@@ -27,7 +27,6 @@ class PathFinding:
             cur_node = queue.popleft()
             if cur_node == goal:
                 break
-            # SUTAISO CRASHA KURIS KARTAIS ATSIRANDA #
             if cur_node in graph:
                 next_nodes = graph[cur_node]
             else:

@@ -73,7 +73,6 @@ class NPC(AnimatedSprite):
                 self.game.sound.npc_pain.play()
                 self.game.player.fired = False
                 self.pain = True
-                print(self.game.weapon.damage)
                 self.health -= self.game.weapon.damage
                 self.check_health()
 
@@ -95,7 +94,6 @@ class NPC(AnimatedSprite):
 
                 if self.dist < self.attack_dist:
                     if randint(0, 30) < 10:
-                        print("ATTACK")
                         self.animate(self.attack_images)
                         self.attack()
                 else:

@@ -35,12 +35,10 @@ class Player:
 			if event.key == pg.K_d: self.movingRight = False
 
 		if event.type == pg.MOUSEMOTION:
-			mx, my = pg.mouse.get_pos()
-			if mx < MOUSE_BORDER_LEFT or mx > MOUSE_BORDER_RIGHT:
-				pg.mouse.set_pos([HALF_WIDTH, HALF_HEIGHT])
 			self.rel = pg.mouse.get_rel()[0]
 			self.rel = max(-MOUSE_MAX_REL, min(MOUSE_MAX_REL, self.rel))
 			self.angle += self.rel * MOUSE_SENSITIVITY * self.game.delta_time
+			pg.mouse.set_pos((HALF_WIDTH, HALF_HEIGHT))
 
 		if event.type == pg.MOUSEBUTTONDOWN:
 			if event.button == 1:
@@ -64,7 +62,7 @@ class Player:
 		self.movement()
 		self.recover_health()
 		self.game.weapon.update(self.weapon_attack)
-		if self.game.object_handler.killed > 50:
+		if self.game.object_handler.killed >= self.game.map.enemy_amount:
 			self.set_state("win")
 		if self.health < 1:
 			self.set_state("gameover")
@@ -76,11 +74,20 @@ class Player:
 				self.time_prev = time_now
 				self.health += 1
 
+	def check_if_last_level(self):
+		if len(self.game.map_lists) > 1:
+			return False
+		return True
+
 	def set_state(self, string):
 		if string == "gameover":
 			self.game.object_renderer.status_game_over()
 		elif string == "win":
-			self.game.object_renderer.status_game_won()
+			if self.check_if_last_level():
+				self.game.object_renderer.status_game_won()
+			else:
+				self.game.map_lists.pop(0)
+				self.game.new_game("resources/levels/" + str(self.game.map_lists[0]) + ".txt")
 		pg.display.flip()
 		pg.time.delay(1500)
 		self.game.new_game()

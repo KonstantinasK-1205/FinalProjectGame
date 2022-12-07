@@ -15,13 +15,16 @@ class Game:
         pg.init()
         pg.mouse.set_visible(False)
         pg.event.set_grab(True)
+
+        self.map_lists = ["level1", "level2", "level3"]
+
         self.screen = pg.display.set_mode(RES)
         self.clock = pg.time.Clock()
         self.delta_time = 1
         self.global_trigger = False
         self.new_game()
 
-    def new_game(self):
+    def new_game(self, level="resources/levels/level1.txt"):
         self.player = Player(self)
         self.object_handler = ObjectHandler(self)
         self.object_renderer = ObjectRenderer(self)
@@ -29,10 +32,10 @@ class Game:
         self.weapon = Weapon(self)
         self.sound = Sound(self)
         self.map = Map(self)
+        self.map.get_map(path)
         self.pathfinding = PathFinding(self)
 
         self.object_handler.loadMap(self)
-        #self.object_handler.generatePickups()
 
     def update(self):
         self.raycasting.update()

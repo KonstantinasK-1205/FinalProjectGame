@@ -22,6 +22,10 @@ class ObjectRenderer:
     # In Game Texts
     def draw_ingame_gui(self):
         # Draw Killed Amount
+        killed_text = self.font.render("Enemy left: " + str(self.game.map.enemy_amount - self.game.object_handler.killed), True, (255, 255, 255))
+        self.screen.blit(killed_text, (RES[0] - killed_text.get_size()[0], RES[1] - self.font.get_linesize()))
+
+        # Draw Killed Amount
         killed_text = self.font.render("Killed: " + str(self.game.object_handler.killed), True, (255, 255, 255))
         self.screen.blit(killed_text, (MARGIN, RES[1] - self.font.get_linesize()))
  
@@ -48,6 +52,7 @@ class ObjectRenderer:
         pg.draw.rect(self.screen, (102, 0, 0), pg.Rect(0, 0, RES[0], RES[1]))
 
     def draw_background(self):
+        self.sky_offset = (self.sky_offset + 4.5 * self.game.player.rel) % WIDTH
         # Angle between 0 and 360
         angle = math.fmod(self.game.player.angle * 180 / math.pi, 360)
         if angle < 0:
@@ -57,8 +62,8 @@ class ObjectRenderer:
 
         self.screen.blit(self.sky_image, (-self.sky_offset, 0))
         self.screen.blit(self.sky_image, (-self.sky_offset + WIDTH, 0))
-
         pg.draw.rect(self.screen, FLOOR_COLOR, (0, HALF_HEIGHT, WIDTH, HEIGHT))
+
 
     def render_game_objects(self):
         list_objects = sorted(self.game.raycasting.objects_to_render, key=lambda t: t[0], reverse=True)
