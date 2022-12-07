@@ -9,6 +9,9 @@ class Map:
         self.get_map()
 
     def get_map(self):
+        # In case a map was already loaded, remove old objects
+        self.game.object_handler.reset()
+
         map_file = open("resources/levels/level1.txt", "r")
         y = 0
         while line := map_file.readline():

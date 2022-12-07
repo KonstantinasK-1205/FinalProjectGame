@@ -134,3 +134,9 @@ class ObjectHandler:
 
     def randomNum(self, minNum, maxNum):
         return random.randint(minNum, maxNum)
+
+    def reset(self):
+        self.sprite_list = []
+        self.npc_list = []
+        self.alive_npc_list = []
+        self.npc_positions = {}
