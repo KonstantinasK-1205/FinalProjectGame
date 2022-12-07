@@ -13,5 +13,8 @@ class Sound:
 
         self.hpHealed = pg.mixer.Sound(self.path + 'hpHealed.wav')
         self.dmgIncrease = pg.mixer.Sound(self.path + 'dmgIncrease.wav')
+
+        self.healthpack = pg.mixer.Sound(self.path + 'healthpack.wav')
+
         # self.theme = pg.mixer.Sound(self.path + 'theme.wav')
 
