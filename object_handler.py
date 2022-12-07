@@ -22,8 +22,8 @@ class ObjectHandler:
         self.gameMap = Map(game)
         self.map_size = self.gameMap.get_size()
 
-        self.hpRestored = False;
-        self.dmgIncreased = False;
+        self.hpRestored = False
+        self.dmgIncreased = False
 
         # Sprites on the Map
         self.add_sprite(SpriteObject(game))
@@ -36,7 +36,7 @@ class ObjectHandler:
         print("MAP Size X: " + str(self.map_size[0]) + " | Y: " + str(self.map_size[1]) + " | Empty: " + str(self.gameMap.world_empty_space))
 
         cloRangeNPC = 0
-        while cloRangeNPC < 10:
+        while cloRangeNPC < 5:
             newX = self.randomNum(4, math.floor(self.map_size[0] / 4))
             newY = self.randomNum(4, math.floor(self.map_size[1] / 6))
             if not self.gameMap.isWall(newX, newY):
@@ -44,7 +44,7 @@ class ObjectHandler:
                 cloRangeNPC = cloRangeNPC + 1
 
         midRangeNPC = 0
-        while midRangeNPC < 60:
+        while midRangeNPC < 50:
             newX = self.randomNum(math.floor(self.map_size[0] / 4) + 1, math.floor(self.map_size[0] / 2))
             newY = self.randomNum(math.floor(self.map_size[1] / 6) + 1, math.floor(self.map_size[1] / 3))
             if not self.gameMap.isWall(newX, newY):
@@ -52,7 +52,7 @@ class ObjectHandler:
                 midRangeNPC = midRangeNPC + 1
 
         farRangeNPC = 0
-        while farRangeNPC < 40:
+        while farRangeNPC < 70:
             newX = self.randomNum(math.floor(self.map_size[0] / 2) + 1, self.map_size[0])
             newY = self.randomNum(math.floor(self.map_size[1] / 3) + 1, self.map_size[1])
             if not self.gameMap.isWall(newX, newY):
@@ -61,13 +61,13 @@ class ObjectHandler:
 
     def killReward(self):
         reward = self.killed
-        if reward > 15 and ( not self.hpRestored ):
+        if reward > 15 and not self.hpRestored:
             self.game.player.set_health(200)
             self.game.sound.hpHealed.play()
             self.hpRestored = True
 
-        if reward > 20 and ( not self.dmgIncreased ):
-            self.game.weapon.set_damage(100)
+        if reward > 20 and not self.dmgIncreased:
+            self.game.weapon.set_buff(1.3)
             self.game.sound.dmgIncrease.play()
             self.dmgIncreased = True
 

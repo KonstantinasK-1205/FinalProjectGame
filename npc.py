@@ -22,6 +22,7 @@ class NPC(AnimatedSprite):
         self.ray_cast_value = False
         self.frame_counter = 0
         self.player_search_trigger = False
+        self.death_animation_started = False
 
     def update(self):
         self.check_animation_time()
@@ -41,7 +42,7 @@ class NPC(AnimatedSprite):
             self.y += dy
 
     def movement(self):
-        next_pos = self.game.pathfinding.get_path(self.map_pos, self.game.player.map_pos)
+        next_pos = self.game.pathfinding.get_path(self.map_pos, self.game.player.get_map_pos)
         next_x, next_y = next_pos
         if next_pos not in self.game.object_handler.npc_positions:
             angle = math.atan2(next_y + 0.5 - self.y, next_x + 0.5 - self.x)
@@ -53,12 +54,13 @@ class NPC(AnimatedSprite):
         if self.animation_trigger:
             self.game.sound.npc_attack.play()
             if random() < self.accuracy:
-                self.game.player.get_damage(self.attack_damage)
+                self.game.player.get_hit(self.attack_damage)
 
 
     def animate_death(self):
         if not self.alive:
-            if self.game.global_trigger and self.frame_counter < len(self.death_images) - 1:
+            if self.animation_trigger and self.frame_counter < len(self.death_images):
+                self.death_animation_started = True
                 self.death_images.rotate(-1)
                 self.image = self.death_images[0]
                 self.frame_counter += 1
@@ -69,11 +71,12 @@ class NPC(AnimatedSprite):
             self.pain = False
 
     def check_hit_in_npc(self):
-        if self.ray_cast_value and self.game.player.shot:
+        if self.ray_cast_value and self.game.player.fired:
             if HALF_WIDTH - self.sprite_half_width < self.screen_x < HALF_WIDTH + self.sprite_half_width:
                 self.game.sound.npc_pain.play()
-                self.game.player.shot = False
+                self.game.player.fired = False
                 self.pain = True
+                print(self.game.weapon.damage)
                 self.health -= self.game.weapon.damage
                 self.check_health()
 
@@ -94,8 +97,10 @@ class NPC(AnimatedSprite):
                 self.player_search_trigger = True
 
                 if self.dist < self.attack_dist:
-                    self.animate(self.attack_images)
-                    self.attack()
+                    if randint(0, 20) < 5:
+                        print("ATTACK")
+                        self.animate(self.attack_images)
+                        self.attack()
                 else:
                     self.animate(self.walk_images)
                     self.movement()
@@ -114,14 +119,14 @@ class NPC(AnimatedSprite):
         return int(self.x), int(self.y)
 
     def ray_cast_player_npc(self):
-        if self.game.player.map_pos == self.map_pos:
+        if self.game.player.get_map_pos == self.map_pos:
             return True
 
         wall_dist_v, wall_dist_h = 0, 0
         player_dist_v, player_dist_h = 0, 0
 
-        ox, oy = self.game.player.pos
-        x_map, y_map = self.game.player.map_pos
+        ox, oy = self.game.player.get_pos
+        x_map, y_map = self.game.player.get_map_pos
 
         ray_angle = self.theta
 
@@ -131,6 +136,7 @@ class NPC(AnimatedSprite):
         # horizontals
         y_hor, dy = (y_map + 1, 1) if sin_a > 0 else (y_map - 1e-6, -1)
 
+        # Fixes crash, when Sin reaches 0, game crashes, this one line fix it
         if sin_a == 0.0:
             sin_a = 0.0000000000001
         depth_hor = (y_hor - oy) / sin_a
@@ -178,12 +184,6 @@ class NPC(AnimatedSprite):
         if 0 < player_dist < wall_dist or not wall_dist:
             return True
         return False
-
-    def draw_ray_cast(self):
-        pg.draw.circle(self.game.screen, 'red', (100 * self.x, 100 * self.y), 15)
-        if self.ray_cast_player_npc():
-            pg.draw.line(self.game.screen, 'orange', (100 * self.game.player.x, 100 * self.game.player.y),
-                         (100 * self.x, 100 * self.y), 2)
 
 class SoldierNPC(NPC):
     def __init__(self, game, path='resources/sprites/npc/soldier/0.png', pos=(10.5, 5.5),
