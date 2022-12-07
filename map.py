@@ -1,3 +1,4 @@
+from sprite_object import *
 import pygame as pg
 
 class Map:
@@ -18,6 +19,14 @@ class Map:
                     self.world_map[(x, y)] = int(char)
                 elif char == "p":
                     self.game.player.set_spawn(x + 0.5, y + 0.5)
+                elif char == "e":
+                    self.game.object_handler.add_npc(NPC(self.game, pos=(x + 0.5, y + 0.5)))
+                elif char == "h":
+                    self.game.object_handler.add_sprite(Healthpack(self.game, pos=(x + 0.5, y + 0.5)))
+                elif char == "b":
+                    self.game.object_handler.add_sprite(Ammopack(self.game, pos=(x + 0.5, y + 0.5)))
+                elif char == "a":
+                    self.game.object_handler.add_sprite(Armorpickup(self.game, pos=(x + 0.5, y + 0.5)))
                 x = x + 1
             y = y + 1
 

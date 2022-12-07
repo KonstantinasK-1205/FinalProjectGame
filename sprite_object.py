@@ -126,7 +126,7 @@ class Ammopack(SpriteObject):
             dy = self.y - self.player.y
             d = math.sqrt(dx * dx + dy * dy)
             if d < 0.5:
-                self.player.bullet_left += 5
+                self.player.bullet_left += 10
                 self.game.sound.ammopack.play()
                 self.used = True
 

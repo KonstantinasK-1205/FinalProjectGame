@@ -1,11 +1,11 @@
 import sys
 import pygame as pg
-from map import *
 from player import *
 from raycasting import *
 from object_renderer import *
 from sprite_object import *
 from object_handler import *
+from map import *
 from weapon import *
 from sound import *
 from pathfinding import *
@@ -23,13 +23,16 @@ class Game:
 
     def new_game(self):
         self.player = Player(self)
-        self.map = Map(self)
+        self.object_handler = ObjectHandler(self)
         self.object_renderer = ObjectRenderer(self)
         self.raycasting = RayCasting(self)
-        self.object_handler = ObjectHandler(self)
         self.weapon = Weapon(self)
         self.sound = Sound(self)
+        self.map = Map(self)
         self.pathfinding = PathFinding(self)
+
+        self.object_handler.loadMap(self)
+        #self.object_handler.generatePickups()
 
     def update(self):
         self.raycasting.update()

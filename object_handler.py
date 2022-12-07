@@ -11,7 +11,6 @@ class ObjectHandler:
         self.static_sprite_path = 'resources/sprites/static_sprites/'
         self.anim_sprite_path = 'resources/sprites/animated_sprites/'
 
-        self.game = game
         self.sprite_list = []
         self.npc_list = []
         self.alive_npc_list = []
@@ -19,19 +18,28 @@ class ObjectHandler:
         self.lastRespawned = pg.time.get_ticks()
         self.killed = 0
 
-        self.gameMap = Map(game)
-        self.map_size = self.gameMap.get_size()
+        self.game = ''
+        self.gameMap = ''
+        self.map_size = ''
 
         self.hpRestored = False
         self.dmgIncreased = False
         self.sprite_positions = []
+        # Little bit more interesting spawning, but also more problematic
+        # print("MAP Size X: " + str(self.map_size[0]) + " | Y: " + str(self.map_size[1]))
 
+    def loadMap(self, game):
+        self.game = game
+        self.gameMap = Map(game)
+        self.map_size = self.gameMap.get_size()
+
+    def generatePickups(self):
         # Sprites on the Map
         for i in range(0, self.randomNum(15, 30)):
             newX = self.randomNum(0, self.map_size[0])
             newY = self.randomNum(0, self.map_size[1])
             if not (newX - 0.5, newY - 0.5) in self.sprite_positions:
-                self.add_sprite(AnimatedSprite(game, pos=(newX - 0.5, newY - 0.5)))
+                self.add_sprite(AnimatedSprite(self.game, pos=(newX - 0.5, newY - 0.5)))
                 self.sprite_positions.append((newX - 0.5, newY - 0.5)) 
 
 
@@ -40,7 +48,7 @@ class ObjectHandler:
             newX = self.randomNum(0, self.map_size[0])
             newY = self.randomNum(0, self.map_size[1])
             if not (newX - 0.5, newY - 0.5) in self.sprite_positions:
-                self.add_sprite(Healthpack(game, pos=(newX - 0.5, newY - 0.5)))
+                self.add_sprite(Healthpack(self.game, pos=(newX - 0.5, newY - 0.5)))
                 self.sprite_positions.append((newX - 0.5, newY - 0.5)) 
 
         # Spawn pickable armors
@@ -48,7 +56,7 @@ class ObjectHandler:
             newX = self.randomNum(0, self.map_size[0])
             newY = self.randomNum(0, self.map_size[1])
             if not (newX - 0.5, newY - 0.5) in self.sprite_positions:
-                self.add_sprite(Ammopack(game, pos=(newX - 0.5, newY - 0.5)))
+                self.add_sprite(Ammopack(self.game, pos=(newX - 0.5, newY - 0.5)))
                 self.sprite_positions.append((newX - 0.5, newY - 0.5)) 
         
         # Spawn ammopacks
@@ -56,11 +64,8 @@ class ObjectHandler:
             newX = self.randomNum(0, self.map_size[0])
             newY = self.randomNum(0, self.map_size[1])
             if not (newX - 0.5, newY - 0.5) in self.sprite_positions:
-                self.add_sprite(Armorpickup(game, pos=(newX - 0.5, newY - 0.5)))
+                self.add_sprite(Armorpickup(self.game, pos=(newX - 0.5, newY - 0.5)))
                 self.sprite_positions.append((newX - 0.5, newY - 0.5)) 
-
-        # Little bit more interesting spawning, but also more problematic
-        print("MAP Size X: " + str(self.map_size[0]) + " | Y: " + str(self.map_size[1]))
 
         cloRangeNPC = 0
         while cloRangeNPC < 5:
