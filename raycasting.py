@@ -15,6 +15,10 @@ class RayCasting:
         for ray, values in enumerate(self.ray_casting_result):
             depth, proj_height, texture, offset = values
 
+            # Negative proj_height causes crash
+            if proj_height < 0:
+                continue
+
             if proj_height < HEIGHT:
                 wall_column = self.textures[texture].subsurface(
                     offset * (TEXTURE_SIZE - SCALE), 0, SCALE, TEXTURE_SIZE
