@@ -40,7 +40,7 @@ class ObjectHandler:
             self.add_sprite(Healthpack(game, pos=(newX - 0.5, newY - 0.5)))
 
         # Little bit more interesting spawning, but also more problematic
-        print("MAP Size X: " + str(self.map_size[0]) + " | Y: " + str(self.map_size[1]) + " | Empty: " + str(self.gameMap.world_empty_space))
+        print("MAP Size X: " + str(self.map_size[0]) + " | Y: " + str(self.map_size[1]))
 
         cloRangeNPC = 0
         while cloRangeNPC < 5:
