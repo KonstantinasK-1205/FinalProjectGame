@@ -10,15 +10,27 @@ class Map:
         self.enemy_amount = 0
 
     def get_map(self, path):
+        print("Loading map " + path)
+
         # In case a map was already loaded, remove old objects
         self.enemy_amount = 0
         self.game.object_handler.reset()
 
         map_file = open(path, "r")
+
         y = 0
         while line := map_file.readline():
             x = 0
+            skip = False
             for char in line:
+                # Magic fix for tab separated files
+                if "\t" in line:
+                    if skip:
+                        skip = False
+                        continue
+                    elif not char == "\t":
+                        skip = True
+
                 # world_map should only contain ints which refer to wall texture
                 # index
                 if char.isdigit():

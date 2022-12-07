@@ -34,6 +34,10 @@ class RayCasting:
                 wall_column = pg.transform.scale(wall_column, (SCALE, HEIGHT))
                 wall_pos = (ray * SCALE, 0)
 
+            # Shade by depth to achieve a fog effect
+            shade = max(0, min(255, 400 - int(depth * 30)))
+            wall_column.fill(pg.Color(shade, shade, shade), None, pg.BLEND_MULT)
+
             self.objects_to_render.append((depth, wall_column, wall_pos))
 
     def ray_cast(self):
