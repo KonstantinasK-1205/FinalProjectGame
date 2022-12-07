@@ -1,6 +1,5 @@
-from sprite_object import *
 from npc import *
-import pygame as pg
+
 
 class Map:
     def __init__(self, game):

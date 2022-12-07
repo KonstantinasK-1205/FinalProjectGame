@@ -1,5 +1,6 @@
 import pygame as pg
 
+
 class Sound:
     def __init__(self, game):
         self.game = game
@@ -20,4 +21,3 @@ class Sound:
         self.armorpicked = pg.mixer.Sound(self.path + 'armorpicked.wav')
 
         # self.theme = pg.mixer.Sound(self.path + 'theme.wav')
-

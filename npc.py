@@ -1,10 +1,12 @@
+from random import randint, random, uniform
+
 from sprite_object import *
-from random import randint, random, choice, uniform
+
 
 class NPC(AnimatedSprite):
     def __init__(self, game, path='resources/sprites/npc/soldier/0.png', pos=(3, 3),
                  scale=0.6, shift=0.38, animation_time=180):
-        super().__init__(game, path,  pos, scale, shift, animation_time)
+        super().__init__(game, path, pos, scale, shift, animation_time)
         self.attack_images = self.get_images(self.path + '/attack')
         self.death_images = self.get_images(self.path + '/death')
         self.idle_images = self.get_images(self.path + '/idle')
@@ -52,7 +54,6 @@ class NPC(AnimatedSprite):
             self.game.sound.npc_attack.play()
             if random() < self.accuracy:
                 self.game.player.get_hit(self.attack_damage)
-
 
     def animate_death(self):
         if not self.alive:
@@ -152,7 +153,7 @@ class NPC(AnimatedSprite):
             y_hor += dy
             depth_hor += delta_depth
 
-         # Verticals
+        # Verticals
         x_vert, dx = (x_map + 1, 1) if cos_a > 0 else (x_map - 1e-6, -1)
 
         depth_vert = (x_vert - ox) / cos_a
@@ -180,10 +181,8 @@ class NPC(AnimatedSprite):
             return True
         return False
 
+
 class SoldierNPC(NPC):
     def __init__(self, game, path='resources/sprites/npc/soldier/0.png', pos=(10.5, 5.5),
                  scale=0.6, shift=0.38, animation_time=180):
         super().__init__(game, path, pos, scale, shift, animation_time)
-
-
-

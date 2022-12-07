@@ -1,7 +1,10 @@
-import pygame as pg
-from settings import *
 import os
 from collections import deque
+
+import pygame as pg
+
+from settings import *
+
 
 class SpriteObject:
     def __init__(self, game, path='resources/sprites/static_sprites/candlebra.png',
@@ -54,7 +57,7 @@ class SpriteObject:
 
 class AnimatedSprite(SpriteObject):
     def __init__(self, game, path='resources/sprites/animated_sprites/green_light/0.png',
-                pos=(2, 8), scale=0.8, shift=0.25, animation_time=120):
+                 pos=(2, 8), scale=0.8, shift=0.25, animation_time=120):
         super().__init__(game, path, pos, scale, shift)
         self.animation_time = animation_time
         self.path = path.rsplit('/', 1)[0]
@@ -90,7 +93,7 @@ class AnimatedSprite(SpriteObject):
 
 class Healthpack(SpriteObject):
     def __init__(self, game, path='resources/sprites/static_sprites/healthpack.png',
-                pos=(2.5, 3), scale=0.3, shift=1.1):
+                 pos=(2.5, 3), scale=0.3, shift=1.1):
         super().__init__(game, path, pos, scale, shift)
         self.used = False
 
@@ -109,9 +112,10 @@ class Healthpack(SpriteObject):
                 self.game.sound.healthpack.play()
                 self.used = True
 
+
 class Ammopack(SpriteObject):
     def __init__(self, game, path='resources/sprites/static_sprites/ammopack.png',
-                pos=(2.5, 3), scale=0.3, shift=1.1):
+                 pos=(2.5, 3), scale=0.3, shift=1.1):
         super().__init__(game, path, pos, scale, shift)
         self.used = False
 
@@ -130,9 +134,10 @@ class Ammopack(SpriteObject):
                 self.game.sound.ammopack.play()
                 self.used = True
 
+
 class Armorpickup(SpriteObject):
     def __init__(self, game, path='resources/sprites/static_sprites/armorpickup.png',
-                pos=(2.5, 3), scale=0.3, shift=1.1):
+                 pos=(2.5, 3), scale=0.3, shift=1.1):
         super().__init__(game, path, pos, scale, shift)
         self.used = False
 

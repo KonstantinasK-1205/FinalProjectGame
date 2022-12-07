@@ -1,8 +1,7 @@
-from sprite_object import *
-from npc import *
-from map import *
 import random
-import math
+
+from map import *
+
 
 class ObjectHandler:
     def __init__(self, game):
@@ -37,7 +36,7 @@ class ObjectHandler:
             self.hpRestored = True
 
         if reward > int(self.game.map.enemy_amount / 2) and not self.dmgIncreased:
-            self.game.weapon.set_buff(1.3)
+            self.game.weapon.set_damage_buff(1.3)
             self.game.sound.dmgIncrease.play()
             self.dmgIncreased = True
 

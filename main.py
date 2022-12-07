@@ -1,14 +1,13 @@
 import sys
-import pygame as pg
+
+from object_handler import *
+from object_renderer import *
+from pathfinding import *
 from player import *
 from raycasting import *
-from object_renderer import *
-from sprite_object import *
-from object_handler import *
-from map import *
-from weapon import *
 from sound import *
-from pathfinding import *
+from weapon import *
+
 
 class Game:
     def __init__(self):
@@ -46,7 +45,7 @@ class Game:
 
     def draw(self):
         pg.display.flip()
-        self.object_renderer.draw()        
+        self.object_renderer.draw()
         self.weapon.draw()
 
     def check_events(self):
@@ -80,6 +79,7 @@ class Game:
             self.check_events()
             self.update()
             self.draw()
+
 
 if __name__ == '__main__':
     game = Game()
