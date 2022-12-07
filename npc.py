@@ -32,13 +32,10 @@ class NPC(AnimatedSprite):
     def isAlive(self):
         return self.alive
 
-    def check_wall(self, x, y):
-        return (x, y) not in self.game.map.world_map
-
     def check_wall_collision(self, dx, dy):
-        if self.check_wall(int(self.x + dx * self.size), int(self.y)):
+        if self.game.map.isWall(int(self.x + dx * self.size), int(self.y)):
             self.x += dx
-        if self.check_wall(int(self.x), int(self.y + dy * self.size)):
+        if self.game.map.isWall(int(self.x), int(self.y + dy * self.size)):
             self.y += dy
 
     def movement(self):

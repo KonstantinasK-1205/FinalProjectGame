@@ -83,7 +83,7 @@ class Player:
 
 	def get_hit(self, damage):
 		self.health -= damage
-		self.game.object_renderer.player_damage()
+		self.game.object_renderer.player_hitted()
 		self.game.sound.player_pain.play()
 
 	def movement(self):

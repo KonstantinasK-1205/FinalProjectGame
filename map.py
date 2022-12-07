@@ -72,10 +72,6 @@ class Map:
                     self.game.player.set_spawn(j + 1.5, i - 0.5)
                 elif value == '_':
                     self.world_empty_space = self.world_empty_space + 1
-#     WORLD TEST
-    def draw(self):
-        [pg.draw.rect(self.game.screen, 'darkgray', (pos[0] * 100, pos[1] * 100, 100, 100), 2)
-         for pos in self.world_map]
 
     def isWall(self, x, y):
         if (x, y) in self.world_map:

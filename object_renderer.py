@@ -8,14 +8,13 @@ class ObjectRenderer:
         self.wall_textures = self.load_wall_textures()
         self.sky_image = self.get_texture('resources/textures/sky.jpg', (WIDTH, HALF_HEIGHT))
         self.sky_offset = 0
-        self.blood_screen = self.get_texture('resources/textures/blood_screen.png', RES)
-        self.digit_size = 72
-        self.digit_images = [self.get_texture(f'resources/textures/digits/{i}.png', [self.digit_size] * 2)
-                             for i in range(11)]
-        self.digits = dict(zip(map(str, range(11)), self.digit_images))
         self.game_over_image = self.get_texture('resources/textures/game_over.png', RES)
         self.game_victory_image = self.get_texture('resources/textures/win.png', RES)
 
+        # New things
+        self.font = pg.font.Font("resources/fonts/Font.ttf", 72)
+        self.health_text = self.font.render("0", True, (255, 0, 0))
+        self.killed_text = self.font.render("0", True, (0, 0, 0))
 
     def draw(self):
         self.draw_background()
@@ -23,31 +22,29 @@ class ObjectRenderer:
         self.draw_player_health()
         self.draw_killed_amount()
 
+    # In Game Texts
+    def draw_player_health(self):
+        self.health_text = self.font.render(str(self.game.player.health) + " %", True, (255, 0, 0))
+        self.screen.blit(self.health_text, (MARGIN, 0))
+
+    def draw_killed_amount(self):
+        self.killed_text = self.font.render(str(self.game.object_handler.killed), True, (255, 255, 255))
+        self.screen.blit(self.killed_text, (MARGIN, RES[1] - self.font.get_linesize()))
+
+    # States
     def status_game_over(self):
         self.screen.blit(self.game_over_image, (0, 0))
 
     def status_game_won(self):
         self.screen.blit(self.game_victory_image, (0, 0))
 
-    def draw_player_health(self):
-        health = str(self.game.player.health)
-        for i, char in enumerate(health):
-            self.screen.blit(self.digits[char], (i * self.digit_size + MARGIN, 0))
-        self.screen.blit(self.digits['10'], ((i + 1) * self.digit_size + MARGIN, 0))
-
-    def draw_killed_amount(self):
-        killed = str(self.game.object_handler.killed)
-        for i, char in enumerate(killed):
-            self.screen.blit(self.digits[char], (i * self.digit_size + MARGIN, RES[1] - self.digit_size))
-
-    def player_damage(self):
-        self.screen.blit(self.blood_screen, (0, 0))
+    def player_hitted(self):
+        pg.draw.rect(self.screen, (102, 0, 0), pg.Rect(0, 0, RES[0], RES[1]))
 
     def draw_background(self):
         self.sky_offset = (self.sky_offset + 4.5 * self.game.player.rel) % WIDTH
         self.screen.blit(self.sky_image, (-self.sky_offset, 0))
         self.screen.blit(self.sky_image, (-self.sky_offset + WIDTH, 0))
-    #     floor
         pg.draw.rect(self.screen, FLOOR_COLOR, (0, HALF_HEIGHT, WIDTH, HEIGHT))
 
 

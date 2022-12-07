@@ -35,11 +35,11 @@ class Game:
         self.raycasting.update()
         self.object_handler.update()
         self.player.update()
-        pg.display.flip()
         self.delta_time = self.clock.tick(FPS)
-        pg.display.set_caption(f'{self.clock.get_fps() :.1f}')
+        pg.display.set_caption(f'{self.delta_time :.1f}')
 
     def draw(self):
+        pg.display.flip()
         self.object_renderer.draw()        
         self.weapon.draw()
 
