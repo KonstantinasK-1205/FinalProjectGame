@@ -48,11 +48,17 @@ class ObjectRenderer:
         pg.draw.rect(self.screen, (102, 0, 0), pg.Rect(0, 0, RES[0], RES[1]))
 
     def draw_background(self):
-        self.sky_offset = (self.sky_offset + 4.5 * self.game.player.rel) % WIDTH
+        # Angle between 0 and 360
+        angle = math.fmod(self.game.player.angle * 180 / math.pi, 360)
+        if angle < 0:
+            angle = angle + 360
+
+        self.sky_offset = math.fmod(angle * WIDTH / 360, WIDTH)
+
         self.screen.blit(self.sky_image, (-self.sky_offset, 0))
         self.screen.blit(self.sky_image, (-self.sky_offset + WIDTH, 0))
-        pg.draw.rect(self.screen, FLOOR_COLOR, (0, HALF_HEIGHT, WIDTH, HEIGHT))
 
+        pg.draw.rect(self.screen, FLOOR_COLOR, (0, HALF_HEIGHT, WIDTH, HEIGHT))
 
     def render_game_objects(self):
         list_objects = sorted(self.game.raycasting.objects_to_render, key=lambda t: t[0], reverse=True)
