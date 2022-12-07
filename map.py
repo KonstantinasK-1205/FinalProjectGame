@@ -7,7 +7,7 @@ class Map:
         self.get_map()
 
     def get_map(self):
-        map_file = open("resources/map.txt", "r")
+        map_file = open("resources/levels/level1.txt", "r")
         y = 0
         while line := map_file.readline():
             x = 0

@@ -12,24 +12,30 @@ class ObjectRenderer:
         self.game_victory_image = self.get_texture('resources/textures/win.png', RES)
 
         # New things
-        self.font = pg.font.Font("resources/fonts/Font.ttf", 72)
-        self.health_text = self.font.render("0", True, (255, 0, 0))
-        self.killed_text = self.font.render("0", True, (0, 0, 0))
+        self.font = pg.font.Font("resources/fonts/Font.ttf", 48)
 
     def draw(self):
         self.draw_background()
         self.render_game_objects()
-        self.draw_player_health()
-        self.draw_killed_amount()
+        self.draw_ingame_gui()
 
     # In Game Texts
-    def draw_player_health(self):
-        self.health_text = self.font.render(str(self.game.player.health) + " %", True, (255, 0, 0))
-        self.screen.blit(self.health_text, (MARGIN, 0))
-
-    def draw_killed_amount(self):
-        self.killed_text = self.font.render(str(self.game.object_handler.killed), True, (255, 255, 255))
-        self.screen.blit(self.killed_text, (MARGIN, RES[1] - self.font.get_linesize()))
+    def draw_ingame_gui(self):
+        # Draw Killed Amount
+        killed_text = self.font.render("Killed: " + str(self.game.object_handler.killed), True, (255, 255, 255))
+        self.screen.blit(killed_text, (MARGIN, RES[1] - self.font.get_linesize()))
+ 
+        # Draw Bullet amount
+        bullet_text = self.font.render("Bullet: " + str(self.game.player.bullet_left), True, (255, 255, 255))
+        self.screen.blit(bullet_text, (MARGIN, RES[1] - self.font.get_linesize() * 2.1))
+ 
+        # Draw Armor left amount
+        armor_text = self.font.render("Armor: " + str(self.game.player.armor), True, (255, 255, 255))
+        self.screen.blit(armor_text, (MARGIN, RES[1] - self.font.get_linesize() * 3.2))
+ 
+        # Draw HP
+        health_text = self.font.render("HP: " + str(self.game.player.health) + " %", True, (255, 255, 255))
+        self.screen.blit(health_text, (MARGIN, RES[1] - self.font.get_linesize() * 4.3))
 
     # States
     def status_game_over(self):

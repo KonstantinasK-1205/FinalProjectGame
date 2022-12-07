@@ -24,20 +24,40 @@ class ObjectHandler:
 
         self.hpRestored = False
         self.dmgIncreased = False
+        self.sprite_positions = []
 
         # Sprites on the Map
-        self.add_sprite(SpriteObject(game))
-        for i in range(0, self.randomNum(10, 30)):
+        for i in range(0, self.randomNum(15, 30)):
             newX = self.randomNum(0, self.map_size[0])
             newY = self.randomNum(0, self.map_size[1])
-            self.add_sprite(AnimatedSprite(game, pos=(newX - 0.5, newY - 0.5)))
+            if not (newX - 0.5, newY - 0.5) in self.sprite_positions:
+                self.add_sprite(AnimatedSprite(game, pos=(newX - 0.5, newY - 0.5)))
+                self.sprite_positions.append((newX - 0.5, newY - 0.5)) 
+
 
         # Spawn healthpacks
-        self.add_sprite(Healthpack(game))
-        for i in range(0, self.randomNum(10, 30)):
+        for i in range(0, self.randomNum(15, 30)):
             newX = self.randomNum(0, self.map_size[0])
             newY = self.randomNum(0, self.map_size[1])
-            self.add_sprite(Healthpack(game, pos=(newX - 0.5, newY - 0.5)))
+            if not (newX - 0.5, newY - 0.5) in self.sprite_positions:
+                self.add_sprite(Healthpack(game, pos=(newX - 0.5, newY - 0.5)))
+                self.sprite_positions.append((newX - 0.5, newY - 0.5)) 
+
+        # Spawn pickable armors
+        for i in range(0, self.randomNum(10, 20)):
+            newX = self.randomNum(0, self.map_size[0])
+            newY = self.randomNum(0, self.map_size[1])
+            if not (newX - 0.5, newY - 0.5) in self.sprite_positions:
+                self.add_sprite(Ammopack(game, pos=(newX - 0.5, newY - 0.5)))
+                self.sprite_positions.append((newX - 0.5, newY - 0.5)) 
+        
+        # Spawn ammopacks
+        for i in range(0, self.randomNum(25, 40)):
+            newX = self.randomNum(0, self.map_size[0])
+            newY = self.randomNum(0, self.map_size[1])
+            if not (newX - 0.5, newY - 0.5) in self.sprite_positions:
+                self.add_sprite(Armorpickup(game, pos=(newX - 0.5, newY - 0.5)))
+                self.sprite_positions.append((newX - 0.5, newY - 0.5)) 
 
         # Little bit more interesting spawning, but also more problematic
         print("MAP Size X: " + str(self.map_size[0]) + " | Y: " + str(self.map_size[1]))
@@ -59,7 +79,7 @@ class ObjectHandler:
                 midRangeNPC = midRangeNPC + 1
 
         farRangeNPC = 0
-        while farRangeNPC < 70:
+        while farRangeNPC < 40:
             newX = self.randomNum(math.floor(self.map_size[0] / 2) + 1, self.map_size[0])
             newY = self.randomNum(math.floor(self.map_size[1] / 3) + 1, self.map_size[1])
             if not self.gameMap.isWall(newX, newY):

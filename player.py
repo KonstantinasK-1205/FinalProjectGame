@@ -13,6 +13,9 @@ class Player:
 		self.health_recovery_delay = 5000
 		self.time_prev = pg.time.get_ticks()
 
+		self.armor = 100
+		self.bullet_left = 10
+
 		self.movingForward = False
 		self.movingBackward = False
 		self.movingLeft = False
@@ -41,8 +44,9 @@ class Player:
 
 		if event.type == pg.MOUSEBUTTONDOWN:
 			if event.button == 1:
-				if not self.game.weapon.reloading:
+				if not self.game.weapon.reloading and self.bullet_left > 0:
 					self.game.sound.shotgun.play()
+					self.bullet_left -= 1
 					self.fired = True
 					self.weapon_attack = "Fire"
 					self.game.global_trigger = True
@@ -50,7 +54,7 @@ class Player:
 
 			if event.button == 3:
 				if not self.game.weapon.reloading:
-					self.game.sound.shotgun.play()
+					self.game.sound.melee.play()
 					self.fired = True
 					self.weapon_attack = "Melee"
 					self.game.global_trigger = True
@@ -82,7 +86,17 @@ class Player:
 		self.game.new_game()
 
 	def get_hit(self, damage):
-		self.health -= damage
+		noncompensated_dmg = 0
+		if self.armor > 0:
+			if self.armor < damage:
+				noncompensated_dmg = damage - self.armor
+				self.armor = 0
+				self.health -= noncompensated_dmg
+			else:
+				self.armor -= damage
+		else:
+			self.armor = 0
+			self.health -= damage
 		self.game.object_renderer.player_hitted()
 		self.game.sound.player_pain.play()
 

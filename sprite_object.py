@@ -90,7 +90,7 @@ class AnimatedSprite(SpriteObject):
 
 class Healthpack(SpriteObject):
     def __init__(self, game, path='resources/sprites/static_sprites/healthpack.png',
-                pos=(2.5, 3), scale=0.7, shift=0.25):
+                pos=(2.5, 3), scale=0.3, shift=1.1):
         super().__init__(game, path, pos, scale, shift)
         self.used = False
 
@@ -107,4 +107,46 @@ class Healthpack(SpriteObject):
             if d < 0.5 and self.player.health < 150:
                 self.player.health = 150
                 self.game.sound.healthpack.play()
+                self.used = True
+
+class Ammopack(SpriteObject):
+    def __init__(self, game, path='resources/sprites/static_sprites/ammopack.png',
+                pos=(2.5, 3), scale=0.3, shift=1.1):
+        super().__init__(game, path, pos, scale, shift)
+        self.used = False
+
+    def update(self):
+        # Don't draw if already used
+        if not self.used:
+            super().update()
+
+            # Only heal if the player is not full health and is near the
+            # healthpack
+            dx = self.x - self.player.x
+            dy = self.y - self.player.y
+            d = math.sqrt(dx * dx + dy * dy)
+            if d < 0.5:
+                self.player.bullet_left += 5
+                self.game.sound.ammopack.play()
+                self.used = True
+
+class Armorpickup(SpriteObject):
+    def __init__(self, game, path='resources/sprites/static_sprites/armorpickup.png',
+                pos=(2.5, 3), scale=0.3, shift=1.1):
+        super().__init__(game, path, pos, scale, shift)
+        self.used = False
+
+    def update(self):
+        # Don't draw if already used
+        if not self.used:
+            super().update()
+
+            # Only heal if the player is not full health and is near the
+            # healthpack
+            dx = self.x - self.player.x
+            dy = self.y - self.player.y
+            d = math.sqrt(dx * dx + dy * dy)
+            if d < 0.5 and self.player.armor < 100:
+                self.player.armor = 100
+                self.game.sound.armorpicked.play()
                 self.used = True

@@ -94,7 +94,7 @@ class NPC(AnimatedSprite):
                 self.player_search_trigger = True
 
                 if self.dist < self.attack_dist:
-                    if randint(0, 20) < 5:
+                    if randint(0, 30) < 10:
                         print("ATTACK")
                         self.animate(self.attack_images)
                         self.attack()

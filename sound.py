@@ -6,6 +6,7 @@ class Sound:
         pg.mixer.init()
         self.path = 'resources/sound/'
         self.shotgun = pg.mixer.Sound(self.path + 'ShotgunShoot.wav')
+        self.melee = pg.mixer.Sound(self.path + 'melee.wav')
         self.npc_pain = pg.mixer.Sound(self.path + 'npc_pain.wav')
         self.npc_death = pg.mixer.Sound(self.path + 'npc_death.wav')
         self.npc_attack = pg.mixer.Sound(self.path + 'npc_attack.wav')
@@ -15,6 +16,8 @@ class Sound:
         self.dmgIncrease = pg.mixer.Sound(self.path + 'dmgIncrease.wav')
 
         self.healthpack = pg.mixer.Sound(self.path + 'healthpack.wav')
+        self.ammopack = pg.mixer.Sound(self.path + 'ammopack.wav')
+        self.armorpicked = pg.mixer.Sound(self.path + 'armorpicked.wav')
 
         # self.theme = pg.mixer.Sound(self.path + 'theme.wav')
 
