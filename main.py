@@ -22,10 +22,11 @@ class Game:
         self.delta_time = 1
         self.new_game("resources/levels/" + self.map_lists[0] + ".txt")
 
-        self.unpause()
-
         self.PRINTFPSEVENT = pg.USEREVENT + 1
         pg.time.set_timer(self.PRINTFPSEVENT, 1000)
+
+        self.paused = True
+        self.intro = True
 
     def new_game(self, level="resources/levels/Level1.txt"):
         self.player = Player(self)
@@ -58,7 +59,10 @@ class Game:
             pg.display.flip()
 
     def draw(self):
-        if self.paused:
+        if self.intro:
+            self.object_renderer.draw_intro_state()
+            pg.display.flip()
+        elif self.paused:
             self.object_renderer.draw_pause_state()
             pg.display.flip()
         else:
@@ -75,6 +79,7 @@ class Game:
                 self.pause()
             elif event.type == pg.MOUSEBUTTONUP and event.button == 1:
                 self.unpause()
+                self.intro = False
             elif event.type == self.PRINTFPSEVENT:
                 print(str(int(self.clock.get_fps())) + " FPS")
 

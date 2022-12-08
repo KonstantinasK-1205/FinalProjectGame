@@ -43,6 +43,16 @@ class ObjectRenderer:
         self.screen.blit(health_text, (MARGIN, RES[1] - self.font.get_linesize() * 4.3))
 
     # States
+    def draw_intro_state(self):
+        pause_text = self.font.render("Welcome to Die!", True, (255, 255, 255))
+        pause_text_pos = self.center_text(pause_text)
+        continue_text = self.font.render("Press mouse button to continue", True, (255, 255, 255))
+        continue_text_pos = self.center_text(continue_text)
+        pg.draw.rect(self.screen, (44, 44, 44), pg.Rect(0, 0, RES[0], RES[1]))
+        self.screen.blit(pause_text, (pause_text_pos[0], pause_text_pos[1] - pause_text.get_height()))
+        self.screen.blit(continue_text, (continue_text_pos[0], continue_text_pos[1]))
+
+    # States
     def draw_pause_state(self):
         pause_text = self.font.render("Game Paused!", True, (255, 255, 255))
         pause_text_pos = self.center_text(pause_text)
