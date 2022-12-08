@@ -20,13 +20,17 @@ class Game:
         self.clock = pg.time.Clock()
         self.loading_screen_time = pg.time.get_ticks()
         self.delta_time = 1
-        self.new_game("resources/levels/" + self.map_lists[0] + ".txt")
+
+        self.object_handler = ObjectHandler()
+        self.object_renderer = ObjectRenderer(self)
 
         self.PRINTFPSEVENT = pg.USEREVENT + 1
         pg.time.set_timer(self.PRINTFPSEVENT, 1000)
 
         self.paused = True
         self.intro = True
+
+        self.ms = 0
 
     def new_game(self, level="resources/levels/Level1.txt"):
         self.player = Player(self)
@@ -43,7 +47,9 @@ class Game:
 
         self.object_handler.load_map(self)
         if pg.time.get_ticks() - self.loading_screen_time < 500:
-            pg.time.wait(500)
+            self.ms = 2000
+            while self.boolean_wait(500):
+                self.draw_loading_screen()
 
     def update(self):
         if not self.paused:
@@ -52,11 +58,18 @@ class Game:
             self.player.update()
             self.delta_time = self.clock.tick(FPS)
 
+    def boolean_wait(self, update_ms):
+        if self.ms > 0:
+            pg.time.wait(update_ms)
+            self.ms -= update_ms
+            return True
+        else:
+            return False
+
     def draw_loading_screen(self):
-        if not self.map.map_loaded:
-            self.loading_screen_time = pg.time.get_ticks()
-            self.object_renderer.draw_loading_state()
-            pg.display.flip()
+        self.loading_screen_time = pg.time.get_ticks()
+        self.object_renderer.draw_loading_state()
+        pg.display.flip()
 
     def draw(self):
         if self.intro:
@@ -79,12 +92,17 @@ class Game:
                 self.pause()
             elif event.type == pg.MOUSEBUTTONUP and event.button == 1:
                 self.unpause()
-                self.intro = False
+                self.turn_off_intro()
             elif event.type == self.PRINTFPSEVENT:
                 print(str(int(self.clock.get_fps())) + " FPS")
 
             if not self.paused:
                 self.player.handle_events(event)
+
+    def turn_off_intro(self):
+        if self.intro:
+            self.intro = False
+            self.new_game("resources/levels/" + self.map_lists[0] + ".txt")
 
     def pause(self):
         self.paused = True

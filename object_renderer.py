@@ -14,6 +14,8 @@ class ObjectRenderer:
         self.game_victory_image = self.get_texture('resources/textures/win.png', RES)
         self.font = pg.font.Font("resources/fonts/Font.ttf", 48)
 
+        self.loading_str = "Loading level"
+
     def draw(self):
         self.draw_background()
         self.render_game_objects()
@@ -48,6 +50,7 @@ class ObjectRenderer:
         pause_text_pos = self.center_text(pause_text)
         continue_text = self.font.render("Press mouse button to continue", True, (255, 255, 255))
         continue_text_pos = self.center_text(continue_text)
+
         pg.draw.rect(self.screen, (44, 44, 44), pg.Rect(0, 0, RES[0], RES[1]))
         self.screen.blit(pause_text, (pause_text_pos[0], pause_text_pos[1] - pause_text.get_height()))
         self.screen.blit(continue_text, (continue_text_pos[0], continue_text_pos[1]))
@@ -56,6 +59,7 @@ class ObjectRenderer:
     def draw_pause_state(self):
         pause_text = self.font.render("Game Paused!", True, (255, 255, 255))
         pause_text_pos = self.center_text(pause_text)
+
         continue_text = self.font.render("Press mouse button to continue", True, (255, 255, 255))
         continue_text_pos = self.center_text(continue_text)
         pg.draw.rect(self.screen, (44, 44, 44), pg.Rect(0, 0, RES[0], RES[1]))
@@ -65,8 +69,15 @@ class ObjectRenderer:
     def draw_loading_state(self):
         level_text = self.font.render(str(self.game.map_lists[0]), True, (255, 255, 255))
         level_text_pos = self.center_text(level_text)
-        loading_text = self.font.render("Loading level...", True, (255, 255, 255))
+
+        if self.loading_str.count('.') < 3:
+            self.loading_str += "."
+        else:
+            self.loading_str = "Loading level"
+
+        loading_text = self.font.render(self.loading_str, True, (255, 255, 255))
         loading_text_pos = self.center_text(loading_text)
+
         pg.draw.rect(self.screen, (44, 44, 44), pg.Rect(0, 0, RES[0], RES[1]))
         self.screen.blit(level_text, (level_text_pos[0], level_text_pos[1] - level_text.get_height()))
         self.screen.blit(loading_text, (loading_text_pos[0], loading_text_pos[1]))
