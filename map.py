@@ -5,13 +5,14 @@ class Map:
     def __init__(self, game):
         self.game = game
         self.world_map = {}
-        self.get_map("resources/levels/level1.txt")
         self.enemy_amount = 0
+        self.map_loaded = False
 
     def get_map(self, path):
         print("Loading map " + path)
 
         # In case a map was already loaded, remove old objects
+        self.map_loaded = False
         self.enemy_amount = 0
         self.game.object_handler.reset()
 
@@ -47,6 +48,7 @@ class Map:
                     self.game.object_handler.add_sprite(Armorpickup(self.game, pos=(x + 0.5, y + 0.5)))
                 x = x + 1
             y = y + 1
+            self.map_loaded = True
 
     def isWall(self, x, y):
         return (x, y) in self.world_map
@@ -55,7 +57,9 @@ class Map:
         return self.enemy_amount
 
     def get_size(self):
-        xy_size = list(self.world_map.keys())[-1]
-        x_size = xy_size[0]
-        y_size = xy_size[1]
-        return x_size, y_size
+        if len(list(self.world_map.keys())) > 0:
+            xy_size = list(self.world_map.keys())[-1]
+            x_size = xy_size[0]
+            y_size = xy_size[1]
+            return x_size, y_size
+        return 0, 0

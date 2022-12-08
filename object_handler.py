@@ -31,7 +31,7 @@ class ObjectHandler:
     def killReward(self):
         reward = self.killed
         if reward > int(self.game.map.enemy_amount / 4) and not self.hpRestored:
-            self.game.player.set_health(200)
+            self.game.player.health += 50
             self.game.sound.hpHealed.play()
             self.hpRestored = True
 

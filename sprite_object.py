@@ -82,7 +82,8 @@ class AnimatedSprite(SpriteObject):
             self.animation_time_prev = time_now
             self.animation_trigger = True
 
-    def get_images(self, path):
+    @staticmethod
+    def get_images(path):
         images = deque()
         for file_name in os.listdir(path):
             if os.path.isfile(os.path.join(path, file_name)):
@@ -107,8 +108,10 @@ class Healthpack(SpriteObject):
             dx = self.x - self.player.x
             dy = self.y - self.player.y
             d = math.sqrt(dx * dx + dy * dy)
-            if d < 0.5 and self.player.health < 150:
-                self.player.health = 150
+            if d < 0.5 and self.player.health < 100:
+                self.player.health += 25
+                if self.player.health > 100:
+                    self.player.health = 100
                 self.game.sound.healthpack.play()
                 self.used = True
 
@@ -152,6 +155,8 @@ class Armorpickup(SpriteObject):
             dy = self.y - self.player.y
             d = math.sqrt(dx * dx + dy * dy)
             if d < 0.5 and self.player.armor < 100:
-                self.player.armor = 100
+                self.player.armor += 25
+                if self.player.armor > 100:
+                    self.player.armor = 100
                 self.game.sound.armorpicked.play()
                 self.used = True

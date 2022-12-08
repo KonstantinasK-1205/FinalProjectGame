@@ -18,7 +18,6 @@ class Game:
         self.screen = pg.display.set_mode(RES)
         self.clock = pg.time.Clock()
         self.delta_time = 1
-        self.global_trigger = False
         self.new_game()
 
         self.unpause()
@@ -27,10 +26,12 @@ class Game:
         self.player = Player(self)
         self.object_handler = ObjectHandler(self)
         self.object_renderer = ObjectRenderer(self)
+        self.map = Map(self)
+        self.draw_loading_screen()
+
         self.raycasting = RayCasting(self)
         self.weapon = Weapon(self)
         self.sound = Sound(self)
-        self.map = Map(self)
         self.map.get_map(level)
         self.pathfinding = PathFinding(self)
 
@@ -42,14 +43,23 @@ class Game:
             self.object_handler.update()
             self.player.update()
             self.delta_time = self.clock.tick(FPS)
+            #print(self.clock.get_fps())
+
+    def draw_loading_screen(self):
+        if not self.map.map_loaded:
+            self.object_renderer.draw_loading_state()
+            pg.display.flip()
 
     def draw(self):
-        pg.display.flip()
-        self.object_renderer.draw()
-        self.weapon.draw()
+        if self.paused:
+            self.object_renderer.draw_pause_state()
+            pg.display.flip()
+        else:
+            pg.display.flip()
+            self.object_renderer.draw()
+            self.weapon.draw()
 
     def check_events(self):
-        self.global_trigger = False
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 pg.quit()

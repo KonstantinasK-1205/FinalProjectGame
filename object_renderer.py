@@ -12,8 +12,6 @@ class ObjectRenderer:
         self.sky_offset = 0
         self.game_over_image = self.get_texture('resources/textures/game_over.png', RES)
         self.game_victory_image = self.get_texture('resources/textures/win.png', RES)
-
-        # New things
         self.font = pg.font.Font("resources/fonts/Font.ttf", 48)
 
     def draw(self):
@@ -45,6 +43,20 @@ class ObjectRenderer:
         self.screen.blit(health_text, (MARGIN, RES[1] - self.font.get_linesize() * 4.3))
 
     # States
+    def draw_pause_state(self):
+        pause_text = self.font.render("Game Paused!", True, (255, 255, 255))
+        continue_text = self.font.render("Press mouse button to continue", True, (255, 255, 255))
+        pg.draw.rect(self.screen, (44, 44, 44), pg.Rect(0, 0, RES[0], RES[1]))
+        self.screen.blit(pause_text, ((RES[0] - pause_text.get_width()) / 2, ((RES[1] - pause_text.get_height()) / 2) - pause_text.get_height()))
+        self.screen.blit(continue_text, ((RES[0] - continue_text.get_width()) / 2, (RES[1] - continue_text.get_height()) / 2))
+
+    def draw_loading_state(self):
+        level_text = self.font.render(str(self.game.map_lists[0]), True, (255, 255, 255))
+        loading_text = self.font.render("Loading level...", True, (255, 255, 255))
+        pg.draw.rect(self.screen, (44, 44, 44), pg.Rect(0, 0, RES[0], RES[1]))
+        self.screen.blit(level_text, ((RES[0] - level_text.get_width()) / 2, ((RES[1] - level_text.get_height()) / 2) - level_text.get_height()))
+        self.screen.blit(loading_text, ((RES[0] - loading_text.get_width()) / 2, (RES[1] - loading_text.get_height()) / 2))
+
     def status_game_over(self):
         self.screen.blit(self.game_over_image, (0, 0))
 

@@ -49,7 +49,6 @@ class Player:
                     self.bullet_left -= 1
                     self.fired = True
                     self.weapon_attack = "Fire"
-                    self.game.global_trigger = True
                     self.game.weapon.reloading = True
 
             if event.button == 3:
@@ -57,7 +56,6 @@ class Player:
                     self.game.sound.melee.play()
                     self.fired = True
                     self.weapon_attack = "Melee"
-                    self.game.global_trigger = True
                     self.game.weapon.reloading = True
 
     def update(self):
@@ -84,15 +82,13 @@ class Player:
     def set_state(self, string):
         if string == "gameover":
             self.game.object_renderer.status_game_over()
+            self.game.new_game()
         elif string == "win":
             if self.check_if_last_level():
                 self.game.object_renderer.status_game_won()
             else:
                 self.game.map_lists.pop(0)
                 self.game.new_game("resources/levels/" + str(self.game.map_lists[0]) + ".txt")
-        pg.display.flip()
-        pg.time.delay(1500)
-        self.game.new_game()
 
     def get_hit(self, damage):
         if self.armor > 0:
