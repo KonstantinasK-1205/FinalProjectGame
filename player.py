@@ -1,5 +1,3 @@
-import math
-
 import pygame as pg
 
 from settings import *
@@ -8,16 +6,16 @@ from settings import *
 class Player:
     def __init__(self, game):
         self.game = game
-        self.angle = PLAYER_ANGLE
-        self.fired = False
-        self.weapon_attack = 'Standby'
-        self.health = PLAYER_MAX_HEALTH
         self.rel = 0
-        self.health_recovery_delay = 5000
+        self.pos_x = 0
+        self.pos_y = 0
+        self.angle = PLAYER_ANGLE
+        self.health = PLAYER_MAX_HEALTH
+        self.health_recovery_delay = 10000
         self.time_prev = pg.time.get_ticks()
 
+        self.health = 100
         self.armor = 100
-        self.bullet_left = 10
 
         self.movingForward = False
         self.movingBackward = False
@@ -26,46 +24,35 @@ class Player:
 
     def handle_events(self, event):
         if event.type == pg.KEYDOWN:
-            if event.key == pg.K_w: self.movingForward = True
-            if event.key == pg.K_s: self.movingBackward = True
-            if event.key == pg.K_a: self.movingLeft = True
-            if event.key == pg.K_d: self.movingRight = True
+            if event.key == pg.K_w:
+                self.movingForward = True
+            if event.key == pg.K_s:
+                self.movingBackward = True
+            if event.key == pg.K_a:
+                self.movingLeft = True
+            if event.key == pg.K_d:
+                self.movingRight = True
 
         elif event.type == pg.KEYUP:
-            if event.key == pg.K_w: self.movingForward = False
-            if event.key == pg.K_s: self.movingBackward = False
-            if event.key == pg.K_a: self.movingLeft = False
-            if event.key == pg.K_d: self.movingRight = False
+            if event.key == pg.K_w:
+                self.movingForward = False
+            if event.key == pg.K_s:
+                self.movingBackward = False
+            if event.key == pg.K_a:
+                self.movingLeft = False
+            if event.key == pg.K_d:
+                self.movingRight = False
 
         if event.type == pg.MOUSEMOTION:
-            self.rel = pg.mouse.get_rel()[0]
-            self.rel = max(-MOUSE_MAX_REL, min(MOUSE_MAX_REL, self.rel))
+            self.rel = max(-MOUSE_MAX_REL, min(MOUSE_MAX_REL, pg.mouse.get_rel()[0]))
             self.angle += self.rel * MOUSE_SENSITIVITY * self.game.delta_time
 
-        if event.type == pg.MOUSEBUTTONDOWN:
-            if event.button == 1:
-                if not self.game.weapon.reloading and self.bullet_left > 0:
-                    self.game.sound.shotgun.play()
-                    self.bullet_left -= 1
-                    self.fired = True
-                    self.weapon_attack = "Fire"
-                    self.game.weapon.reloading = True
-
-            if event.button == 3:
-                if not self.game.weapon.reloading:
-                    self.game.sound.melee.play()
-                    self.fired = True
-                    self.weapon_attack = "Melee"
-                    self.game.weapon.reloading = True
+        self.game.weapon.handle_events(event)
 
     def update(self):
         self.movement()
         self.recover_health()
-        self.game.weapon.update(self.weapon_attack)
-        if self.game.object_handler.killed >= self.game.map.enemy_amount:
-            self.set_state("win")
-        if self.health < 1:
-            self.set_state("gameover")
+        self.game.weapon.update()
 
     def recover_health(self):
         if self.health < PLAYER_MAX_HEALTH:
@@ -73,37 +60,6 @@ class Player:
             if time_now - self.time_prev > self.health_recovery_delay:
                 self.time_prev = time_now
                 self.health += 1
-
-    def check_if_last_level(self):
-        if len(self.game.map_lists) > 1:
-            return False
-        return True
-
-    def set_state(self, string):
-        if string == "gameover":
-            self.game.object_renderer.status_game_over()
-            self.game.new_game()
-        elif string == "win":
-            if self.check_if_last_level():
-                self.game.object_renderer.status_game_won()
-            else:
-                self.game.map_lists.pop(0)
-                self.game.new_game("resources/levels/" + str(self.game.map_lists[0]) + ".txt")
-
-    def get_hit(self, damage):
-        if self.armor > 0:
-            if self.armor < damage:
-                noncompensated_dmg = 0
-                noncompensated_dmg = damage - self.armor
-                self.armor = 0
-                self.health -= noncompensated_dmg
-            else:
-                self.armor -= damage
-        else:
-            self.armor = 0
-            self.health -= damage
-        self.game.object_renderer.player_hitted()
-        self.game.sound.player_pain.play()
 
     def movement(self):
         dx, dy = 0, 0
@@ -125,15 +81,13 @@ class Player:
             dy += speed_cos
 
         if not (dx == 0 and dy == 0):
-            self.check_wall_collision(dx, dy)
+            scale = PLAYER_SIZE_SCALE / self.game.delta_time
+            if not self.game.map.is_wall(int(self.pos_x + dx * scale), int(self.pos_y)):
+                self.pos_x += dx
+            if not self.game.map.is_wall(int(self.pos_x), int(self.pos_y + dy * scale)):
+                self.pos_y += dy
+            # Calculate new angle
             self.angle %= math.tau
-
-    def check_wall_collision(self, dx, dy):
-        scale = PLAYER_SIZE_SCALE / self.game.delta_time
-        if not self.game.map.isWall(int(self.x + dx * scale), int(self.y)):
-            self.x += dx
-        if not self.game.map.isWall(int(self.x), int(self.y + dy * scale)):
-            self.y += dy
 
     # Getters
     @property
@@ -142,16 +96,45 @@ class Player:
 
     @property
     def get_pos(self):
-        return self.x, self.y
+        return self.pos_x, self.pos_y
 
     @property
     def get_map_pos(self):
-        return int(self.x), int(self.y)
+        return int(self.pos_x), int(self.pos_y)
 
     # Setters
     def set_spawn(self, x, y):
-        self.x = x
-        self.y = y
+        self.pos_x = x
+        self.pos_y = y
 
-    def set_health(self, number):
-        self.health = number
+    def add_health(self, hp):
+        # Increase player health value without exceeding max value
+        new_health = self.health + hp
+        if new_health > 100:
+            new_health = 100
+        self.health = new_health
+
+    def add_armor(self, armor):
+        # Increase player armor value without exceeding max value
+        new_armor = self.armor + armor
+        if new_armor > 100:
+            new_armor = 100
+        self.armor = new_armor
+
+    def apply_damage(self, damage):
+        # Calculate player health and armor applying damage
+        if self.armor > 0 and self.armor >= damage:
+            self.armor -= damage
+        elif 0 < self.armor < damage:
+            self.health -= damage - self.armor
+            self.armor = 0
+        else:
+            self.armor = 0
+            self.health -= damage
+
+        # Give audible & visual feedback to player, if he is still alive
+        if self.health > 1:
+            self.game.object_renderer.player_is_hit()
+            self.game.sound.player_pain.play()
+        else:
+            self.game.object_handler.set_state_game_over()

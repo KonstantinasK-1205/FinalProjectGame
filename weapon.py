@@ -5,7 +5,7 @@ def load_images(images, scale=0.4):
     loaded_images = deque()
     for image in images:
         full_path = "resources/sprites/weapon/shotgun/" + str(image) + ".png"
-        if os.path.isfile(full_path) and os.path.exists(full_path):
+        if os.path.exists(full_path):
             img = pg.image.load(full_path).convert_alpha()
         else:
             break
@@ -17,63 +17,94 @@ def load_images(images, scale=0.4):
 class Weapon:
     def __init__(self, game):
         self.game = game
-        self.standby_animation = load_images([0])
-        # Fire Animation
-        self.fire_animation = load_images([1, 2, 3, 4, 5])
-        self.fire_animation_speed = 170
-        # Melee Animation
-        self.melee_animation = load_images(["m_1", "m_2"])
-        self.melee_animation_speed = 120
 
-        self.damage = 70
+        self.current_state = "Standby"
+        self.weapon_info = {
+            "Standby": {
+                "Sprites": load_images([0]),
+                "Damage": 0,
+                "Speed": 1,
+            },
+            "Melee": {
+                "Sprites": load_images(["m_1", "m_2"]),
+                "Damage": 24,
+                "Speed": 210,
+            },
+            "Fire": {
+                "Sprites": load_images([1, 2, 3, 4, 5]),
+                "Damage": 70,
+                "Speed": 170,
+                "Bullet Left": 10
+            }
+        }
+        self.cur_display = self.weapon_info[self.current_state]["Sprites"]
+        self.weapon_pos = (HALF_WIDTH - self.cur_display[0].get_width() // 2,
+                           HEIGHT - self.cur_display[0].get_height())
+
+        self.fired = False
         self.damage_buff = 1
+
         self.reloading = False
         self.frame_counter = 0
         self.animation_trigger = False
         self.animation_time_prev = pg.time.get_ticks()
-        self.weapon_pos = (HALF_WIDTH - self.standby_animation[0].get_width() // 2,
-                           HEIGHT - self.standby_animation[0].get_height())
-        self.currently_draw = self.standby_animation
 
-    def set_damage_buff(self, number):
-        self.damage_buff = number
+    def handle_events(self, event):
+        if event.type == pg.MOUSEBUTTONDOWN and not self.reloading:
+            if event.button == 1 and self.weapon_info["Fire"]["Bullet Left"] > 0:
+                self.fired = True
+                self.reloading = True
+                self.current_state = "Fire"
+                self.weapon_info["Fire"]["Bullet Left"] -= 1
+                self.game.sound.shotgun_fire.play()
 
-    def animate(self, state="Standby"):
-        # Set all variables
-        if state == "Fire":
-            self.damage = 60 * self.damage_buff
-            images = self.fire_animation
-            weapon_animation = self.fire_animation_speed
-        elif state == "Melee":
-            self.damage = 80 * self.damage_buff
-            images = self.melee_animation
-            weapon_animation = self.melee_animation_speed
-        else:
-            images = self.standby_animation
-            weapon_animation = self.fire_animation_speed
+            if event.button == 3:
+                self.fired = True
+                self.reloading = True
+                self.current_state = "Melee"
+                self.game.sound.shotgun_melee.play()
 
+    def update(self):
+        self.animate()
+
+    def draw(self):
+        self.game.screen.blit(self.cur_display[0], self.weapon_pos)
+
+    # Getters
+    def get_damage(self):
+        return self.weapon_info[self.current_state]["Damage"]
+
+    def get_bullet_left(self):
+        return self.weapon_info["Fire"]["Bullet Left"]
+
+    # Setters
+    def set_damage_buff(self, buff_val):
+        for attack in self.weapon_info:
+            self.weapon_info[attack]["Damage"] = self.weapon_info[attack]["Damage"] * buff_val
+
+    # Other Functions
+    def add_bullets(self, number):
+        self.weapon_info["Fire"]["Bullet Left"] += number
+
+    def animate(self):
+        # Make animation
+        if self.reloading:
+            self.fired = False
+            self.animation_timer()
+            if self.animation_trigger:
+                self.weapon_info[self.current_state]["Sprites"].rotate(-1)
+                self.cur_display = self.weapon_info[self.current_state]["Sprites"]
+                self.frame_counter += 1
+                if self.frame_counter == len(self.weapon_info[self.current_state]["Sprites"]):
+                    self.frame_counter = 0
+                    self.reloading = False
+                    self.current_state = "Standby"
+                    self.cur_display = self.weapon_info["Standby"]["Sprites"]
+
+    def animation_timer(self):
         # Check for animation timer
         self.animation_trigger = False
         time_now = pg.time.get_ticks()
-        if time_now - self.animation_time_prev > weapon_animation:
+        if time_now - self.animation_time_prev > self.weapon_info[self.current_state]["Speed"]:
             self.animation_time_prev = time_now
             self.animation_trigger = True
-
-        # Make animation
-        if self.reloading:
-            self.game.player.fired = False
-            if self.animation_trigger:
-                images.rotate(-1)
-                self.currently_draw = images
-                self.frame_counter += 1
-                if self.frame_counter == len(images):
-                    self.frame_counter = 0
-                    self.reloading = False
-                    self.game.player.weapon_attack = "Standby"
-                    self.currently_draw = self.standby_animation
-
-    def draw(self):
-        self.game.screen.blit(self.currently_draw[0], self.weapon_pos)
-
-    def update(self, state="Standby"):
-        self.animate(state)

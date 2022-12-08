@@ -35,9 +35,9 @@ class NPC(AnimatedSprite):
         return self.alive
 
     def check_wall_collision(self, dx, dy):
-        if not self.game.map.isWall(int(self.x + dx * self.size), int(self.y)):
+        if not self.game.map.is_wall(int(self.x + dx * self.size), int(self.y)):
             self.x += dx
-        if not self.game.map.isWall(int(self.x), int(self.y + dy * self.size)):
+        if not self.game.map.is_wall(int(self.x), int(self.y + dy * self.size)):
             self.y += dy
 
     def movement(self):
@@ -53,7 +53,7 @@ class NPC(AnimatedSprite):
         if self.animation_trigger:
             self.game.sound.npc_attack.play()
             if random() < self.accuracy:
-                self.game.player.get_hit(self.attack_damage)
+                self.game.player.apply_damage(self.attack_damage)
 
     def animate_death(self):
         if not self.alive:
@@ -69,12 +69,11 @@ class NPC(AnimatedSprite):
             self.pain = False
 
     def check_hit_in_npc(self):
-        if self.ray_cast_value and self.game.player.fired:
+        if self.ray_cast_value and self.game.weapon.fired:
             if HALF_WIDTH - self.sprite_half_width < self.screen_x < HALF_WIDTH + self.sprite_half_width:
                 self.game.sound.npc_pain.play()
-                self.game.player.fired = False
                 self.pain = True
-                self.health -= self.game.weapon.damage
+                self.health -= self.game.weapon.get_damage()
                 self.check_health()
 
     def check_health(self):

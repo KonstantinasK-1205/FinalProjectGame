@@ -8,6 +8,7 @@ class PathFinding:
         self.ways = [-1, 0], [0, -1], [1, 0], [0, 1], [-1, -1], [1, -1], [1, 1], [-1, 1]
         self.graph = {}
         self.get_graph()
+        self.visited = None
 
     def get_path(self, start, goal):
         self.visited = self.bfs(start, goal, self.graph)

@@ -2,22 +2,25 @@ import pygame as pg
 
 
 class Sound:
-    def __init__(self, game):
-        self.game = game
+    def __init__(self):
         pg.mixer.init()
         self.path = 'resources/sound/'
-        self.shotgun = pg.mixer.Sound(self.path + 'ShotgunShoot.wav')
-        self.melee = pg.mixer.Sound(self.path + 'melee.wav')
+
+        # Weapon Sounds
+        self.shotgun_fire = pg.mixer.Sound(self.path + 'weapon_shotgun_fire.wav')
+        self.shotgun_melee = pg.mixer.Sound(self.path + 'weapon_shotgun_melee.wav')
+
+        # NPC Sounds
         self.npc_pain = pg.mixer.Sound(self.path + 'npc_pain.wav')
         self.npc_death = pg.mixer.Sound(self.path + 'npc_death.wav')
         self.npc_attack = pg.mixer.Sound(self.path + 'npc_attack.wav')
+
+        # Player Sounds
+        self.player_healed = pg.mixer.Sound(self.path + 'player_healed.wav')
         self.player_pain = pg.mixer.Sound(self.path + 'player_pain.wav')
+        self.buff_damage = pg.mixer.Sound(self.path + 'buff_damage.wav')
 
-        self.hpHealed = pg.mixer.Sound(self.path + 'hpHealed.wav')
-        self.dmgIncrease = pg.mixer.Sound(self.path + 'dmgIncrease.wav')
-
-        self.healthpack = pg.mixer.Sound(self.path + 'healthpack.wav')
-        self.ammopack = pg.mixer.Sound(self.path + 'ammopack.wav')
-        self.armorpicked = pg.mixer.Sound(self.path + 'armorpicked.wav')
-
-        # self.theme = pg.mixer.Sound(self.path + 'theme.wav')
+        # Pickup Sounds
+        self.pickup_ammo = pg.mixer.Sound(self.path + 'pickup_ammo.wav')
+        self.pickup_health = pg.mixer.Sound(self.path + 'pickup_health.wav')
+        self.pickup_armor = pg.mixer.Sound(self.path + 'pickup_armor.wav')

@@ -1,49 +1,46 @@
-import random
-
 from map import *
 
 
 class ObjectHandler:
-    def __init__(self, game):
-        # Sprite variables
-        self.npc_sprite_path = 'resources/sprites/npc/'
-        self.static_sprite_path = 'resources/sprites/static_sprites/'
-        self.anim_sprite_path = 'resources/sprites/animated_sprites/'
-
+    def __init__(self):
         self.npc_list = []
         self.sprite_list = []
         self.alive_npc_list = []
         self.npc_positions = {}
         self.killed = 0
 
-        self.game = ''
-        self.gameMap = ''
-        self.map_size = ''
+        self.game = None
+        self.gameMap = None
+        self.map_size = None
 
         self.hpRestored = False
         self.dmgIncreased = False
 
-    def loadMap(self, game):
+    def load_map(self, game):
         self.game = game
         self.gameMap = Map(game)
         self.map_size = self.gameMap.get_size()
 
-    def killReward(self):
+    def kill_reward(self):
         reward = self.killed
         if reward > int(self.game.map.enemy_amount / 4) and not self.hpRestored:
-            self.game.player.health += 50
-            self.game.sound.hpHealed.play()
+            self.game.player.add_health(25)
+            self.game.sound.player_healed.play()
             self.hpRestored = True
 
-        if reward > int(self.game.map.enemy_amount / 2) and not self.dmgIncreased:
-            self.game.weapon.set_damage_buff(1.3)
-            self.game.sound.dmgIncrease.play()
+        if reward > int(self.game.map.enemy_amount / 1.5) and not self.dmgIncreased:
+            self.game.weapon.set_damage_buff(1.5)
+            self.game.sound.buff_damage.play()
             self.dmgIncreased = True
 
+        if reward >= self.game.map.enemy_amount:
+            self.set_state_win()
+
     def update(self):
-        self.killReward()
+        self.kill_reward()
         self.npc_positions = {npc.map_pos for npc in self.npc_list if npc.alive}
-        [sprite.update() for sprite in self.sprite_list]
+        self.handle_pickups()
+
         for npc in self.npc_list:
             npc.update()
 
@@ -52,15 +49,40 @@ class ObjectHandler:
                 self.alive_npc_list.pop(self.alive_npc_list.index(npc))
                 self.killed = self.killed + 1
 
+    def handle_pickups(self):
+        # Create new array in which we will store
+        # index of element we remove
+        remove = []
+        for index, sprite in enumerate(self.sprite_list):
+            # If sprite wasn't used just update it,
+            # otherwise add to remove array
+            if not sprite.picked:
+                sprite.update()
+            else:
+                remove.append(index)
+
+        # Iterate each remove element and remove
+        # each sprite from main array
+        for index in remove:
+            self.sprite_list.pop(index)
+
+    def set_state_game_over(self):
+        self.game.object_renderer.status_game_over()
+        self.game.new_game()
+
+    def set_state_win(self):
+        if len(self.game.map_lists) > 1:
+            self.game.map_lists.pop(0)
+            self.game.new_game("resources/levels/" + str(self.game.map_lists[0]) + ".txt")
+        else:
+            self.game.object_renderer.status_game_won()
+
     def add_npc(self, npc):
         self.npc_list.append(npc)
         self.alive_npc_list.append(npc)
 
     def add_sprite(self, sprite):
         self.sprite_list.append(sprite)
-
-    def randomNum(self, minNum, maxNum):
-        return random.randint(minNum, maxNum)
 
     def reset(self):
         self.npc_list = []

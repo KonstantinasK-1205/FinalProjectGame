@@ -40,17 +40,19 @@ class Map:
                 elif char == "e":
                     self.game.object_handler.add_npc(NPC(self.game, pos=(x + 0.5, y + 0.5)))
                     self.enemy_amount += 1
+                elif char == "c":
+                    self.game.object_handler.add_sprite(SpriteObject(self.game, pos=(x + 0.5, y + 0.5)))
                 elif char == "h":
-                    self.game.object_handler.add_sprite(Healthpack(self.game, pos=(x + 0.5, y + 0.5)))
+                    self.game.object_handler.add_sprite(PickupHealth(self.game, pos=(x + 0.5, y + 0.5)))
                 elif char == "b":
-                    self.game.object_handler.add_sprite(Ammopack(self.game, pos=(x + 0.5, y + 0.5)))
+                    self.game.object_handler.add_sprite(PickupAmmo(self.game, pos=(x + 0.5, y + 0.5)))
                 elif char == "a":
-                    self.game.object_handler.add_sprite(Armorpickup(self.game, pos=(x + 0.5, y + 0.5)))
+                    self.game.object_handler.add_sprite(PickupArmor(self.game, pos=(x + 0.5, y + 0.5)))
                 x = x + 1
             y = y + 1
             self.map_loaded = True
 
-    def isWall(self, x, y):
+    def is_wall(self, x, y):
         return (x, y) in self.world_map
 
     def get_enemy_amount(self):

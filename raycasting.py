@@ -97,7 +97,6 @@ class RayCasting:
                 x_hor %= 1
                 offset = (1 - x_hor) if sin_a > 0 else x_hor
 
-            # Nuimti "fishbowl" efekta
             depth *= math.cos(self.game.player.get_angle - ray_angle)
 
             # Projection

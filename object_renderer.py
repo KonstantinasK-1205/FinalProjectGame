@@ -17,10 +17,10 @@ class ObjectRenderer:
     def draw(self):
         self.draw_background()
         self.render_game_objects()
-        self.draw_ingame_gui()
+        self.draw_in_game_gui()
 
     # In Game Texts
-    def draw_ingame_gui(self):
+    def draw_in_game_gui(self):
         # Draw Killed Amount
         killed_text = self.font.render(
             "Enemy left: " + str(self.game.map.enemy_amount - self.game.object_handler.killed), True, (255, 255, 255))
@@ -31,7 +31,7 @@ class ObjectRenderer:
         self.screen.blit(killed_text, (MARGIN, RES[1] - self.font.get_linesize()))
 
         # Draw Bullet amount
-        bullet_text = self.font.render("Bullet: " + str(self.game.player.bullet_left), True, (255, 255, 255))
+        bullet_text = self.font.render("Bullet: " + str(self.game.weapon.get_bullet_left()), True, (255, 255, 255))
         self.screen.blit(bullet_text, (MARGIN, RES[1] - self.font.get_linesize() * 2.1))
 
         # Draw Armor left amount
@@ -45,17 +45,25 @@ class ObjectRenderer:
     # States
     def draw_pause_state(self):
         pause_text = self.font.render("Game Paused!", True, (255, 255, 255))
+        pause_text_pos = self.center_text(pause_text)
         continue_text = self.font.render("Press mouse button to continue", True, (255, 255, 255))
+        continue_text_pos = self.center_text(continue_text)
         pg.draw.rect(self.screen, (44, 44, 44), pg.Rect(0, 0, RES[0], RES[1]))
-        self.screen.blit(pause_text, ((RES[0] - pause_text.get_width()) / 2, ((RES[1] - pause_text.get_height()) / 2) - pause_text.get_height()))
-        self.screen.blit(continue_text, ((RES[0] - continue_text.get_width()) / 2, (RES[1] - continue_text.get_height()) / 2))
+        self.screen.blit(pause_text, (pause_text_pos[0], pause_text_pos[1] - pause_text.get_height()))
+        self.screen.blit(continue_text, (continue_text_pos[0], continue_text_pos[1]))
 
     def draw_loading_state(self):
         level_text = self.font.render(str(self.game.map_lists[0]), True, (255, 255, 255))
+        level_text_pos = self.center_text(level_text)
         loading_text = self.font.render("Loading level...", True, (255, 255, 255))
+        loading_text_pos = self.center_text(loading_text)
         pg.draw.rect(self.screen, (44, 44, 44), pg.Rect(0, 0, RES[0], RES[1]))
-        self.screen.blit(level_text, ((RES[0] - level_text.get_width()) / 2, ((RES[1] - level_text.get_height()) / 2) - level_text.get_height()))
-        self.screen.blit(loading_text, ((RES[0] - loading_text.get_width()) / 2, (RES[1] - loading_text.get_height()) / 2))
+        self.screen.blit(level_text, (level_text_pos[0], level_text_pos[1] - level_text.get_height()))
+        self.screen.blit(loading_text, (loading_text_pos[0], loading_text_pos[1]))
+
+    @staticmethod
+    def center_text(text):
+        return (RES[0] - text.get_width()) / 2, (RES[1] - text.get_height()) / 2
 
     def status_game_over(self):
         self.screen.blit(self.game_over_image, (0, 0))
@@ -63,7 +71,7 @@ class ObjectRenderer:
     def status_game_won(self):
         self.screen.blit(self.game_victory_image, (0, 0))
 
-    def player_hitted(self):
+    def player_is_hit(self):
         pg.draw.rect(self.screen, (102, 0, 0), pg.Rect(0, 0, RES[0], RES[1]))
 
     def draw_background(self):

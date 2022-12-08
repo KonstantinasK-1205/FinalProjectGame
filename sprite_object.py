@@ -7,7 +7,7 @@ from settings import *
 
 
 class SpriteObject:
-    def __init__(self, game, path='resources/sprites/static_sprites/candlebra.png',
+    def __init__(self, game, path='resources/sprites/static_sprites/candelabra.png',
                  pos=(2, 2), scale=0.7, shift=0.25):
         self.game = game
         self.player = game.player
@@ -20,6 +20,7 @@ class SpriteObject:
         self.sprite_half_width = 0
         self.SPRITE_SCALE = scale
         self.SPRITE_HEIGHT_SHIFT = shift
+        self.picked = False
 
     def get_sprite_projection(self):
         proj = SCREEN_DIST / self.norm_dist * self.SPRITE_SCALE
@@ -28,14 +29,14 @@ class SpriteObject:
         image = pg.transform.scale(self.image, (proj_width, proj_height))
 
         self.sprite_half_width = proj_width // 2
-        heigh_shift = proj_height * self.SPRITE_HEIGHT_SHIFT
-        pos = self.screen_x - self.sprite_half_width, HALF_HEIGHT - proj_height // 2 + heigh_shift
+        height_shift = proj_height * self.SPRITE_HEIGHT_SHIFT
+        pos = self.screen_x - self.sprite_half_width, HALF_HEIGHT - proj_height // 2 + height_shift
 
         self.game.raycasting.objects_to_render.append((self.norm_dist, image, pos))
 
     def get_sprite(self):
-        dx = self.x - self.player.x
-        dy = self.y - self.player.y
+        dx = self.x - self.player.get_pos[0]
+        dy = self.y - self.player.get_pos[1]
         self.dx, self.dy = dx, dy
         self.theta = math.atan2(dy, dx)
 
@@ -64,6 +65,7 @@ class AnimatedSprite(SpriteObject):
         self.images = self.get_images(self.path)
         self.animation_time_prev = pg.time.get_ticks()
         self.animation_trigger = False
+        self.picked = False
 
     def update(self):
         super().update()
@@ -92,71 +94,55 @@ class AnimatedSprite(SpriteObject):
         return images
 
 
-class Healthpack(SpriteObject):
-    def __init__(self, game, path='resources/sprites/static_sprites/healthpack.png',
+class PickupHealth(SpriteObject):
+    def __init__(self, game, path='resources/sprites/static_sprites/pickups/health.png',
                  pos=(2.5, 3), scale=0.3, shift=1.1):
         super().__init__(game, path, pos, scale, shift)
-        self.used = False
+        self.picked = False
 
     def update(self):
-        # Don't draw if already used
-        if not self.used:
-            super().update()
+        super().update()
 
-            # Only heal if the player is not full health and is near the
-            # healthpack
-            dx = self.x - self.player.x
-            dy = self.y - self.player.y
-            d = math.sqrt(dx * dx + dy * dy)
-            if d < 0.5 and self.player.health < 100:
-                self.player.health += 25
-                if self.player.health > 100:
-                    self.player.health = 100
-                self.game.sound.healthpack.play()
-                self.used = True
+        dx = self.x - self.player.get_pos[0]
+        dy = self.y - self.player.get_pos[1]
+        d = math.sqrt(dx * dx + dy * dy)
+        if d < 0.5 and self.player.health < 100:
+            self.player.add_health(25)
+            self.game.sound.pickup_health.play()
+            self.picked = True
 
 
-class Ammopack(SpriteObject):
-    def __init__(self, game, path='resources/sprites/static_sprites/ammopack.png',
+class PickupAmmo(SpriteObject):
+    def __init__(self, game, path='resources/sprites/static_sprites/pickups/ammo.png',
                  pos=(2.5, 3), scale=0.3, shift=1.1):
         super().__init__(game, path, pos, scale, shift)
-        self.used = False
+        self.picked = False
 
     def update(self):
-        # Don't draw if already used
-        if not self.used:
-            super().update()
+        super().update()
 
-            # Only heal if the player is not full health and is near the
-            # healthpack
-            dx = self.x - self.player.x
-            dy = self.y - self.player.y
-            d = math.sqrt(dx * dx + dy * dy)
-            if d < 0.5:
-                self.player.bullet_left += 10
-                self.game.sound.ammopack.play()
-                self.used = True
+        dx = self.x - self.player.get_pos[0]
+        dy = self.y - self.player.get_pos[1]
+        d = math.sqrt(dx * dx + dy * dy)
+        if d < 0.5:
+            self.game.weapon.add_bullets(10)
+            self.game.sound.pickup_ammo.play()
+            self.picked = True
 
 
-class Armorpickup(SpriteObject):
-    def __init__(self, game, path='resources/sprites/static_sprites/armorpickup.png',
+class PickupArmor(SpriteObject):
+    def __init__(self, game, path='resources/sprites/static_sprites/pickups/armor.png',
                  pos=(2.5, 3), scale=0.3, shift=1.1):
         super().__init__(game, path, pos, scale, shift)
-        self.used = False
+        self.picked = False
 
     def update(self):
-        # Don't draw if already used
-        if not self.used:
-            super().update()
+        super().update()
 
-            # Only heal if the player is not full health and is near the
-            # healthpack
-            dx = self.x - self.player.x
-            dy = self.y - self.player.y
-            d = math.sqrt(dx * dx + dy * dy)
-            if d < 0.5 and self.player.armor < 100:
-                self.player.armor += 25
-                if self.player.armor > 100:
-                    self.player.armor = 100
-                self.game.sound.armorpicked.play()
-                self.used = True
+        dx = self.x - self.player.get_pos[0]
+        dy = self.y - self.player.get_pos[1]
+        d = math.sqrt(dx * dx + dy * dy)
+        if d < 0.5 and self.player.armor < 100:
+            self.player.add_armor(25)
+            self.game.sound.pickup_armor.play()
+            self.picked = True
