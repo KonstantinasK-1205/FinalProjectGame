@@ -15,7 +15,7 @@ class Player:
         self.time_prev = pg.time.get_ticks()
 
         self.health = 100
-        self.armor = 100
+        self.armor = 0
 
         self.movingForward = False
         self.movingBackward = False

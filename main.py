@@ -24,6 +24,9 @@ class Game:
 
         self.unpause()
 
+        self.PRINTFPSEVENT = pg.USEREVENT + 1
+        pg.time.set_timer(self.PRINTFPSEVENT, 1000)
+
     def new_game(self, level="resources/levels/Level1.txt"):
         self.player = Player(self)
         self.object_handler = ObjectHandler()
@@ -47,7 +50,6 @@ class Game:
             self.object_handler.update()
             self.player.update()
             self.delta_time = self.clock.tick(FPS)
-            print(self.clock.get_fps())
 
     def draw_loading_screen(self):
         if not self.map.map_loaded:
@@ -73,6 +75,8 @@ class Game:
                 self.pause()
             elif event.type == pg.MOUSEBUTTONUP and event.button == 1:
                 self.unpause()
+            elif event.type == self.PRINTFPSEVENT:
+                print(str(int(self.clock.get_fps())) + " FPS")
 
             if not self.paused:
                 self.player.handle_events(event)
