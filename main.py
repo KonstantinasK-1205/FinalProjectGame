@@ -1,6 +1,12 @@
 import sys
 
-from states import *
+from States.Intro import IntroState
+from States.Loading import LoadingState
+from States.Game import GameState
+from States.Pause import PauseState
+from States.Win import WinState
+from States.Lose import LoseState
+
 from object_handler import *
 from object_renderer import *
 from pathfinding import *

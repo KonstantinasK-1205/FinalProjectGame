@@ -51,12 +51,15 @@ class Weapon:
 
     def handle_events(self, event):
         if event.type == pg.MOUSEBUTTONDOWN and not self.reloading:
-            if event.button == 1 and self.weapon_info["Fire"]["Bullet Left"] > 0:
-                self.fired = True
-                self.reloading = True
-                self.current_state = "Fire"
-                self.weapon_info["Fire"]["Bullet Left"] -= 1
-                self.game.sound.shotgun_fire.play()
+            if event.button == 1:
+                if self.weapon_info["Fire"]["Bullet Left"] > 0:
+                    self.fired = True
+                    self.reloading = True
+                    self.current_state = "Fire"
+                    self.weapon_info["Fire"]["Bullet Left"] -= 1
+                    self.game.sound.shotgun_fire.play()
+                else:
+                    self.game.sound.shotgun_empty.play()
 
             if event.button == 3:
                 self.fired = True

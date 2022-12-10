@@ -127,7 +127,7 @@ class Player:
         # Give audible & visual feedback to player, if he is still alive
         if self.health > 1:
             self.game.object_renderer.player_is_hit()
-            self.game.sound.player_pain.play()
+            # self.game.sound.player_pain[random.randint(0, 1)].play()
         else:
             self.game.set_state("Game over")
 

@@ -1,5 +1,3 @@
-from random import randint, random, uniform
-
 from sprite_object import *
 
 
@@ -13,12 +11,12 @@ class NPC(AnimatedSprite):
         self.pain_images = self.get_images(self.path + '/pain')
         self.walk_images = self.get_images(self.path + '/walk')
 
-        self.attack_dist = randint(3, 6)
+        self.attack_dist = random.randint(3, 6)
         self.speed = 0.03
         self.size = 50
         self.health = 100
-        self.attack_damage = randint(3, 10)
-        self.accuracy = uniform(0.70, 0.80)
+        self.attack_damage = random.randint(3, 10)
+        self.accuracy = random.uniform(0.70, 0.80)
         self.alive = True
         self.pain = False
         self.ray_cast_value = False
@@ -31,7 +29,7 @@ class NPC(AnimatedSprite):
         self.get_sprite()
         self.run_logic()
 
-    def isAlive(self):
+    def is_alive(self):
         return self.alive
 
     def check_wall_collision(self, dx, dy):
@@ -51,8 +49,10 @@ class NPC(AnimatedSprite):
 
     def attack(self):
         if self.animation_trigger:
-            self.game.sound.npc_attack.play()
-            if random() < self.accuracy:
+            self.game.sound.play_sound(self.game.sound.npc_attack[random.randint(0, 1)],
+                                       (self.x, self.y),
+                                       self.game.player.get_pos)
+            if random.random() < self.accuracy:
                 self.game.player.apply_damage(self.attack_damage)
 
     def animate_death(self):
@@ -71,15 +71,17 @@ class NPC(AnimatedSprite):
     def check_hit_in_npc(self):
         if self.ray_cast_value and self.game.weapon.fired:
             if HALF_WIDTH - self.sprite_half_width < self.screen_x < HALF_WIDTH + self.sprite_half_width:
-                self.game.sound.npc_pain.play()
                 self.pain = True
                 self.health -= self.game.weapon.get_damage()
-                self.check_health()
-
-    def check_health(self):
-        if self.health < 1:
-            self.alive = False
-            self.game.sound.npc_death.play()
+                if self.health > 1:
+                    self.game.sound.play_sound(self.game.sound.npc_pain[random.randint(0, 2)],
+                                               (self.x, self.y),
+                                               self.game.player.get_pos)
+                else:
+                    self.alive = False
+                    self.game.sound.play_sound(self.game.sound.npc_death[random.randint(0, 3)],
+                                               (self.x, self.y),
+                                               self.game.player.get_pos)
 
     def run_logic(self):
         if self.alive:
@@ -93,7 +95,7 @@ class NPC(AnimatedSprite):
                 self.player_search_trigger = True
 
                 if self.dist < self.attack_dist:
-                    if randint(0, 30) < 10:
+                    if random.randint(0, 30) < 10:
                         self.animate(self.attack_images)
                         self.attack()
                 else:

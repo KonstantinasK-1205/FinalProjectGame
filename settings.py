@@ -1,4 +1,5 @@
 import math
+import random
 
 # Game Settings
 RES = WIDTH, HEIGHT = 1280, 720
