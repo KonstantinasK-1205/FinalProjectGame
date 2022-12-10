@@ -8,13 +8,9 @@ class ObjectRenderer:
         self.game = game
         self.screen = game.screen
         self.wall_textures = self.load_wall_textures()
+        self.font = pg.font.Font("resources/fonts/Font.ttf", 48)
         self.sky_image = self.get_texture('resources/textures/sky.jpg', (WIDTH, HALF_HEIGHT))
         self.sky_offset = 0
-        self.game_over_image = self.get_texture('resources/textures/game_over.png', RES)
-        self.game_victory_image = self.get_texture('resources/textures/win.png', RES)
-        self.font = pg.font.Font("resources/fonts/Font.ttf", 48)
-
-        self.loading_str = "Loading level"
 
     def draw(self):
         self.draw_background()
@@ -43,54 +39,6 @@ class ObjectRenderer:
         # Draw HP
         health_text = self.font.render("HP: " + str(self.game.player.health) + " %", True, (255, 255, 255))
         self.screen.blit(health_text, (MARGIN, RES[1] - self.font.get_linesize() * 4.3))
-
-    # States
-    def draw_intro_state(self):
-        pause_text = self.font.render("Welcome to Die!", True, (255, 255, 255))
-        pause_text_pos = self.center_text(pause_text)
-        continue_text = self.font.render("Press mouse button to continue", True, (255, 255, 255))
-        continue_text_pos = self.center_text(continue_text)
-
-        pg.draw.rect(self.screen, (44, 44, 44), pg.Rect(0, 0, RES[0], RES[1]))
-        self.screen.blit(pause_text, (pause_text_pos[0], pause_text_pos[1] - pause_text.get_height()))
-        self.screen.blit(continue_text, (continue_text_pos[0], continue_text_pos[1]))
-
-    # States
-    def draw_pause_state(self):
-        pause_text = self.font.render("Game Paused!", True, (255, 255, 255))
-        pause_text_pos = self.center_text(pause_text)
-
-        continue_text = self.font.render("Press mouse button to continue", True, (255, 255, 255))
-        continue_text_pos = self.center_text(continue_text)
-        pg.draw.rect(self.screen, (44, 44, 44), pg.Rect(0, 0, RES[0], RES[1]))
-        self.screen.blit(pause_text, (pause_text_pos[0], pause_text_pos[1] - pause_text.get_height()))
-        self.screen.blit(continue_text, (continue_text_pos[0], continue_text_pos[1]))
-
-    def draw_loading_state(self):
-        level_text = self.font.render(str(self.game.map_lists[0]), True, (255, 255, 255))
-        level_text_pos = self.center_text(level_text)
-
-        if self.loading_str.count('.') < 3:
-            self.loading_str += "."
-        else:
-            self.loading_str = "Loading level"
-
-        loading_text = self.font.render(self.loading_str, True, (255, 255, 255))
-        loading_text_pos = self.center_text(loading_text)
-
-        pg.draw.rect(self.screen, (44, 44, 44), pg.Rect(0, 0, RES[0], RES[1]))
-        self.screen.blit(level_text, (level_text_pos[0], level_text_pos[1] - level_text.get_height()))
-        self.screen.blit(loading_text, (loading_text_pos[0], loading_text_pos[1]))
-
-    @staticmethod
-    def center_text(text):
-        return (RES[0] - text.get_width()) / 2, (RES[1] - text.get_height()) / 2
-
-    def status_game_over(self):
-        self.screen.blit(self.game_over_image, (0, 0))
-
-    def status_game_won(self):
-        self.screen.blit(self.game_victory_image, (0, 0))
 
     def player_is_hit(self):
         pg.draw.rect(self.screen, (102, 0, 0), pg.Rect(0, 0, RES[0], RES[1]))

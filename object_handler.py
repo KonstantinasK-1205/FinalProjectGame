@@ -34,7 +34,12 @@ class ObjectHandler:
             self.dmgIncreased = True
 
         if reward >= self.game.map.enemy_amount:
-            self.set_state_win()
+            if len(self.game.map_lists) > 1:
+                self.game.map_lists.pop(0)
+                self.game.current_state = "Loading"
+                self.game.new_game("resources/levels/" + str(self.game.map_lists[0]) + ".txt")
+            else:
+                self.game.current_state = "Win"
 
     def update(self):
         self.kill_reward()
@@ -65,17 +70,6 @@ class ObjectHandler:
         # each sprite from main array
         for index in remove:
             self.sprite_list.pop(index)
-
-    def set_state_game_over(self):
-        self.game.object_renderer.status_game_over()
-        self.game.new_game()
-
-    def set_state_win(self):
-        if len(self.game.map_lists) > 1:
-            self.game.map_lists.pop(0)
-            self.game.new_game("resources/levels/" + str(self.game.map_lists[0]) + ".txt")
-        else:
-            self.game.object_renderer.status_game_won()
 
     def add_npc(self, npc):
         self.npc_list.append(npc)

@@ -137,4 +137,5 @@ class Player:
             self.game.object_renderer.player_is_hit()
             self.game.sound.player_pain.play()
         else:
-            self.game.object_handler.set_state_game_over()
+            self.game.current_state = "Game over"
+
