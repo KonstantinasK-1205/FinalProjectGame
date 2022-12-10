@@ -51,15 +51,7 @@ class Player:
 
     def update(self):
         self.movement()
-        self.recover_health()
         self.game.weapon.update()
-
-    def recover_health(self):
-        if self.health < PLAYER_MAX_HEALTH:
-            time_now = pg.time.get_ticks()
-            if time_now - self.time_prev > self.health_recovery_delay:
-                self.time_prev = time_now
-                self.health += 1
 
     def movement(self):
         dx, dy = 0, 0
@@ -137,5 +129,5 @@ class Player:
             self.game.object_renderer.player_is_hit()
             self.game.sound.player_pain.play()
         else:
-            self.game.current_state = "Game over"
+            self.game.set_state("Game over")
 

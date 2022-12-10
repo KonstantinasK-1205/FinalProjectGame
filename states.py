@@ -31,6 +31,9 @@ class State:
         self.screen = game.screen
         self.font = pg.font.Font("resources/fonts/Font.ttf", 48)
 
+    def on_set(self):
+        return None
+
     def update(self):
         return None
 
@@ -41,16 +44,19 @@ class State:
 class IntroState(State):
     def __init__(self, game):
         super().__init__(game)
-        self.title_surface = create_text_surface(self.font, "Welcome To Die")
+        self.title_surface = create_text_surface(self.font, "Welcome To Die!")
         self.continue_surface = create_text_surface(self.font, "Press mouse to continue")
+
+    def on_set(self):
+        return None
 
     def handle_events(self, event):
         if event.type == pg.KEYUP:
             if event.key == pg.K_RETURN or event.key == pg.K_SPACE:
-                self.game.current_state = "Loading"
+                self.game.set_state("Loading")
                 self.game.new_game("resources/levels/" + self.game.map_lists[0] + ".txt")
         if event.type == pg.MOUSEBUTTONUP and event.button == 1:
-            self.game.current_state = "Loading"
+            self.game.set_state("Loading")
             self.game.new_game("resources/levels/" + self.game.map_lists[0] + ".txt")
 
     def update(self):
@@ -67,33 +73,28 @@ class IntroState(State):
 class LoadingState(State):
     def __init__(self, game):
         super().__init__(game)
-        self.game_ready = False
         self.level_surface = create_text_surface(self.font, str(self.game.map_lists[0]))
 
-        self.loading_string = "Loading level"
-        self.loading_surface = create_text_surface(self.font, self.loading_string)
-        self.loading_screen_time = pg.time.get_ticks()
+    def on_set(self):
+        self.game_ready = False
+        self.on_set_ms = pg.time.get_ticks()
+        self.elapsed_ms = 0
 
     def handle_events(self, event):
-        if event.type == pg.KEYUP:
-            if event.key == pg.K_RETURN or event.key == pg.K_SPACE:
-                self.game_ready = False
-                self.game.current_state = "Game"
-        if event.type == pg.MOUSEBUTTONUP and event.button == 1:
-            self.game_ready = False
-            self.game.current_state = "Game"
+        if self.game_ready and self.elapsed_ms > STATE_WAIT_MS:
+            if event.type == pg.KEYUP:
+                if event.key == pg.K_RETURN or event.key == pg.K_SPACE:
+                    self.game.set_state("Game")
+            elif event.type == pg.MOUSEBUTTONUP and event.button == 1:
+                self.game.set_state("Game")
 
     def update(self):
-        current_tick = pg.time.get_ticks()
-        if not self.game_ready and current_tick - self.loading_screen_time < 500:
-            if self.loading_string.count('.') < 3:
-                self.loading_string += "."
-                self.loading_surface = create_text_surface(self.font, self.loading_string)
+        self.elapsed_ms = pg.time.get_ticks() - self.on_set_ms
 
-            else:
-                self.loading_string = "Loading level"
-                self.loading_surface = create_text_surface(self.font, self.loading_string)
-            self.loading_screen_time = current_tick
+        if not self.game_ready or self.elapsed_ms < STATE_WAIT_MS:
+            dot_count = 1 + self.elapsed_ms // 200 % 3
+            self.loading_string = "Loading level" + "." * dot_count
+            self.loading_surface = create_text_surface(self.font, self.loading_string)
         elif self.game_ready:
             self.loading_string = "Press mouse to continue"
             self.loading_surface = create_text_surface(self.font, self.loading_string)
@@ -110,12 +111,16 @@ class GameState(State):
     def __init__(self, game):
         super().__init__(game)
 
+    def on_set(self):
+        pg.mouse.set_visible(False)
+        pg.event.set_grab(True)
+        pg.mixer.stop()
+
     def handle_events(self, event):
         self.game.player.handle_events(event)
         if event.type == pg.KEYUP:
             if event.key == pg.K_ESCAPE:
-                self.game.current_state = "Pause"
-                self.game.state[self.game.current_state].pause()
+                self.game.set_state("Pause")
 
     def update(self):
         self.game.raycasting.update()
@@ -135,14 +140,17 @@ class PauseState(State):
         self.pause_surface = create_text_surface(self.font, "Game Paused!")
         self.continue_surface = create_text_surface(self.font, "Press mouse to continue")
 
+    def on_set(self):
+        pg.mouse.set_visible(True)
+        pg.event.set_grab(False)
+        pg.mixer.stop()
+
     def handle_events(self, event):
         if event.type == pg.KEYUP:
             if event.key == pg.K_RETURN or event.key == pg.K_SPACE or event.key == pg.K_ESCAPE:
-                self.unpause()
-                self.game.current_state = "Game"
+                self.game.set_state("Game")
         if event.type == pg.MOUSEBUTTONUP and event.button == 1:
-            self.unpause()
-            self.game.current_state = "Game"
+            self.game.set_state("Game")
 
     def update(self):
         return None
@@ -154,14 +162,6 @@ class PauseState(State):
         self.screen.blit(self.continue_surface[0], (self.continue_surface[1][0], self.continue_surface[1][1]))
         pg.display.flip()
 
-    def pause(self):
-        pg.mouse.set_visible(True)
-        pg.event.set_grab(False)
-
-    def unpause(self):
-        pg.mouse.set_visible(False)
-        pg.event.set_grab(True)
-
 
 class WinState(State):
     def __init__(self, game):
@@ -169,15 +169,22 @@ class WinState(State):
         self.victory_image = pg.image.load('resources/textures/win.png').convert_alpha()
         self.victory_image = pg.transform.scale(self.victory_image, RES)
 
+    def on_set(self):
+        self.on_set_ms = pg.time.get_ticks()
+        self.elapsed_ms = 0
+        pg.mixer.stop()
+        self.game.sound.win.play()
+
     def handle_events(self, event):
-        if event.type == pg.KEYUP:
-            if event.key == pg.K_RETURN or event.key == pg.K_SPACE:
+        if self.elapsed_ms > STATE_WAIT_MS:
+            if event.type == pg.KEYUP:
+                if event.key == pg.K_RETURN or event.key == pg.K_SPACE:
+                    self.game.is_running = False
+            if event.type == pg.MOUSEBUTTONUP and event.button == 1:
                 self.game.is_running = False
-        if event.type == pg.MOUSEBUTTONUP and event.button == 1:
-            self.game.is_running = False
 
     def update(self):
-        return None
+        self.elapsed_ms = pg.time.get_ticks() - self.on_set_ms
 
     def draw(self):
         self.screen.blit(self.victory_image, (0, 0))
@@ -190,20 +197,27 @@ class LoseState(State):
         self.lose_image = pg.image.load('resources/textures/game_over.png').convert_alpha()
         self.lose_image = pg.transform.scale(self.lose_image, RES)
 
-    def handle_events(self, event):
-        if event.type == pg.KEYUP:
-            if event.key == pg.K_RETURN or event.key == pg.K_SPACE:
-                self.game.current_state = "Loading"
-                self.game.new_game("resources/levels/" + self.game.map_lists[0] + ".txt")
-            if event.key == pg.K_ESCAPE:
-                self.game.is_running = False
+    def on_set(self):
+        self.on_set_ms = pg.time.get_ticks()
+        self.elapsed_ms = 0
+        pg.mixer.stop()
+        self.game.sound.lose.play()
 
-        if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
-            self.game.current_state = "Loading"
-            self.game.new_game("resources/levels/" + self.game.map_lists[0] + ".txt")
+    def handle_events(self, event):
+        if self.elapsed_ms > STATE_WAIT_MS:
+            if event.type == pg.KEYUP:
+                if event.key == pg.K_RETURN or event.key == pg.K_SPACE:
+                    self.game.set_state("Loading")
+                    self.game.new_game("resources/levels/" + self.game.map_lists[0] + ".txt")
+                if event.key == pg.K_ESCAPE:
+                    self.game.is_running = False
+
+            if event.type == pg.MOUSEBUTTONUP and event.button == 1:
+                self.game.set_state("Loading")
+                self.game.new_game("resources/levels/" + self.game.map_lists[0] + ".txt")
 
     def update(self):
-        return None
+        self.elapsed_ms = pg.time.get_ticks() - self.on_set_ms
 
     def draw(self):
         self.screen.blit(self.lose_image, (0, 0))

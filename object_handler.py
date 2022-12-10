@@ -36,10 +36,10 @@ class ObjectHandler:
         if reward >= self.game.map.enemy_amount:
             if len(self.game.map_lists) > 1:
                 self.game.map_lists.pop(0)
-                self.game.current_state = "Loading"
+                self.game.set_state("Loading")
                 self.game.new_game("resources/levels/" + str(self.game.map_lists[0]) + ".txt")
             else:
-                self.game.current_state = "Win"
+                self.game.set_state("Win")
 
     def update(self):
         self.kill_reward()

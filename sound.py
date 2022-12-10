@@ -24,3 +24,7 @@ class Sound:
         self.pickup_ammo = pg.mixer.Sound(self.path + 'pickup_ammo.wav')
         self.pickup_health = pg.mixer.Sound(self.path + 'pickup_health.wav')
         self.pickup_armor = pg.mixer.Sound(self.path + 'pickup_armor.wav')
+
+        # Lose and win sounds
+        self.lose = pg.mixer.Sound(self.path + 'lose.wav')
+        self.win = pg.mixer.Sound(self.path + 'win.wav')

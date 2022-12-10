@@ -36,8 +36,6 @@ class Game:
 
         self.PRINTFPSEVENT = pg.USEREVENT + 1
         pg.time.set_timer(self.PRINTFPSEVENT, 1000)
-        pg.mouse.set_visible(False)
-        pg.event.set_grab(True)
 
     def check_events(self):
         for event in pg.event.get():
@@ -77,6 +75,10 @@ class Game:
             self.draw()
         pg.quit()
         sys.exit()
+
+    def set_state(self, state):
+        self.current_state = state
+        self.state[self.current_state].on_set()
 
 
 if __name__ == '__main__':
