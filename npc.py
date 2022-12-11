@@ -71,17 +71,18 @@ class NPC(AnimatedSprite):
     def check_hit_in_npc(self):
         if self.ray_cast_value and self.game.weapon.fired:
             if HALF_WIDTH - self.sprite_half_width < self.screen_x < HALF_WIDTH + self.sprite_half_width:
-                self.pain = True
-                self.health -= self.game.weapon.get_damage()
-                if self.health > 1:
-                    self.game.sound.play_sound(self.game.sound.npc_pain[random.randint(0, 2)],
-                                               (self.x, self.y),
-                                               self.game.player.get_pos)
-                else:
-                    self.alive = False
-                    self.game.sound.play_sound(self.game.sound.npc_death[random.randint(0, 3)],
-                                               (self.x, self.y),
-                                               self.game.player.get_pos)
+                if random.random() < (self.game.weapon.get_accuracy() / 100):
+                    self.pain = True
+                    self.health -= self.game.weapon.get_damage()
+                    if self.health > 1:
+                        self.game.sound.play_sound(self.game.sound.npc_pain[random.randint(0, 2)],
+                                                   (self.x, self.y),
+                                                   self.game.player.get_pos)
+                    else:
+                        self.alive = False
+                        self.game.sound.play_sound(self.game.sound.npc_death[random.randint(0, 3)],
+                                                   (self.x, self.y),
+                                                   self.game.player.get_pos)
 
     def run_logic(self):
         if self.alive:

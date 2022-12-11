@@ -12,11 +12,6 @@ class ObjectRenderer:
         self.sky_image = self.get_texture('resources/textures/sky.jpg', (WIDTH, HALF_HEIGHT))
         self.sky_offset = 0
 
-    def draw(self):
-        self.draw_background()
-        self.render_game_objects()
-        self.draw_in_game_gui()
-
     # In Game Texts
     def draw_in_game_gui(self):
         # Draw Killed Amount
@@ -29,8 +24,9 @@ class ObjectRenderer:
         self.screen.blit(killed_text, (MARGIN, RES[1] - self.font.get_linesize()))
 
         # Draw Bullet amount
-        bullet_text = self.font.render("Bullet: " + str(self.game.weapon.get_bullet_left()), True, (255, 255, 255))
-        self.screen.blit(bullet_text, (MARGIN, RES[1] - self.font.get_linesize() * 2.1))
+        total_bullet = self.font.render("Bullet: " + str(self.game.weapon.get_cartridge_bullet_left()) +
+                                        " / " + str(self.game.weapon.get_total_bullet_left()), True, (255, 255, 255))
+        self.screen.blit(total_bullet, (MARGIN, RES[1] - self.font.get_linesize() * 2.1))
 
         # Draw Armor left amount
         armor_text = self.font.render("Armor: " + str(self.game.player.armor), True, (255, 255, 255))

@@ -45,7 +45,9 @@ class Map:
                 elif char == "h":
                     self.game.object_handler.add_sprite(PickupHealth(self.game, pos=(x + 0.5, y + 0.5)))
                 elif char == "b":
-                    self.game.object_handler.add_sprite(PickupAmmo(self.game, pos=(x + 0.5, y + 0.5)))
+                    self.game.object_handler.add_sprite(ShotgunPickupAmmo(self.game, pos=(x + 0.5, y + 0.5)))
+                elif char == "m":
+                    self.game.object_handler.add_sprite(MachinegunPickupAmmo(self.game, pos=(x + 0.5, y + 0.5)))
                 elif char == "a":
                     self.game.object_handler.add_sprite(PickupArmor(self.game, pos=(x + 0.5, y + 0.5)))
                 x = x + 1

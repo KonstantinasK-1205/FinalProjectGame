@@ -47,8 +47,8 @@ class Game:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.is_running = False
-            elif event.type == self.PRINTFPSEVENT:
-                print(str(int(self.clock.get_fps())) + " FPS")
+            #elif event.type == self.PRINTFPSEVENT:
+            #    print(str(int(self.clock.get_fps())) + " FPS")
             self.state[self.current_state].handle_events(event)
 
     def update(self):

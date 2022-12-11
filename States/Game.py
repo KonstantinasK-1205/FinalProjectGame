@@ -24,6 +24,8 @@ class GameState(State):
         self.game.delta_time = self.game.clock.tick(FPS)
 
     def draw(self):
-        self.game.object_renderer.draw()
+        self.game.object_renderer.draw_background()
+        self.game.object_renderer.render_game_objects()
         self.game.weapon.draw()
+        self.game.object_renderer.draw_in_game_gui()
         pg.display.flip()

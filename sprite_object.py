@@ -112,8 +112,8 @@ class PickupHealth(SpriteObject):
             self.picked = True
 
 
-class PickupAmmo(SpriteObject):
-    def __init__(self, game, path='resources/sprites/static_sprites/pickups/ammo.png',
+class ShotgunPickupAmmo(SpriteObject):
+    def __init__(self, game, path='resources/sprites/static_sprites/pickups/ammo_shotgun.png',
                  pos=(2.5, 3), scale=0.3, shift=1.1):
         super().__init__(game, path, pos, scale, shift)
         self.picked = False
@@ -125,7 +125,25 @@ class PickupAmmo(SpriteObject):
         dy = self.y - self.player.get_pos[1]
         d = math.sqrt(dx * dx + dy * dy)
         if d < 0.5:
-            self.game.weapon.add_bullets(10)
+            self.game.weapon.add_bullets("Shotgun", 10)
+            self.game.sound.pickup_ammo.play()
+            self.picked = True
+
+
+class MachinegunPickupAmmo(SpriteObject):
+    def __init__(self, game, path='resources/sprites/static_sprites/pickups/ammo_machinegun.png',
+                 pos=(2.5, 3), scale=0.3, shift=1.1):
+        super().__init__(game, path, pos, scale, shift)
+        self.picked = False
+
+    def update(self):
+        super().update()
+
+        dx = self.x - self.player.get_pos[0]
+        dy = self.y - self.player.get_pos[1]
+        d = math.sqrt(dx * dx + dy * dy)
+        if d < 0.5:
+            self.game.weapon.add_bullets("Machinegun", 10)
             self.game.sound.pickup_ammo.play()
             self.picked = True
 
