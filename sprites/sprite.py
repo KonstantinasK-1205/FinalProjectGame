@@ -40,8 +40,12 @@ class Sprite:
         self.dx, self.dy = dx, dy
         self.theta = math.atan2(dy, dx)
 
-        delta = self.theta - self.player.angle
-        if (dx > 0 and self.player.angle > math.pi) or (dx < 0 and dy < 0):
+        player_angle = math.fmod(self.player.angle, math.tau)
+        if player_angle < 0:
+            player_angle = player_angle + math.tau
+
+        delta = self.theta - player_angle
+        if (dx > 0 and player_angle > math.pi) or (dx < 0 and dy < 0):
             delta += math.tau
 
         delta_rays = delta / DELTA_ANGLE
