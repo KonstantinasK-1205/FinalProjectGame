@@ -126,7 +126,8 @@ class ShotgunPickupAmmo(SpriteObject):
         d = math.sqrt(dx * dx + dy * dy)
         if d < 0.5:
             self.game.weapon.add_bullets("Shotgun", 10)
-            self.game.sound.pickup_ammo.play()
+            sound = self.game.sound
+            sound.pickup_sound(sound.pickup_ammo)
             self.picked = True
 
 
@@ -144,7 +145,8 @@ class MachinegunPickupAmmo(SpriteObject):
         d = math.sqrt(dx * dx + dy * dy)
         if d < 0.5:
             self.game.weapon.add_bullets("Machinegun", 10)
-            self.game.sound.pickup_ammo.play()
+            sound = self.game.sound
+            sound.pickup_sound(sound.pickup_ammo)
             self.picked = True
 
 
@@ -162,5 +164,6 @@ class PickupArmor(SpriteObject):
         d = math.sqrt(dx * dx + dy * dy)
         if d < 0.5 and self.player.armor < 100:
             self.player.add_armor(25)
-            self.game.sound.pickup_armor.play()
+            sound = self.game.sound
+            sound.pickup_sound(sound.pickup_armor)
             self.picked = True

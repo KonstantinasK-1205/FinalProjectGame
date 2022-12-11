@@ -6,6 +6,7 @@ class Sound:
     def __init__(self):
         pg.mixer.init()
         self.path = 'resources/sound/'
+        self.sound_in_queue = []
 
         # Weapon Sounds
         self.shotgun_fire = pg.mixer.Sound(self.path + 'weapon_shotgun_fire.wav')
@@ -46,6 +47,10 @@ class Sound:
         self.lose = pg.mixer.Sound(self.path + 'lose.wav')
         self.win = pg.mixer.Sound(self.path + 'win.wav')
 
+    def update(self):
+        if len(self.sound_in_queue) > 0:
+            self.play_queue()
+
     def play_sound(self, sound, src_distance, dst_distance):
         x_diff = abs(src_distance[0] - dst_distance[0])
         y_diff = abs(src_distance[1] - dst_distance[1])
@@ -55,3 +60,15 @@ class Sound:
             normalized = 0.9 - ((x_diff + y_diff) / 10)
         sound.set_volume(normalized)
         sound.play()
+
+    def pickup_sound(self, sound):
+        if not pg.mixer.get_busy():
+            sound.play()
+        else:
+            if sound not in self.sound_in_queue:
+                self.sound_in_queue.append(sound)
+
+    def play_queue(self):
+        if not pg.mixer.get_busy():
+            self.sound_in_queue[0].play()
+            self.sound_in_queue.pop(0)

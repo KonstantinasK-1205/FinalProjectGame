@@ -51,7 +51,7 @@ class Weapon:
                 },
                 "Fire": {
                     "Sprites": load_images("machinegun", [1, 2, 3], 3.5),
-                    "Damage": 35,
+                    "Damage": 50,
                     "Speed": 50,
                     "Accuracy": 40,
                     "Currently in Cartridge": 50,

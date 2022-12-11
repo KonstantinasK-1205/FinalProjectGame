@@ -21,6 +21,7 @@ class GameState(State):
         self.game.raycasting.update()
         self.game.object_handler.update()
         self.game.player.update()
+        self.game.sound.update()
         self.game.delta_time = self.game.clock.tick(FPS)
 
     def draw(self):
