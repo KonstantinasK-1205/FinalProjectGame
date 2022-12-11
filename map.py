@@ -1,5 +1,9 @@
 from npc import *
-
+from sprites.sprite import Sprite
+from sprites.pickup_health import PickupHealth
+from sprites.shotgun_pickup_ammo import ShotgunPickupAmmo
+from sprites.machinegun_pickup_ammo import MachinegunPickupAmmo
+from sprites.pickup_armor import PickupArmor
 
 class Map:
     def __init__(self, game):
@@ -41,7 +45,7 @@ class Map:
                     self.game.object_handler.add_npc(NPC(self.game, pos=(x + 0.5, y + 0.5)))
                     self.enemy_amount += 1
                 elif char == "c":
-                    self.game.object_handler.add_sprite(SpriteObject(self.game, pos=(x + 0.5, y + 0.5)))
+                    self.game.object_handler.add_sprite(Sprite(self.game, pos=(x + 0.5, y + 0.5)))
                 elif char == "h":
                     self.game.object_handler.add_sprite(PickupHealth(self.game, pos=(x + 0.5, y + 0.5)))
                 elif char == "b":

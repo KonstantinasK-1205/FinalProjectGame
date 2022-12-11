@@ -17,63 +17,62 @@ class Player:
         self.health = 100
         self.armor = 0
 
-        self.movingForward = False
-        self.movingBackward = False
-        self.movingLeft = False
-        self.movingRight = False
+        self.moving_forw = False
+        self.moving_back = False
+        self.moving_left = False
+        self.moving_right = False
 
     def handle_events(self, event):
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_w:
-                self.movingForward = True
+                self.moving_forw = True
             if event.key == pg.K_s:
-                self.movingBackward = True
+                self.moving_back = True
             if event.key == pg.K_a:
-                self.movingLeft = True
+                self.moving_left = True
             if event.key == pg.K_d:
-                self.movingRight = True
+                self.moving_right = True
 
         elif event.type == pg.KEYUP:
             if event.key == pg.K_w:
-                self.movingForward = False
+                self.moving_forw = False
             if event.key == pg.K_s:
-                self.movingBackward = False
+                self.moving_back = False
             if event.key == pg.K_a:
-                self.movingLeft = False
+                self.moving_left = False
             if event.key == pg.K_d:
-                self.movingRight = False
-
-        if event.type == pg.MOUSEMOTION:
-            self.rel = max(-MOUSE_MAX_REL, min(MOUSE_MAX_REL, pg.mouse.get_rel()[0]))
-            self.angle += self.rel * MOUSE_SENSITIVITY * self.game.delta_time
+                self.moving_right = False
 
         self.game.weapon.handle_events(event)
 
-    def update(self):
-        self.movement()
+    def update(self, dt):
+        self.rel = max(-MOUSE_MAX_REL, min(MOUSE_MAX_REL, pg.mouse.get_rel()[0]))
+        self.angle += self.rel * MOUSE_SENSITIVITY * self.game.dt
+
+        self.movement(dt)
         self.game.weapon.update()
 
-    def movement(self):
+    def movement(self, dt):
         dx, dy = 0, 0
-        speed = PLAYER_SPEED * self.game.delta_time
+        speed = PLAYER_SPEED * dt
         speed_sin = speed * math.sin(self.angle)
         speed_cos = speed * math.cos(self.angle)
 
-        if self.movingForward:
+        if self.moving_forw:
             dx += speed_cos
             dy += speed_sin
-        if self.movingBackward:
+        if self.moving_back:
             dx += -speed_cos
             dy += -speed_sin
-        if self.movingLeft:
+        if self.moving_left:
             dx += speed_sin
             dy += -speed_cos
-        if self.movingRight:
+        if self.moving_right:
             dx += -speed_sin
             dy += speed_cos
 
         if not (dx == 0 and dy == 0):
-            scale = PLAYER_SIZE_SCALE / self.game.delta_time
+            scale = PLAYER_SIZE_SCALE / dt
             if not self.game.map.is_wall(int(self.pos_x + dx * scale), int(self.pos_y)):
                 self.pos_x += dx
             if not self.game.map.is_wall(int(self.pos_x), int(self.pos_y + dy * scale)):
@@ -126,8 +125,8 @@ class Player:
 
         # Give audible & visual feedback to player, if he is still alive
         if self.health > 1:
-            self.game.object_renderer.player_is_hit()
+            self.game.hit_flash_ms = 0
             # self.game.sound.player_pain[random.randint(0, 1)].play()
         else:
-            self.game.set_state("Game over")
+            self.game.current_state = "Game over"
 

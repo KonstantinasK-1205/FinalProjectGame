@@ -31,14 +31,14 @@ class State:
         self.screen = game.screen
         self.font = pg.font.Font("resources/fonts/Font.ttf", 48)
 
-    @staticmethod
-    def on_set():
-        return None
+    def on_set(self):
+        pass
 
-    @staticmethod
-    def update():
-        return None
+    def handle_events(self):
+        pass
 
-    @staticmethod
-    def draw():
-        return None
+    def update(self, dt):
+        pass
+
+    def draw(self):
+        pass

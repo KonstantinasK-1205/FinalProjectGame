@@ -16,6 +16,9 @@ class ObjectHandler:
         self.hpRestored = False
         self.dmgIncreased = False
 
+        self.map_change = False
+        self.map_change_wait_ms = 0
+
     def load_map(self, game):
         self.game = game
         self.gameMap = Map(game)
@@ -34,14 +37,10 @@ class ObjectHandler:
             self.dmgIncreased = True
 
         if reward >= self.game.map.enemy_amount:
-            if len(self.game.map_lists) > 1:
-                self.game.map_lists.pop(0)
-                self.game.set_state("Loading")
-                self.game.new_game("resources/levels/" + str(self.game.map_lists[0]) + ".txt")
-            else:
-                self.game.set_state("Win")
+            self.map_change = True
+            self.map_change_wait_s = 0
 
-    def update(self):
+    def update(self, dt):
         self.kill_reward()
         self.npc_positions = {npc.map_pos for npc in self.npc_list if npc.alive}
         self.handle_pickups()
@@ -53,6 +52,18 @@ class ObjectHandler:
             if not npc.is_alive():
                 self.alive_npc_list.pop(self.alive_npc_list.index(npc))
                 self.killed = self.killed + 1
+
+        if self.map_change:
+            self.map_change_wait_ms = self.map_change_wait_ms + dt
+            print("Waiting for map change " + str(self.map_change_wait_s))
+            if self.map_change_wait_ms >= MAP_CHANGE_WAIT_MS:
+                self.map_change = False
+                if len(self.game.map_lists) > 1:
+                    self.game.map_lists.pop(0)
+                    self.game.current_state = "Loading"
+                    self.game.new_game("resources/levels/" + str(self.game.map_lists[0]) + ".txt")
+                else:
+                    self.game.current_state = "Win"
 
     def handle_pickups(self):
         # Create new array in which we will store

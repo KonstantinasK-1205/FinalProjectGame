@@ -1,4 +1,4 @@
-from States.State import *
+from states.state import *
 
 
 class LoseState(State):
@@ -19,18 +19,17 @@ class LoseState(State):
         if self.elapsed_ms > STATE_WAIT_MS:
             if event.type == pg.KEYUP:
                 if event.key == pg.K_RETURN or event.key == pg.K_SPACE:
-                    self.game.set_state("Loading")
+                    self.game.current_state = "Loading"
                     self.game.new_game("resources/levels/" + self.game.map_lists[0] + ".txt")
                 if event.key == pg.K_ESCAPE:
                     self.game.is_running = False
 
             if event.type == pg.MOUSEBUTTONUP and event.button == 1:
-                self.game.set_state("Loading")
+                self.game.current_state = "Loading"
                 self.game.new_game("resources/levels/" + self.game.map_lists[0] + ".txt")
 
-    def update(self):
+    def update(self, dt):
         self.elapsed_ms = pg.time.get_ticks() - self.on_set_ms
 
     def draw(self):
         self.screen.blit(self.lose_image, (0, 0))
-        pg.display.flip()

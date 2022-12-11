@@ -1,4 +1,4 @@
-from States.State import *
+from states.state import *
 
 
 class WinState(State):
@@ -23,9 +23,8 @@ class WinState(State):
             if event.type == pg.MOUSEBUTTONUP and event.button == 1:
                 self.game.is_running = False
 
-    def update(self):
+    def update(self, dt):
         self.elapsed_ms = pg.time.get_ticks() - self.on_set_ms
 
     def draw(self):
         self.screen.blit(self.victory_image, (0, 0))
-        pg.display.flip()

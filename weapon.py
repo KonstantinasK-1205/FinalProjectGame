@@ -1,4 +1,4 @@
-from sprite_object import *
+from sprites.sprite import *
 
 
 def load_images(weapon, images, scale=0.4):

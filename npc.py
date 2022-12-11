@@ -1,5 +1,7 @@
-from sprite_object import *
-
+from sprites.animated_sprite import AnimatedSprite
+import random
+import math
+from settings import *
 
 class NPC(AnimatedSprite):
     def __init__(self, game, path='resources/sprites/npc/soldier/0.png', pos=(3, 3),
