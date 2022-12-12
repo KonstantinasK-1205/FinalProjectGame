@@ -26,8 +26,11 @@ class NPC(AnimatedSprite):
         self.player_search_trigger = False
         self.death_animation_started = False
         self.angle = 0
+        self.current_time = 0
+        self.previous_shot = 0
 
     def update(self):
+        self.current_time = pg.time.get_ticks()
         self.check_animation_time()
         self.get_sprite()
         self.run_logic()
@@ -53,12 +56,15 @@ class NPC(AnimatedSprite):
             self.game.sound.play_sound(self.game.sound.npc_attack[random.randint(0, 1)],
                                        (self.x, self.y),
                                        self.game.player.get_pos)
-           # if random.random() < self.accuracy:
             self.create_bullet()
+            self.previous_shot = pg.time.get_ticks()
 
     def create_bullet(self):
-        print("Creating bullet on X: " + str(int(self.x)) + " | Y: " + str(int(self.y)))
-        self.game.object_handler.add_bullet(Bullet(self.game, self.map_pos, self.damage, self.angle, 'enemy'))
+        dx = self.game.player.pos_x - self.x
+        dy = self.game.player.pos_y - self.y
+        angle = math.atan2(dy, dx)
+
+        self.game.object_handler.add_bullet(Bullet(self.game, (self.x, self.y), self.damage, angle, 'enemy'))
 
     def animate_death(self):
         if not self.alive:
@@ -98,8 +104,10 @@ class NPC(AnimatedSprite):
 
                 if self.dist < self.attack_dist:
                     if random.randint(0, 30) < 10:
-                        self.animate(self.attack_images)
-                        self.attack()
+                        # 200 - NPC Shotgun speed
+                        if self.current_time - self.previous_shot > 200 * 5:
+                            self.animate(self.attack_images)
+                            self.attack()
                 else:
                     self.animate(self.walk_images)
                     self.movement()

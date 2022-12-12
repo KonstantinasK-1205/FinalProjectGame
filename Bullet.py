@@ -31,8 +31,6 @@ class Bullet:
         # Check collision with player
         if self.owner == 'enemy':
             if self.game.player.get_map_pos == (int(self.pos_x), int(self.pos_y)):
-                print("->Collision with player")
-                print("->Damaged done: " + str(self.damage))
                 self.collided = True
                 self.game.player.apply_damage(self.damage)
 
@@ -46,6 +44,4 @@ class Bullet:
         if not self.game.map.is_wall(pos[0], pos[1]):
             return False
         self.collided = True
-        print("-->Collided with wall")
-        print("---> X: " + str(int(self.pos_x)) + " | Y: " + str(int(self.pos_y)))
         return True

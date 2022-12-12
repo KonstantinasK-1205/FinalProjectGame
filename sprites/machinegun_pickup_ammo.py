@@ -14,7 +14,7 @@ class MachinegunPickupAmmo(Sprite):
         dy = self.y - self.player.get_pos[1]
         d = math.sqrt(dx * dx + dy * dy)
         if d < 0.5:
-            self.game.weapon.add_bullets("Machinegun", 10)
+            self.game.weapon.add_bullets("Machinegun", 50)
             sound = self.game.sound
             sound.pickup_sound(sound.pickup_ammo)
             self.picked = True

@@ -25,8 +25,8 @@ class Game:
 
         self.object_handler = ObjectHandler()
         self.object_renderer = ObjectRenderer(self)
-        # self.map_lists = ["Level1", "Level2", "Level3"]
-        self.map_lists = ["T_Level1", "T_Level2", "T_Level3"]
+        self.map_lists = ["Level1", "Level2", "Level3", "Level4"]
+        #self.map_lists = ["T_Level1", "T_Level2", "T_Level3"]
 
         self.state = {
             "Intro": IntroState(self),

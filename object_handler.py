@@ -57,7 +57,6 @@ class ObjectHandler:
 
         if self.map_change:
             self.map_change_wait_ms = self.map_change_wait_ms + dt
-            print("Waiting for map change " + str(self.map_change_wait_s))
             if self.map_change_wait_ms >= MAP_CHANGE_WAIT_MS:
                 self.map_change = False
                 if len(self.game.map_lists) > 1:
@@ -81,11 +80,11 @@ class ObjectHandler:
 
         # Iterate each remove element and remove
         # each sprite from main array
-        for index in remove:
+        for index in remove[::-1]:
             self.bullet_list.pop(index)
 
     def handle_pickups(self):
-        # Create new array in which we will store
+        # Create new array in which we will stores
         # index of element we remove
         remove = []
         for index, sprite in enumerate(self.sprite_list):
