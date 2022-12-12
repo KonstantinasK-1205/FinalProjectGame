@@ -1,5 +1,5 @@
 from sprites.sprite import *
-
+from Bullet import *
 
 def load_images(weapon, images, scale=0.4):
     loaded_images = deque()
@@ -82,6 +82,9 @@ class Weapon:
             if event.key == pg.K_r:
                 self.reload()
 
+        if event.type == pg.MOUSEBUTTONUP:
+            self.fired = False
+
         if event.type == pg.MOUSEBUTTONDOWN:
             weapon = self.weapon_info[self.current_weapon]["Fire"]
             if event.button == 1:
@@ -92,6 +95,7 @@ class Weapon:
                         self.frame_counter = 0
                         weapon["Currently in Cartridge"] -= 1
                         self.game.sound.shotgun_fire.play()
+                        self.create_bullet()
                         self.previous_shot = pg.time.get_ticks()
                     else:
                         self.reload()
@@ -108,7 +112,6 @@ class Weapon:
     def update(self):
         self.current_time = pg.time.get_ticks()
         self.animate()
-        self.fired = False
 
     def draw(self):
         self.game.screen.blit(self.cur_display[0], self.weapon_pos)
@@ -125,6 +128,8 @@ class Weapon:
 
     # Getters
     def get_accuracy(self):
+        print("Current Weapon: " + self.current_weapon)
+        print("Current State.: " + self.current_state)
         return self.weapon_info[self.current_weapon][self.current_state]["Accuracy"]
 
     def get_damage(self):
@@ -145,6 +150,10 @@ class Weapon:
     # Other Functions
     def add_bullets(self, weapon, number):
         self.weapon_info[weapon]["Fire"]["Bullet Left"] += number
+
+    def create_bullet(self):
+        weapon = self.weapon_info[self.current_weapon]["Fire"]
+        self.game.object_handler.add_bullet(Bullet(self.game, self.game.player.get_pos, weapon["Damage"], self.game.player.angle, 'player'))
 
     def change_weapon(self, weapon):
         self.current_weapon = weapon

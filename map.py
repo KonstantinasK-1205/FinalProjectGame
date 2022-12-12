@@ -2,6 +2,7 @@ from npc import *
 from sprites.sprite import Sprite
 from sprites.pickup_health import PickupHealth
 from sprites.shotgun_pickup_ammo import ShotgunPickupAmmo
+from Bullet import *
 from sprites.machinegun_pickup_ammo import MachinegunPickupAmmo
 from sprites.pickup_armor import PickupArmor
 

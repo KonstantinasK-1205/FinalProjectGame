@@ -1,5 +1,6 @@
 from sprites.sprite import Sprite
 
+
 class PickupArmor(Sprite):
     def __init__(self, game, path='resources/sprites/static_sprites/pickups/armor.png',
                  pos=(2.5, 3), scale=0.3, shift=1.1):

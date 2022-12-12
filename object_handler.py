@@ -5,6 +5,7 @@ class ObjectHandler:
     def __init__(self):
         self.npc_list = []
         self.sprite_list = []
+        self.bullet_list = []
         self.alive_npc_list = []
         self.npc_positions = {}
         self.killed = 0
@@ -44,6 +45,7 @@ class ObjectHandler:
         self.kill_reward()
         self.npc_positions = {npc.map_pos for npc in self.npc_list if npc.alive}
         self.handle_pickups()
+        self.handle_bullets()
 
         for npc in self.npc_list:
             npc.update()
@@ -64,6 +66,23 @@ class ObjectHandler:
                     self.game.new_game("resources/levels/" + str(self.game.map_lists[0]) + ".txt")
                 else:
                     self.game.current_state = "Win"
+
+    def handle_bullets(self):
+        # Create new array in which we will store
+        # index of element we remove
+        remove = []
+        for index, bullet in enumerate(self.bullet_list):
+            # If sprite wasn't used just update it,
+            # otherwise add to remove array
+            if not bullet.collided:
+                bullet.update()
+            else:
+                remove.append(index)
+
+        # Iterate each remove element and remove
+        # each sprite from main array
+        for index in remove:
+            self.bullet_list.pop(index)
 
     def handle_pickups(self):
         # Create new array in which we will store
@@ -88,6 +107,9 @@ class ObjectHandler:
 
     def add_sprite(self, sprite):
         self.sprite_list.append(sprite)
+
+    def add_bullet(self, bullet):
+        self.bullet_list.append(bullet)
 
     def reset(self):
         self.npc_list = []

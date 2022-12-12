@@ -1,6 +1,7 @@
 from sprites.sprite import Sprite
 import math
 
+
 class ShotgunPickupAmmo(Sprite):
     def __init__(self, game, path='resources/sprites/static_sprites/pickups/ammo_shotgun.png',
                  pos=(2.5, 3), scale=0.3, shift=1.1):

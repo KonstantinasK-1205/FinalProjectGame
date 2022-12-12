@@ -36,6 +36,9 @@ class ObjectRenderer:
         health_text = self.font.render("HP: " + str(self.game.player.health) + " %", True, (255, 255, 255))
         self.screen.blit(health_text, (MARGIN, RES[1] - self.font.get_linesize() * 4.3))
 
+        pos_text = self.font.render("X: " + str(int(self.game.player.pos_x)) + " Y: " + str(int(self.game.player.pos_y)), True, (255, 255, 255))
+        self.screen.blit(pos_text, (MARGIN, 0))
+
     def draw_background(self):
         self.sky_offset = (self.sky_offset + 4.5 * self.game.player.rel) % WIDTH
         # Angle between 0 and 360

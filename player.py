@@ -14,7 +14,6 @@ class Player:
         self.health_recovery_delay = 10000
         self.time_prev = pg.time.get_ticks()
 
-        self.health = 100
         self.armor = 0
 
         self.moving_forw = False
@@ -129,4 +128,3 @@ class Player:
             # self.game.sound.player_pain[random.randint(0, 1)].play()
         else:
             self.game.current_state = "Game over"
-

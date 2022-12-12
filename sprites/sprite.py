@@ -8,7 +8,7 @@ from settings import *
 
 class Sprite:
     def __init__(self, game, path='resources/sprites/static_sprites/candelabra.png',
-                 pos=(2, 2), scale=0.7, shift=0.25):
+                 pos=(2, 2), scale=0.7, shift=0.25, damage=0):
         self.game = game
         self.player = game.player
         self.x, self.y = pos

@@ -1,7 +1,7 @@
-from sprites.animated_sprite import AnimatedSprite
-import random
-import math
 from settings import *
+from sprites.animated_sprite import AnimatedSprite
+from Bullet import *
+
 
 class NPC(AnimatedSprite):
     def __init__(self, game, path='resources/sprites/npc/soldier/0.png', pos=(3, 3),
@@ -17,7 +17,7 @@ class NPC(AnimatedSprite):
         self.speed = 0.03
         self.size = 50
         self.health = 100
-        self.attack_damage = random.randint(3, 10)
+        self.damage = random.randint(3, 10)
         self.accuracy = random.uniform(0.60, 0.80)
         self.alive = True
         self.pain = False
@@ -25,6 +25,7 @@ class NPC(AnimatedSprite):
         self.frame_counter = 0
         self.player_search_trigger = False
         self.death_animation_started = False
+        self.angle = 0
 
     def update(self):
         self.check_animation_time()
@@ -34,28 +35,30 @@ class NPC(AnimatedSprite):
     def is_alive(self):
         return self.alive
 
-    def check_wall_collision(self, dx, dy):
-        if not self.game.map.is_wall(int(self.x + dx * self.size), int(self.y)):
-            self.x += dx
-        if not self.game.map.is_wall(int(self.x), int(self.y + dy * self.size)):
-            self.y += dy
-
     def movement(self):
         next_pos = self.game.pathfinding.get_path(self.map_pos, self.game.player.get_map_pos)
         next_x, next_y = next_pos
         if next_pos not in self.game.object_handler.npc_positions:
-            angle = math.atan2(next_y + 0.5 - self.y, next_x + 0.5 - self.x)
-            dx = math.cos(angle) * self.speed
-            dy = math.sin(angle) * self.speed
-            self.check_wall_collision(dx, dy)
+            dx = math.cos(self.angle) * self.speed
+            dy = math.sin(self.angle) * self.speed
+
+            if not self.game.map.is_wall(int(self.x + dx * self.size), int(self.y)):
+                self.x += dx
+            if not self.game.map.is_wall(int(self.x), int(self.y + dy * self.size)):
+                self.y += dy
+            self.angle = math.atan2(self.game.player.pos_y - self.y, self.game.player.pos_x - self.x)
 
     def attack(self):
         if self.animation_trigger:
             self.game.sound.play_sound(self.game.sound.npc_attack[random.randint(0, 1)],
                                        (self.x, self.y),
                                        self.game.player.get_pos)
-            if random.random() < self.accuracy:
-                self.game.player.apply_damage(self.attack_damage)
+           # if random.random() < self.accuracy:
+            self.create_bullet()
+
+    def create_bullet(self):
+        print("Creating bullet on X: " + str(int(self.x)) + " | Y: " + str(int(self.y)))
+        self.game.object_handler.add_bullet(Bullet(self.game, self.map_pos, self.damage, self.angle, 'enemy'))
 
     def animate_death(self):
         if not self.alive:
@@ -70,26 +73,22 @@ class NPC(AnimatedSprite):
         if self.animation_trigger:
             self.pain = False
 
-    def check_hit_in_npc(self):
-        if self.ray_cast_value and self.game.weapon.fired:
-            if HALF_WIDTH - self.sprite_half_width < self.screen_x < HALF_WIDTH + self.sprite_half_width:
-                if random.random() < (self.game.weapon.get_accuracy() / 100):
-                    self.pain = True
-                    self.health -= self.game.weapon.get_damage()
-                    if self.health > 1:
-                        self.game.sound.play_sound(self.game.sound.npc_pain[random.randint(0, 2)],
-                                                   (self.x, self.y),
-                                                   self.game.player.get_pos)
-                    else:
-                        self.alive = False
-                        self.game.sound.play_sound(self.game.sound.npc_death[random.randint(0, 3)],
-                                                   (self.x, self.y),
-                                                   self.game.player.get_pos)
+    def apply_damage(self, damage):
+        self.pain = True
+        self.health -= damage
+        if self.health > 1:
+            self.game.sound.play_sound(self.game.sound.npc_pain[random.randint(0, 2)],
+                                       (self.x, self.y),
+                                       self.game.player.get_pos)
+        else:
+            self.alive = False
+            self.game.sound.play_sound(self.game.sound.npc_death[random.randint(0, 3)],
+                                       (self.x, self.y),
+                                       self.game.player.get_pos)
 
     def run_logic(self):
         if self.alive:
             self.ray_cast_value = self.ray_cast_player_npc()
-            self.check_hit_in_npc()
 
             if self.pain:
                 self.animate_pain()
