@@ -147,7 +147,8 @@ class Weapon:
     def set_damage_buff(self, buff_val):
         for weapon in self.weapon_info:
             for attack in self.weapon_info[weapon]:
-                self.weapon_info[weapon][attack]["Damage"] = self.weapon_info[weapon][attack]["Damage"] * buff_val
+                if not attack == "Unlocked":
+                    self.weapon_info[weapon][attack]["Damage"] = self.weapon_info[weapon][attack]["Damage"] * buff_val
 
     # Other Functions
     def add_bullets(self, weapon, number):
