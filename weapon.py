@@ -32,13 +32,13 @@ class Weapon:
                 "Melee": {
                     "Sprites": load_images("shotgun", ["m_1", "m_2"]),
                     "Damage": 10,
-                    "Speed": 210,
+                    "Speed": 100,
                     "Accuracy": 90
                 },
                 "Fire": {
                     "Sprites": load_images("shotgun", [1, 2, 3, 4, 5]),
                     "Damage": 70,
-                    "Speed": 170,
+                    "Speed": 140,
                     "Accuracy": 80,
                     "Currently in Cartridge": 1,
                     "Maximum in Cartridge": 1,
@@ -55,7 +55,7 @@ class Weapon:
                 "Fire": {
                     "Sprites": load_images("machinegun", [1, 2, 3], 3.5),
                     "Damage": 50,
-                    "Speed": 50,
+                    "Speed": 30,
                     "Accuracy": 40,
                     "Currently in Cartridge": 0,
                     "Maximum in Cartridge": 50,
@@ -98,6 +98,8 @@ class Weapon:
                         self.current_state = "Fire"
                         self.frame_counter = 0
                         weapon["Currently in Cartridge"] -= 1
+                        if weapon["Currently in Cartridge"] <= 0:
+                            self.reload()
                         self.game.sound.shotgun_fire.play()
                         self.create_bullet()
                         self.previous_shot = pg.time.get_ticks()

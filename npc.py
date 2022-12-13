@@ -17,7 +17,7 @@ class NPC(AnimatedSprite):
         self.speed = 0.03
         self.size = 50
         self.health = 100
-        self.damage = random.randint(3, 10)
+        self.damage = random.randint(3, 7)
         self.accuracy = random.uniform(0.60, 0.80)
         self.alive = True
         self.pain = False
@@ -103,9 +103,9 @@ class NPC(AnimatedSprite):
                 self.player_search_trigger = True
 
                 if self.dist < self.attack_dist:
-                    if random.randint(0, 30) < 10:
-                        # 200 - NPC Shotgun speed
-                        if self.current_time - self.previous_shot > 200 * 5:
+                    if random.randint(0, 30) < 15:
+                        # 250 - NPC Shotgun speed
+                        if self.current_time - self.previous_shot > 250 * 5:
                             self.animate(self.attack_images)
                             self.attack()
                 else:
