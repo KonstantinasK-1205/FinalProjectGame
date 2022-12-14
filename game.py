@@ -1,18 +1,15 @@
-import sys
-
-from states.intro import IntroState
-from states.loading import LoadingState
-from states.game import GameState
-from states.pause import PauseState
-from states.win import WinState
-from states.lose import LoseState
-
 from object_handler import *
 from object_renderer import *
 from pathfinding import *
 from player import *
 from raycasting import *
 from sound import *
+from states.game import GameState
+from states.intro import IntroState
+from states.loading import LoadingState
+from states.lose import LoseState
+from states.pause import PauseState
+from states.win import WinState
 from weapon import *
 
 
@@ -26,7 +23,7 @@ class Game:
         self.object_handler = ObjectHandler()
         self.object_renderer = ObjectRenderer(self)
         self.map_lists = ["Level1", "Level2", "Level3", "Level4"]
-        #self.map_lists = ["T_Level1", "T_Level2", "T_Level3"]
+        # self.map_lists = ["T_Level1", "T_Level2", "T_Level3"]
 
         self.state = {
             "Intro": IntroState(self),
@@ -38,8 +35,8 @@ class Game:
         }
         self.current_state = "Intro"
 
-        #self.PRINTFPSEVENT = pg.USEREVENT + 1
-        #pg.time.set_timer(self.PRINTFPSEVENT, 1000)
+        # self.PRINTFPSEVENT = pg.USEREVENT + 1
+        # pg.time.set_timer(self.PRINTFPSEVENT, 1000)
 
         self.hit_flash_ms = HIT_FLASH_MS
 
@@ -50,7 +47,7 @@ class Game:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.is_running = False
-            #elif event.type == self.PRINTFPSEVENT:
+            # elif event.type == self.PRINTFPSEVENT:
             #    print(str(int(self.clock.get_fps())) + " FPS")
             self.state[self.current_state].handle_events(event)
 

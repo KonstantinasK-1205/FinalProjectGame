@@ -1,5 +1,4 @@
 import pygame as pg
-import math
 
 
 class Sound:
@@ -13,7 +12,7 @@ class Sound:
         self.shotgun_empty = pg.mixer.Sound(self.path + 'weapon_shotgun_empty.wav')
         self.shotgun_melee = pg.mixer.Sound(self.path + 'weapon_shotgun_melee.wav')
 
-        # NPC Sounds
+        # npc Sounds
         self.npc_pain = [
             pg.mixer.Sound(self.path + 'npc_pain_1.wav'),
             pg.mixer.Sound(self.path + 'npc_pain_2.wav'),

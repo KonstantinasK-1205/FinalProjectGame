@@ -1,10 +1,12 @@
-from npc import *
-from sprites.sprite import Sprite
-from sprites.pickup_health import PickupHealth
-from sprites.shotgun_pickup_ammo import ShotgunPickupAmmo
 from Bullet import *
-from sprites.machinegun_pickup_ammo import MachinegunPickupAmmo
+from npc.reaper import Reaper
+from npc.soldier import Soldier
+from sprites.sprite import Sprite
+from sprites.pickup_ammo_machinegun import MachinegunPickupAmmo
+from sprites.pickup_ammo_shotgun import ShotgunPickupAmmo
 from sprites.pickup_armor import PickupArmor
+from sprites.pickup_health import PickupHealth
+
 
 class Map:
     def __init__(self, game):
@@ -41,7 +43,10 @@ class Map:
                 elif char == "p":
                     self.game.player.set_spawn(x + 0.5, y + 0.5)
                 elif char == "e":
-                    self.game.object_handler.add_npc(NPC(self.game, pos=(x + 0.5, y + 0.5)))
+                    self.game.object_handler.add_npc(Soldier(self.game, pos=(x + 0.5, y + 0.5)))
+                    self.enemy_amount += 1
+                elif char == "r":
+                    self.game.object_handler.add_npc(Reaper(self.game, pos=(x + 0.5, y + 0.5)))
                     self.enemy_amount += 1
                 elif char == "c":
                     self.game.object_handler.add_sprite(Sprite(self.game, pos=(x + 0.5, y + 0.5)))

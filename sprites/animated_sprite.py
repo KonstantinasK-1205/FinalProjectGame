@@ -1,7 +1,10 @@
-from sprites.sprite import Sprite
-from collections import deque
 import os
+from collections import deque
+
 import pygame as pg
+
+from sprites.sprite import Sprite
+
 
 class AnimatedSprite(Sprite):
     def __init__(self, game, path='resources/sprites/animated_sprites/green_light/0.png',
@@ -34,7 +37,7 @@ class AnimatedSprite(Sprite):
     @staticmethod
     def get_images(path):
         images = deque()
-        for file_name in os.listdir(path):
+        for file_name in sorted(os.listdir(path)):
             if os.path.isfile(os.path.join(path, file_name)):
                 img = pg.image.load(path + '/' + file_name).convert_alpha()
                 images.append(img)

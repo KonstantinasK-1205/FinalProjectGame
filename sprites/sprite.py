@@ -1,6 +1,3 @@
-import os
-from collections import deque
-
 import pygame as pg
 
 from settings import *
@@ -35,8 +32,8 @@ class Sprite:
         self.game.raycasting.objects_to_render.append((self.norm_dist, image, pos))
 
     def get_sprite(self):
-        dx = self.x - self.player.get_pos[0]
-        dy = self.y - self.player.get_pos[1]
+        dx = self.x - self.player.exact_pos[0]
+        dy = self.y - self.player.exact_pos[1]
         self.dx, self.dy = dx, dy
         self.theta = math.atan2(dy, dx)
 

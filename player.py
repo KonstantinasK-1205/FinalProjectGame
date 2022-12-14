@@ -85,11 +85,11 @@ class Player:
         return self.angle
 
     @property
-    def get_pos(self):
+    def exact_pos(self):
         return self.pos_x, self.pos_y
 
     @property
-    def get_map_pos(self):
+    def grid_pos(self):
         return int(self.pos_x), int(self.pos_y)
 
     # Setters

@@ -1,4 +1,5 @@
 from map import *
+from settings import *
 
 
 class ObjectHandler:
@@ -43,7 +44,7 @@ class ObjectHandler:
 
     def update(self, dt):
         self.kill_reward()
-        self.npc_positions = {npc.map_pos for npc in self.npc_list if npc.alive}
+        self.npc_positions = {npc.grid_pos for npc in self.npc_list if npc.alive}
         self.handle_pickups()
         self.handle_bullets()
 
@@ -51,7 +52,7 @@ class ObjectHandler:
             npc.update()
 
         for npc in self.alive_npc_list:
-            if not npc.is_alive():
+            if npc.is_dead:
                 self.alive_npc_list.pop(self.alive_npc_list.index(npc))
                 self.killed = self.killed + 1
 

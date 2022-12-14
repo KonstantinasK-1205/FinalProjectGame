@@ -1,5 +1,7 @@
-from sprites.sprite import *
 from Bullet import *
+from sprites.sprite import *
+from collections import deque
+import os
 
 
 def load_images(weapon, images, scale=0.4):
@@ -31,9 +33,10 @@ class Weapon:
                 },
                 "Melee": {
                     "Sprites": load_images("shotgun", ["m_1", "m_2"]),
-                    "Damage": 10,
+                    "Damage": 200,
                     "Speed": 100,
-                    "Accuracy": 90
+                    "Accuracy": 90,
+                    "Bullet Lifetime": 150
                 },
                 "Fire": {
                     "Sprites": load_images("shotgun", [1, 2, 3, 4, 5]),
@@ -42,7 +45,8 @@ class Weapon:
                     "Accuracy": 80,
                     "Currently in Cartridge": 1,
                     "Maximum in Cartridge": 1,
-                    "Bullet Left": 10
+                    "Bullet Left": 10,
+                    "Bullet Lifetime": 3000
                 }
             },
             "Machinegun": {
@@ -59,7 +63,8 @@ class Weapon:
                     "Accuracy": 40,
                     "Currently in Cartridge": 0,
                     "Maximum in Cartridge": 50,
-                    "Bullet Left": 0
+                    "Bullet Left": 0,
+                    "Bullet Lifetime": 5000
                 }
             }
         }
@@ -114,6 +119,8 @@ class Weapon:
                     self.current_state = "Melee"
                     self.frame_counter = 0
                     self.game.sound.shotgun_melee.play()
+                    self.create_bullet('Melee', 150)
+                    self.previous_shot = pg.time.get_ticks()
 
     def update(self):
         self.current_time = pg.time.get_ticks()
@@ -156,12 +163,14 @@ class Weapon:
     def add_bullets(self, weapon, number):
         if not self.weapon_info[weapon]["Unlocked"]:
             self.weapon_info[weapon]["Unlocked"] = True
+            self.change_weapon(weapon)
         self.weapon_info[weapon]["Fire"]["Bullet Left"] += number
 
-    def create_bullet(self):
-        weapon = self.weapon_info[self.current_weapon]["Fire"]
-        angle = self.game.player.angle + math.pi * 2
-        self.game.object_handler.add_bullet(Bullet(self.game, self.game.player.get_pos, weapon["Damage"], angle, 'player'))
+    def create_bullet(self, state='Fire', lifetime=5000):
+        weapon = self.weapon_info[self.current_weapon][state]
+        angle = self.game.player.angle + (math.pi * 2)
+        self.game.object_handler.add_bullet(Bullet(self.game, self.game.player.exact_pos,
+                                                   weapon["Damage"], angle, 'player', weapon["Bullet Lifetime"]))
 
     def change_weapon(self, weapon):
         self.current_weapon = weapon

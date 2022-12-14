@@ -36,7 +36,8 @@ class ObjectRenderer:
         health_text = self.font.render("HP: " + str(self.game.player.health) + " %", True, (255, 255, 255))
         self.screen.blit(health_text, (MARGIN, RES[1] - self.font.get_linesize() * 4.3))
 
-        pos_text = self.font.render("X: " + str(int(self.game.player.pos_x)) + " Y: " + str(int(self.game.player.pos_y)), True, (255, 255, 255))
+        pos_text = self.font.render(
+            "X: " + str(int(self.game.player.pos_x)) + " Y: " + str(int(self.game.player.pos_y)), True, (255, 255, 255))
         self.screen.blit(pos_text, (MARGIN, 0))
 
     def draw_background(self):
@@ -65,6 +66,7 @@ class ObjectRenderer:
     def load_wall_textures(self):
         return {
             1: self.get_texture('resources/textures/wall1.png'),
-            2: self.get_texture('resources/textures/wall2.jpg'),
-            3: self.get_texture('resources/textures/wall3.png')
+            2: self.get_texture('resources/textures/wall2.png'),
+            3: self.get_texture('resources/textures/wall3.png'),
+            4: self.get_texture('resources/textures/wall4.png'),
         }

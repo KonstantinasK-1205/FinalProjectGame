@@ -1,5 +1,4 @@
 import math
-import random
 
 # Game Settings
 RES = WIDTH, HEIGHT = 1280, 720
@@ -20,7 +19,7 @@ MOUSE_SENSITIVITY = 0.0002
 MOUSE_MAX_REL = 40
 
 # FLOOR COLOR
-FLOOR_COLOR = (30, 30, 30)
+FLOOR_COLOR = (34, 28, 29)
 
 # RayCasting
 FOV = math.pi / 3

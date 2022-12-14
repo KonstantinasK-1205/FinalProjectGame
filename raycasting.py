@@ -43,8 +43,8 @@ class RayCasting:
     def ray_cast(self):
         self.ray_casting_result = []
         texture_vert, texture_hor = 1, 1
-        ox, oy = self.game.player.get_pos
-        x_map, y_map = self.game.player.get_map_pos
+        ox, oy = self.game.player.exact_pos
+        x_map, y_map = self.game.player.grid_pos
 
         ray_angle = self.game.player.get_angle - HALF_FOV + 0.0001
         for ray in range(NUM_RAYS):

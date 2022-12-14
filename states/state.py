@@ -1,4 +1,5 @@
 import pygame as pg
+
 from settings import *
 
 rgb_colors = {
@@ -34,7 +35,7 @@ class State:
     def on_set(self):
         pass
 
-    def handle_events(self):
+    def handle_events(self, events):
         pass
 
     def update(self, dt):
