@@ -4,7 +4,8 @@ import math
 RES = WIDTH, HEIGHT = 1280, 720
 HALF_WIDTH = WIDTH // 2
 HALF_HEIGHT = HEIGHT // 2
-FPS = 60
+VSYNC = 1
+PRINT_FPS = 0
 
 # On mini map
 PLAYER_ANGLE = 1.5
@@ -22,7 +23,7 @@ MOUSE_MAX_REL = 40
 FLOOR_COLOR = (34, 28, 29)
 
 # RayCasting
-FOV = math.pi / 3
+FOV = 36
 HALF_FOV = FOV / 2
 NUM_RAYS = WIDTH // 2
 HALF_NUM_RAYS = NUM_RAYS // 2

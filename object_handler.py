@@ -67,6 +67,12 @@ class ObjectHandler:
                 else:
                     self.game.current_state = "Win"
 
+    def draw(self):
+        for npc in self.npc_list:
+            npc.draw()
+        for sprite in self.sprite_list:
+            sprite.draw()
+
     def handle_bullets(self):
         # Create new array in which we will store
         # index of element we remove
@@ -91,7 +97,7 @@ class ObjectHandler:
         for index, sprite in enumerate(self.sprite_list):
             # If sprite wasn't used just update it,
             # otherwise add to remove array
-            if not sprite.picked:
+            if not sprite.delete:
                 sprite.update()
             else:
                 remove.append(index)

@@ -15,7 +15,6 @@ class AnimatedSprite(Sprite):
         self.images = self.get_images(self.path)
         self.animation_time_prev = pg.time.get_ticks()
         self.animation_trigger = False
-        self.picked = False
 
     def update(self):
         super().update()
@@ -25,7 +24,7 @@ class AnimatedSprite(Sprite):
     def animate(self, images):
         if self.animation_trigger:
             images.rotate(-1)
-            self.image = images[0]
+            self.texture_path = images[0]
 
     def check_animation_time(self):
         self.animation_trigger = False
@@ -34,11 +33,11 @@ class AnimatedSprite(Sprite):
             self.animation_time_prev = time_now
             self.animation_trigger = True
 
-    @staticmethod
-    def get_images(path):
+    def get_images(self, path):
         images = deque()
         for file_name in sorted(os.listdir(path)):
             if os.path.isfile(os.path.join(path, file_name)):
-                img = pg.image.load(path + '/' + file_name).convert_alpha()
-                images.append(img)
+                texture_path = path + '/' + file_name
+                self.game.renderer.load_texture_from_file(texture_path)
+                images.append(texture_path)
         return images

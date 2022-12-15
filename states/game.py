@@ -17,13 +17,11 @@ class GameState(State):
                 self.game.current_state = "Pause"
 
     def update(self, dt):
-        self.game.raycasting.update()
         self.game.object_handler.update(dt)
         self.game.player.update(dt)
         self.game.sound.update()
 
     def draw(self):
-        self.game.object_renderer.draw_background()
-        self.game.object_renderer.render_game_objects()
+        self.game.object_handler.draw()
         self.game.weapon.draw()
-        self.game.object_renderer.draw_in_game_gui()
+        self.game.hud.draw_in_game_gui()

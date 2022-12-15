@@ -9,6 +9,10 @@ class NPC(AnimatedSprite):
                  scale=0.6, shift=0.38, animation_time=180):
         super().__init__(game, path, pos, scale, shift, animation_time)
 
+        self.width = 0.3
+        self.height = 0.6
+        self.z = -0.05
+
         # NPC base stats
         self.pain = False
         self.alive = True
@@ -37,7 +41,6 @@ class NPC(AnimatedSprite):
     def update(self):
         self.current_time = pg.time.get_ticks()
         self.check_animation_time()
-        self.get_sprite()
         self.run_logic()
 
     def run_logic(self):
@@ -50,7 +53,8 @@ class NPC(AnimatedSprite):
             elif self.ray_cast_value:
                 self.player_search_trigger = True
 
-                if self.dist < self.attack_dist:
+                dist = math.hypot(self.x - self.player.pos_x, self.y - self.player.pos_y)
+                if dist < self.attack_dist:
                     if self.current_time - self.previous_shot > self.shoot_delay * 5:
                         self.animate(self.attack_images)
                         self.attack()
@@ -124,7 +128,7 @@ class NPC(AnimatedSprite):
             if self.animation_trigger and self.frame_counter < len(self.death_images) - 1:
                 self.frame_counter += 1
                 self.death_images.rotate(-1)
-                self.image = self.death_images[0]
+                self.texture_path = self.death_images[0]
 
     # Ray casting
     def ray_cast_player_npc(self):
@@ -137,7 +141,7 @@ class NPC(AnimatedSprite):
         ox, oy = self.player.exact_pos
         x_map, y_map = self.player.grid_pos
 
-        ray_angle = self.theta
+        ray_angle = math.atan2(self.y - self.player.pos_y, self.x - self.player.pos_x)
 
         sin_a = math.sin(ray_angle)
         cos_a = math.cos(ray_angle)

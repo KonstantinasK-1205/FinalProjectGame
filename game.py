@@ -1,8 +1,8 @@
 from object_handler import *
-from object_renderer import *
+from hud import *
 from pathfinding import *
 from player import *
-from raycasting import *
+from renderer import *
 from sound import *
 from states.game import GameState
 from states.intro import IntroState
@@ -16,12 +16,14 @@ from weapon import *
 class Game:
     def __init__(self):
         pg.init()
+        pg.display.set_mode(RES, pg.DOUBLEBUF | pg.OPENGL, vsync=VSYNC)
+        pg.display.set_caption("Final Project")
 
-        self.screen = pg.display.set_mode(RES)
+        self.screen = pg.Surface((RES[0], RES[1]), pg.SRCALPHA)
         self.clock = pg.time.Clock()
-
+        self.renderer = Renderer(self)
         self.object_handler = ObjectHandler()
-        self.object_renderer = ObjectRenderer(self)
+        self.hud = Hud(self)
         self.map_lists = ["Level1", "Level2", "Level3", "Level4"]
         # self.map_lists = ["T_Level1", "T_Level2", "T_Level3"]
 
@@ -35,8 +37,9 @@ class Game:
         }
         self.current_state = "Intro"
 
-        # self.PRINTFPSEVENT = pg.USEREVENT + 1
-        # pg.time.set_timer(self.PRINTFPSEVENT, 1000)
+        self.PRINTFPSEVENT = pg.USEREVENT + 1
+        if PRINT_FPS:
+            pg.time.set_timer(self.PRINTFPSEVENT, 1000)
 
         self.hit_flash_ms = HIT_FLASH_MS
 
@@ -47,16 +50,18 @@ class Game:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.is_running = False
-            # elif event.type == self.PRINTFPSEVENT:
-            #    print(str(int(self.clock.get_fps())) + " FPS")
+            elif event.type == self.PRINTFPSEVENT:
+               print(str(int(self.clock.get_fps())) + " FPS")
             self.state[self.current_state].handle_events(event)
 
     def update(self):
-        self.dt = self.clock.tick(FPS)
+        self.dt = self.clock.tick()
 
         self.state[self.current_state].update(self.dt)
 
     def draw(self):
+        self.screen.fill((0, 0, 0, 0))
+
         self.state[self.current_state].draw()
 
         if self.hit_flash_ms < HIT_FLASH_MS:
@@ -66,23 +71,23 @@ class Game:
 
             self.hit_flash_ms = self.hit_flash_ms + self.dt
 
+        self.renderer.render()
+
         pg.display.flip()
 
     def new_game(self, level):
-        self.state[self.current_state].update(0)
-        self.state[self.current_state].draw()
-
         self.player = Player(self)
         self.object_handler = ObjectHandler()
-        self.object_renderer = ObjectRenderer(self)
+        self.hud = Hud(self)
         self.map = Map(self)
 
-        self.raycasting = RayCasting(self)
         self.sound = Sound()
         self.weapon = Weapon(self)
         self.map.get_map(level)
         self.pathfinding = PathFinding(self)
         self.object_handler.load_map(self)
+
+        self.renderer.draw_world = True
 
     def run(self):
         self.is_running = True

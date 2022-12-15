@@ -5,7 +5,9 @@ class PickupHealth(Sprite):
     def __init__(self, game, path='resources/sprites/static_sprites/pickups/health.png',
                  pos=(0, 0), scale=0.3, shift=1.1):
         super().__init__(game, path, pos, scale, shift)
-        self.picked = False
+
+        self.width = scale
+        self.height = scale
 
     def update(self):
         super().update()
@@ -17,4 +19,4 @@ class PickupHealth(Sprite):
         if d == 0:
             self.player.add_health(25)
             self.game.sound.pickup_health.play()
-            self.picked = True
+            self.delete = True

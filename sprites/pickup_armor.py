@@ -5,7 +5,9 @@ class PickupArmor(Sprite):
     def __init__(self, game, path='resources/sprites/static_sprites/pickups/armor.png',
                  pos=(0, 0), scale=0.3, shift=1.1):
         super().__init__(game, path, pos, scale, shift)
-        self.picked = False
+
+        self.width = scale
+        self.height = scale
 
     def update(self):
         super().update()
@@ -15,4 +17,4 @@ class PickupArmor(Sprite):
             self.player.add_armor(25)
             sound = self.game.sound
             sound.pickup_sound(sound.pickup_armor)
-            self.picked = True
+            self.delete = True

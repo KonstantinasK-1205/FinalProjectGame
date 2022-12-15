@@ -3,13 +3,11 @@ import pygame as pg
 from settings import *
 
 
-class ObjectRenderer:
+class Hud:
     def __init__(self, game):
         self.game = game
         self.screen = game.screen
-        self.wall_textures = self.load_wall_textures()
         self.font = pg.font.Font("resources/fonts/Font.ttf", 48)
-        self.sky_image = self.get_texture('resources/textures/sky.jpg', (WIDTH, HALF_HEIGHT))
         self.sky_offset = 0
 
     # In Game Texts
@@ -39,34 +37,3 @@ class ObjectRenderer:
         pos_text = self.font.render(
             "X: " + str(int(self.game.player.pos_x)) + " Y: " + str(int(self.game.player.pos_y)), True, (255, 255, 255))
         self.screen.blit(pos_text, (MARGIN, 0))
-
-    def draw_background(self):
-        self.sky_offset = (self.sky_offset + 4.5 * self.game.player.rel) % WIDTH
-        # Angle between 0 and 360
-        angle = math.fmod(self.game.player.angle * 180 / math.pi, 360)
-        if angle < 0:
-            angle = angle + 360
-
-        self.sky_offset = math.fmod(angle * WIDTH / 360, WIDTH)
-
-        self.screen.blit(self.sky_image, (-self.sky_offset, 0))
-        self.screen.blit(self.sky_image, (-self.sky_offset + WIDTH, 0))
-        pg.draw.rect(self.screen, FLOOR_COLOR, (0, HALF_HEIGHT, WIDTH, HEIGHT))
-
-    def render_game_objects(self):
-        list_objects = sorted(self.game.raycasting.objects_to_render, key=lambda t: t[0], reverse=True)
-        for depth, image, pos in list_objects:
-            self.screen.blit(image, pos)
-
-    @staticmethod
-    def get_texture(path, res=(TEXTURE_SIZE, TEXTURE_SIZE)):
-        texture = pg.image.load(path).convert_alpha()
-        return pg.transform.scale(texture, res)
-
-    def load_wall_textures(self):
-        return {
-            1: self.get_texture('resources/textures/wall1.png'),
-            2: self.get_texture('resources/textures/wall2.png'),
-            3: self.get_texture('resources/textures/wall3.png'),
-            4: self.get_texture('resources/textures/wall4.png'),
-        }
