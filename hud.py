@@ -55,10 +55,11 @@ class Hud:
         armor_text = self.game.font_small.render(str(self.game.player.armor), False, (0, 0, 64))
         self.screen.blit(armor_text, (self.armor_icon.get_width() + 5 + armor_bar_width / 2 - armor_text.get_width() / 2, RES[1] - (self.armor_icon.get_height() * 2)))
 
-    def draw_enemy_left(self):
-        killed_text = self.game.font_small.render("Enemy left: " + str(self.game.map.enemy_amount - self.game.object_handler.killed),
-                                       True, (255, 255, 255))
-        self.screen.blit(killed_text, (RES[0] - killed_text.get_size()[0], RES[1] - (self.armor_icon.get_height() * 2)))
+    def draw_enemy_stats(self):
+        killed_text = self.game.font_small.render("Enemies killed: " + str(self.game.object_handler.killed), True, (255, 255, 255))
+        self.screen.blit(killed_text, (RES[0] - killed_text.get_size()[0], RES[1] - (self.armor_icon.get_height() * 3)))
+        left_text = self.game.font_small.render("Enemies left: " + str(self.game.map.enemy_amount - self.game.object_handler.killed), True, (255, 255, 255))
+        self.screen.blit(left_text, (RES[0] - killed_text.get_size()[0], RES[1] - (self.armor_icon.get_height() * 2)))
 
     def draw_in_game_gui(self):
         self.draw_armor_bar()

@@ -63,4 +63,4 @@ class GameState(State):
                            (self.margin + enemy.exact_pos[0] * self.size, enemy.exact_pos[1] * self.size), 4)
         pg.draw.circle(self.screen, (0, 255, 0),
                        (self.margin + self.game.player.exact_pos[0] * self.size, self.game.player.exact_pos[1] * self.size), 4)
-        self.game.hud.draw_enemy_left()
+        self.game.hud.draw_enemy_stats()

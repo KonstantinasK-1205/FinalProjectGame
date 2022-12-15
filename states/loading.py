@@ -27,12 +27,12 @@ class LoadingState(State):
 
         if self.elapsed_ms < STATE_WAIT_MS:
             dot_count = 1 + self.elapsed_ms // 200 % 3
-            self.title_text = "Loading level" + "." * dot_count
+            self.title_text = "Loading " + self.game.map_lists[0] + "." * dot_count
             self.update_text()
         else:
             self.title_text = ""
             self.text = [
-                "Loading complete!",
+                self.game.map_lists[0] + " loaded!",
                 "Press Space or Left Mouse Button to continue..."
             ]
             self.update_text()
