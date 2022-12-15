@@ -16,7 +16,7 @@ class Soldier(NPC):
         self.damage = random.randint(15, 20)
         self.attack_dist = random.randint(3, 5)
         self.shoot_delay = 250
-        self.bullet_lifetime = 3000
+        self.bullet_lifetime = 600
 
         self.size = 50
         self.ray_cast_value = False

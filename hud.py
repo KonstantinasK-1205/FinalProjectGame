@@ -23,9 +23,11 @@ class Hud:
 
         health_bar_bg = pg.Surface((health_bar_width, health_bar_height), pg.SRCALPHA)
         health_bar_bg.fill((128, 128, 128))
+        health_bar_bg.set_alpha(20)
 
         health_bar_fg = pg.Surface((health_bar_hp, health_bar_height), pg.SRCALPHA)
         health_bar_fg.fill((6, 100, 32))
+        health_bar_fg.set_alpha(200)
 
         self.screen.blit(self.health_icon, (0, RES[1] - self.health_icon.get_height()))
         self.screen.blit(health_bar_bg, (self.health_icon.get_width() + 5, RES[1] - self.health_icon.get_height()))
@@ -38,10 +40,12 @@ class Hud:
         armor_bar_hp = armor_pixel_size * self.game.player.armor
 
         armor_bar_bg = pg.Surface((armor_bar_width, armor_bar_height), pg.SRCALPHA)
-        armor_bar_bg.fill((128, 128, 128))
+        armor_bar_bg.fill((255, 255, 255))
+        armor_bar_bg.set_alpha(20)
 
         armor_bar_fg = pg.Surface((armor_bar_hp, armor_bar_height), pg.SRCALPHA)
-        armor_bar_fg.fill((6, 100, 32))
+        armor_bar_fg.fill((12, 32, 100))
+        armor_bar_fg.set_alpha(200)
 
         self.screen.blit(self.armor_icon, (0, RES[1] - (self.armor_icon.get_height() * 2)))
         self.screen.blit(armor_bar_bg, (self.armor_icon.get_width() + 5, RES[1] - (self.armor_icon.get_height() * 2)))

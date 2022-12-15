@@ -28,9 +28,10 @@ class GameState(State):
     def draw(self):
         self.game.object_handler.draw()
         self.game.weapon.draw()
-        self.game.hud.draw_in_game_gui()
         if self.in_map:
             self.game.state["Game"].draw_mini_map()
+        else:
+            self.game.hud.draw_in_game_gui()
 
     def init_mini_map(self):
         world_size = self.game.map.get_size()
@@ -40,12 +41,15 @@ class GameState(State):
         self.size = [(RES[0] - (0.05 * RES[0])) / world_size[0],
                     (RES[1] - (0.05 * RES[1])) / world_size[1]]
         self.size = min(self.size[0], self.size[1])
-        self.margin = (RES[0] - (world_size[0] * self.size) / 2)
+        map_width = RES[0] - (world_size[0] * self.size)
+        self.margin = map_width / 2
+        self.previous_pos_x = self.margin
 
         for position, wall in world_map.items():
             wall_column = pg.Surface((self.size, self.size))
             wall_column.fill((0, 0, 0))
-            self.mini_map.append((wall_column, (position[0] * self.size, position[1] * self.size)))
+            self.mini_map.append((wall_column, (self.previous_pos_x, position[1] * self.size)))
+            self.previous_pos_x = self.margin + position[0] * self.size
 
     def draw_mini_map(self):
         surface = pg.Surface((RES[0], RES[1]), pg.SRCALPHA)
@@ -55,7 +59,7 @@ class GameState(State):
             self.screen.blit(image, pos)
         for enemy in self.game.object_handler.alive_npc_list:
             pg.draw.circle(self.screen, (255, 0, 0),
-                           (enemy.exact_pos[0] * self.size, enemy.exact_pos[1] * self.size), 4)
+                           (self.margin + enemy.exact_pos[0] * self.size, enemy.exact_pos[1] * self.size), 4)
         pg.draw.circle(self.screen, (0, 255, 0),
-                       (self.game.player.exact_pos[0] * self.size, self.game.player.exact_pos[1] * self.size), 4)
+                       (self.margin + self.game.player.exact_pos[0] * self.size, self.game.player.exact_pos[1] * self.size), 4)
         self.game.hud.draw_enemy_left()

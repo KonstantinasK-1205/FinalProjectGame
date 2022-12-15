@@ -3,6 +3,7 @@ from settings import *
 import random
 import pygame as pg
 
+
 class Reaper(NPC):
     def __init__(self, game, path='resources/sprites/npc/reaper/0.png', pos=(3, 3),
                  scale=0.6, shift=0.38, animation_time=180):
@@ -18,6 +19,8 @@ class Reaper(NPC):
         self.shoot_delay = 80
         self.bullet_lifetime = 150
         self.damage_reduction = 180
+        self.width = 0.6
+        self.height = 0.6
 
         # NPC sound variables
         self.npc_pain = self.game.sound.npc_reaper_pain
@@ -28,7 +31,7 @@ class Reaper(NPC):
         # NPC animation variables
         self.teleportation_images = self.get_images(self.path + '/teleportation')
 
-        self.size = 20
+        self.size = 35
         self.ray_cast_value = False
         self.player_search_trigger = False
         self.angle = 0
@@ -74,7 +77,7 @@ class Reaper(NPC):
             if self.animation_trigger and self.teleportation_counter < len(self.teleportation_images) - 1:
                 self.teleportation_counter += 1
                 self.teleportation_images.rotate(-1)
-                self.image = self.teleportation_images[0]
+                self.texture_path = self.teleportation_images[0]
 
             if self.teleportation_counter == len(self.teleportation_images) - 1:
                 self.ready_for_teleportation = True
