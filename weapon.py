@@ -46,7 +46,8 @@ class Weapon:
                     "Currently in Cartridge": 1,
                     "Maximum in Cartridge": 1,
                     "Bullet Left": 10,
-                    "Bullet Lifetime": 3000
+                    "Bullet Lifetime": 600,
+                    "Sound": self.game.sound.shotgun_fire
                 }
             },
             "Machinegun": {
@@ -64,7 +65,8 @@ class Weapon:
                     "Currently in Cartridge": 0,
                     "Maximum in Cartridge": 50,
                     "Bullet Left": 0,
-                    "Bullet Lifetime": 5000
+                    "Bullet Lifetime": 3000,
+                    "Sound": self.game.sound.machgun_fire
                 }
             }
         }
@@ -105,7 +107,7 @@ class Weapon:
                         weapon["Currently in Cartridge"] -= 1
                         if weapon["Currently in Cartridge"] <= 0:
                             self.reload()
-                        self.game.sound.shotgun_fire.play()
+                        weapon["Sound"].play()
                         self.create_bullet()
                         self.previous_shot = pg.time.get_ticks()
                     else:

@@ -8,34 +8,25 @@ class Sound:
         self.sound_in_queue = []
 
         # Weapon Sounds
+        self.bullet_wall = pg.mixer.Sound(self.path + 'bullet_to_wall.wav')
+        self.machgun_fire = pg.mixer.Sound(self.path + 'weapon_machinegun_fire.wav')
         self.shotgun_fire = pg.mixer.Sound(self.path + 'weapon_shotgun_fire.wav')
         self.shotgun_empty = pg.mixer.Sound(self.path + 'weapon_shotgun_empty.wav')
         self.shotgun_melee = pg.mixer.Sound(self.path + 'weapon_shotgun_melee.wav')
 
-        # npc Sounds
-        self.npc_pain = [
-            pg.mixer.Sound(self.path + 'npc_pain_1.wav'),
-            pg.mixer.Sound(self.path + 'npc_pain_2.wav'),
-            pg.mixer.Sound(self.path + 'npc_pain_3.wav')
-        ]
-        self.npc_death = [
-            pg.mixer.Sound(self.path + 'npc_death_1.wav'),
-            pg.mixer.Sound(self.path + 'npc_death_2.wav'),
-            pg.mixer.Sound(self.path + 'npc_death_3.wav'),
-            pg.mixer.Sound(self.path + 'npc_death_4.wav')
-        ]
-        self.npc_attack = [
-            pg.mixer.Sound(self.path + 'npc_attack_1.wav'),
-            pg.mixer.Sound(self.path + 'npc_attack_2.wav')
-        ]
+        # NPC Sounds
+        self.npc_soldier_pain = pg.mixer.Sound(self.path + 'npc_soldier_pain.wav')
+        self.npc_soldier_death = pg.mixer.Sound(self.path + 'npc_soldier_death.wav')
+        self.npc_soldier_attack = pg.mixer.Sound(self.path + 'npc_soldier_attack.wav')
+
+        self.npc_reaper_pain = pg.mixer.Sound(self.path + 'npc_reaper_pain.wav')
+        self.npc_reaper_death = pg.mixer.Sound(self.path + 'npc_reaper_death.wav')
+        self.npc_reaper_attack = pg.mixer.Sound(self.path + 'npc_reaper_attack.wav')
+        self.npc_reaper_teleportation = pg.mixer.Sound(self.path + 'npc_reaper_teleportation.wav')
 
         # Player Sounds
-        self.player_pain = [
-            pg.mixer.Sound(self.path + 'player_pain_1.wav'),
-            pg.mixer.Sound(self.path + 'player_pain_2.wav')
-        ]
+        self.player_pain = pg.mixer.Sound(self.path + 'player_pain_1.wav')
         self.buff_damage = pg.mixer.Sound(self.path + 'buff_damage.wav')
-        self.player_healed = pg.mixer.Sound(self.path + 'player_healed.wav')
 
         # Pickup Sounds
         self.pickup_ammo = pg.mixer.Sound(self.path + 'pickup_ammo.wav')

@@ -19,6 +19,7 @@ class NPC(AnimatedSprite):
         self.health = 100
         self.speed = 0.03
         self.damage = 0
+        self.damage_reduction = 0
         self.attack_dist = 0
         self.shoot_delay = 250
         self.bullet_lifetime = 0
@@ -30,6 +31,11 @@ class NPC(AnimatedSprite):
         self.idle_images = self.get_images(self.path + '/idle')
         self.pain_images = self.get_images(self.path + '/pain')
         self.walk_images = self.get_images(self.path + '/walk')
+
+        # Sounds
+        self.npc_attack = self.game.sound.npc_soldier_attack
+        self.npc_pain = self.game.sound.npc_soldier_pain
+        self.npc_death = self.game.sound.npc_soldier_death
 
         self.size = 50
         self.ray_cast_value = False
@@ -75,8 +81,7 @@ class NPC(AnimatedSprite):
     def attack(self):
         if self.animation_trigger:
             self.create_bullet()
-            self.game.sound.play_sound(self.game.sound.npc_attack[random.randint(0, 1)],
-                                       self.grid_pos, self.player.exact_pos)
+            self.game.sound.play_sound(self.npc_attack, self.grid_pos, self.player.exact_pos)
             self.previous_shot = pg.time.get_ticks()
 
     def create_bullet(self):
@@ -92,16 +97,16 @@ class NPC(AnimatedSprite):
         self.game.object_handler.add_bullet(Bullet(self.game, self.grid_pos,
                                                    damage, angle, 'enemy', self.bullet_lifetime))
 
-    def apply_damage(self, damage):
+    def apply_damage(self, damage, weapon):
         self.pain = True
+        if weapon == ["Shotgun", "Melee"] and self.damage_reduction < damage:
+            damage -= self.damage_reduction
         self.health -= damage
         if self.health > 1:
-            self.game.sound.play_sound(self.game.sound.npc_pain[random.randint(0, 2)],
-                                       self.grid_pos, self.player.grid_pos)
+            self.game.sound.play_sound(self.npc_pain, self.grid_pos, self.player.grid_pos)
         else:
             self.alive = False
-            self.game.sound.play_sound(self.game.sound.npc_death[random.randint(0, 3)],
-                                       self.grid_pos, self.player.grid_pos)
+            self.game.sound.play_sound(self.npc_death, self.grid_pos, self.player.grid_pos)
 
     # Movement
     def movement(self):

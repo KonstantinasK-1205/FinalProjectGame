@@ -18,14 +18,6 @@ class Soldier(NPC):
         self.shoot_delay = 250
         self.bullet_lifetime = 3000
 
-        # NPC animation variables
-        self.frame_counter = 0
-        self.attack_images = self.get_images(self.path + '/attack')
-        self.death_images = self.get_images(self.path + '/death')
-        self.idle_images = self.get_images(self.path + '/idle')
-        self.pain_images = self.get_images(self.path + '/pain')
-        self.walk_images = self.get_images(self.path + '/walk')
-
         self.size = 50
         self.ray_cast_value = False
         self.player_search_trigger = False
