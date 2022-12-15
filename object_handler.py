@@ -13,7 +13,6 @@ class ObjectHandler:
 
         self.game = None
         self.gameMap = None
-        self.map_size = None
 
         self.dmgIncreased = False
 
@@ -23,7 +22,6 @@ class ObjectHandler:
     def load_map(self, game):
         self.game = game
         self.gameMap = Map(game)
-        self.map_size = self.gameMap.get_size()
 
     def kill_reward(self):
         reward = self.killed

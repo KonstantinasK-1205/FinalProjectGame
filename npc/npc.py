@@ -168,7 +168,7 @@ class NPC(AnimatedSprite):
             if tile_hor == self.grid_pos:
                 player_dist_h = depth_hor
                 break
-            if tile_hor in self.game.map.world_map:
+            if self.game.map.is_wall(x_hor, y_hor):
                 wall_dist_h = depth_hor
                 break
             x_hor += dx
@@ -189,7 +189,7 @@ class NPC(AnimatedSprite):
             if tile_vert == self.grid_pos:
                 player_dist_v = depth_vert
                 break
-            if tile_vert in self.game.map.world_map:
+            if self.game.map.is_wall(x_vert, y_vert):
                 wall_dist_v = depth_vert
                 break
             x_vert += dx

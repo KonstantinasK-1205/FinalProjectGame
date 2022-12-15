@@ -4,8 +4,12 @@ from states.state import *
 class IntroState(State):
     def __init__(self, game):
         super().__init__(game)
-        self.title_surface = create_text_surface(self.font, "Welcome To Die!")
-        self.continue_surface = create_text_surface(self.font, "Press mouse to continue")
+
+        self.title_text = "Welcome to Final Project!"
+        self.text.append("")
+        self.text.append("You must kill all enemies to proceed to the next level.")
+        self.text.append("Press Space or Left Mouse Button to start!")
+        self.update_text()
 
     def on_set(self):
         pass
@@ -24,6 +28,4 @@ class IntroState(State):
 
     def draw(self):
         pg.draw.rect(self.screen, (44, 44, 44), pg.Rect(0, 0, RES[0], RES[1]))
-        self.screen.blit(self.title_surface[0], (self.title_surface[1][0],
-                                                 self.title_surface[1][1] - self.title_surface[0].get_height()))
-        self.screen.blit(self.continue_surface[0], (self.continue_surface[1][0], self.continue_surface[1][1]))
+        self.draw_text()

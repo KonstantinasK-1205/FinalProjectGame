@@ -35,7 +35,6 @@ class GameState(State):
 
     def init_mini_map(self):
         world_size = self.game.map.get_size()
-        world_map = self.game.map.world_map
         self.mini_map = []
 
         self.size = [(RES[0] - (0.05 * RES[0])) / world_size[0],
@@ -43,13 +42,15 @@ class GameState(State):
         self.size = min(self.size[0], self.size[1])
         map_width = RES[0] - (world_size[0] * self.size)
         self.margin = map_width / 2
-        self.previous_pos_x = self.margin
 
-        for position, wall in world_map.items():
-            wall_column = pg.Surface((self.size, self.size))
-            wall_column.fill((0, 0, 0))
-            self.mini_map.append((wall_column, (self.previous_pos_x, position[1] * self.size)))
-            self.previous_pos_x = self.margin + position[0] * self.size
+        for i in range(self.game.map.height):
+            for j in range(self.game.map.width):
+                if not self.game.map.is_wall(j, i):
+                    continue
+
+                wall_column = pg.Surface((self.size + 1, self.size + 1))
+                wall_column.fill((0, 0, 0))
+                self.mini_map.append((wall_column, (self.margin + j * self.size, i * self.size)))
 
     def draw_mini_map(self):
         surface = pg.Surface((RES[0], RES[1]), pg.SRCALPHA)

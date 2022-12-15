@@ -4,8 +4,10 @@ from states.state import *
 class PauseState(State):
     def __init__(self, game):
         super().__init__(game)
-        self.pause_surface = create_text_surface(self.font, "Game Paused!")
-        self.continue_surface = create_text_surface(self.font, "Press mouse to continue")
+
+        self.title_text = "Game Paused!"
+        self.text.append("Press Space or Left Mouse Button to resume...")
+        self.update_text()
 
     def on_set(self):
         pg.mouse.set_visible(True)
@@ -24,6 +26,4 @@ class PauseState(State):
 
     def draw(self):
         pg.draw.rect(self.screen, (44, 44, 44), pg.Rect(0, 0, RES[0], RES[1]))
-        self.screen.blit(self.pause_surface[0], (self.pause_surface[1][0],
-                                                 self.pause_surface[1][1] - self.pause_surface[0].get_height()))
-        self.screen.blit(self.continue_surface[0], (self.continue_surface[1][0], self.continue_surface[1][1]))
+        self.draw_text()
