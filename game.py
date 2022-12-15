@@ -31,6 +31,9 @@ class Game:
         self.font = pg.font.Font("resources/fonts/Font.ttf", 48)
         self.font_small = pg.font.Font("resources/fonts/Font.ttf", 32)
 
+        self.font = pg.font.Font("resources/fonts/Font.ttf", 48)
+        self.font_small = pg.font.Font("resources/fonts/Font.ttf", 32)
+
         self.state = {
             "Intro": IntroState(self),
             "Loading": LoadingState(self),
