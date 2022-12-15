@@ -63,7 +63,7 @@ class Map:
             self.map_loaded = True
 
     def is_wall(self, x, y):
-        return (x, y) in self.world_map
+        return (int(x), int(y)) in self.world_map
 
     def get_enemy_amount(self):
         return self.enemy_amount
