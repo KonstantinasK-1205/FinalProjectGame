@@ -7,8 +7,6 @@ class Hud:
     def __init__(self, game):
         self.game = game
         self.screen = game.screen
-        self.font = pg.font.Font("resources/fonts/Font.ttf", 32)
-        self.sky_offset = 0
 
         # GUI
         # Health bar
@@ -33,6 +31,9 @@ class Hud:
         self.screen.blit(health_bar_bg, (self.health_icon.get_width() + 5, RES[1] - self.health_icon.get_height()))
         self.screen.blit(health_bar_fg, (self.health_icon.get_width() + 5, RES[1] - self.health_icon.get_height()))
 
+        health_text = self.game.font_small.render(str(self.game.player.health), False, (0, 64, 0))
+        self.screen.blit(health_text, (self.health_icon.get_width() + 5 + health_bar_width / 2 - health_text.get_width() / 2, RES[1] - self.health_icon.get_height()))
+
     def draw_armor_bar(self):
         armor_bar_width = RES[0] / 8
         armor_bar_height = RES[1] / 25
@@ -51,17 +52,21 @@ class Hud:
         self.screen.blit(armor_bar_bg, (self.armor_icon.get_width() + 5, RES[1] - (self.armor_icon.get_height() * 2)))
         self.screen.blit(armor_bar_fg, (self.armor_icon.get_width() + 5, RES[1] - (self.armor_icon.get_height() * 2)))
 
-    def draw_enemy_left(self):
-        killed_text = self.font.render("Enemy left: " + str(self.game.map.enemy_amount - self.game.object_handler.killed),
-                                       True, (255, 255, 255))
-        self.screen.blit(killed_text, (RES[0] - killed_text.get_size()[0], RES[1] - (self.armor_icon.get_height() * 2)))
+        armor_text = self.game.font_small.render(str(self.game.player.armor), False, (0, 0, 64))
+        self.screen.blit(armor_text, (self.armor_icon.get_width() + 5 + armor_bar_width / 2 - armor_text.get_width() / 2, RES[1] - (self.armor_icon.get_height() * 2)))
+
+    def draw_enemy_stats(self):
+        killed_text = self.game.font_small.render("Enemies killed: " + str(self.game.object_handler.killed), True, (255, 255, 255))
+        self.screen.blit(killed_text, (RES[0] - killed_text.get_size()[0], RES[1] - (self.armor_icon.get_height() * 3)))
+        left_text = self.game.font_small.render("Enemies left: " + str(self.game.map.enemy_amount - self.game.object_handler.killed), True, (255, 255, 255))
+        self.screen.blit(left_text, (RES[0] - killed_text.get_size()[0], RES[1] - (self.armor_icon.get_height() * 2)))
 
     def draw_in_game_gui(self):
         self.draw_armor_bar()
         self.draw_health_bar()
 
         # Draw Bullet amount
-        total_bullet = self.font.render("Bullet: " + str(self.game.weapon.get_cartridge_bullet_left()) +
+        total_bullet = self.game.font_small.render("Ammo: " + str(self.game.weapon.get_cartridge_bullet_left()) +
                                         " / " + str(self.game.weapon.get_total_bullet_left()), True, (255, 255, 255))
         self.screen.blit(total_bullet, (0, RES[1] - (self.armor_icon.get_height() * 3)))
 
@@ -73,27 +78,27 @@ class Hud:
     # In Game Texts
     def draw_old_in_game_gui(self):
         # Draw Killed Amount
-        killed_text = self.font.render(
+        killed_text = self.game.font_small.render(
             "Enemy left: " + str(self.game.map.enemy_amount - self.game.object_handler.killed), True, (255, 255, 255))
-        self.screen.blit(killed_text, (RES[0] - killed_text.get_size()[0], RES[1] - self.font.get_linesize()))
+        self.screen.blit(killed_text, (RES[0] - killed_text.get_size()[0], RES[1] - self.game.font_small.get_linesize()))
 
         # Draw Killed Amount
-        killed_text = self.font.render("Killed: " + str(self.game.object_handler.killed), True, (255, 255, 255))
-        self.screen.blit(killed_text, (MARGIN, RES[1] - self.font.get_linesize()))
+        killed_text = self.game.font_small.render("Killed: " + str(self.game.object_handler.killed), True, (255, 255, 255))
+        self.screen.blit(killed_text, (MARGIN, RES[1] - self.game.font_small.get_linesize()))
 
         # Draw Bullet amount
-        total_bullet = self.font.render("Bullet: " + str(self.game.weapon.get_cartridge_bullet_left()) +
+        total_bullet = self.game.font_small.render("Bullet: " + str(self.game.weapon.get_cartridge_bullet_left()) +
                                         " / " + str(self.game.weapon.get_total_bullet_left()), True, (255, 255, 255))
-        self.screen.blit(total_bullet, (MARGIN, RES[1] - self.font.get_linesize() * 2.1))
+        self.screen.blit(total_bullet, (MARGIN, RES[1] - self.game.font_small.get_linesize() * 2.1))
 
         # Draw Armor left amount
-        armor_text = self.font.render("Armor: " + str(self.game.player.armor), True, (255, 255, 255))
-        self.screen.blit(armor_text, (MARGIN, RES[1] - self.font.get_linesize() * 3.2))
+        armor_text = self.game.font_small.render("Armor: " + str(self.game.player.armor), True, (255, 255, 255))
+        self.screen.blit(armor_text, (MARGIN, RES[1] - self.game.font_small.get_linesize() * 3.2))
 
         # Draw HP
-        health_text = self.font.render("HP: " + str(self.game.player.health) + " %", True, (255, 255, 255))
-        self.screen.blit(health_text, (MARGIN, RES[1] - self.font.get_linesize() * 4.3))
+        health_text = self.game.font_small.render("HP: " + str(self.game.player.health) + " %", True, (255, 255, 255))
+        self.screen.blit(health_text, (MARGIN, RES[1] - self.game.font_small.get_linesize() * 4.3))
 
-        pos_text = self.font.render(
+        pos_text = self.game.font_small.render(
             "X: " + str(int(self.game.player.pos_x)) + " Y: " + str(int(self.game.player.pos_y)), True, (255, 255, 255))
         self.screen.blit(pos_text, (MARGIN, 0))

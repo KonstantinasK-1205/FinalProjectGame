@@ -1,17 +1,16 @@
 from Bullet import *
 from settings import *
-from sprites.animated_sprite import AnimatedSprite
+from sprites.sprite import Sprite
 import random
 
 
-class NPC(AnimatedSprite):
-    def __init__(self, game, path='resources/sprites/npc/soldier/0.png', pos=(3, 3),
-                 scale=0.6, shift=0.38, animation_time=180):
-        super().__init__(game, path, pos, scale, shift, animation_time)
+class NPC(Sprite):
+    def __init__(self, game, pos, scale=0.6):
+        super().__init__(game, pos, scale)
 
+        self.z = 0
         self.width = 0.3
         self.height = 0.6
-        self.z = -0.05
 
         # NPC base stats
         self.pain = False
@@ -21,16 +20,44 @@ class NPC(AnimatedSprite):
         self.damage = 0
         self.damage_reduction = 0
         self.attack_dist = 0
-        self.shoot_delay = 250
         self.bullet_lifetime = 0
 
         # NPC animation variables
-        self.frame_counter = 0
-        self.attack_images = self.get_images(self.path + '/attack')
-        self.death_images = self.get_images(self.path + '/death')
-        self.idle_images = self.get_images(self.path + '/idle')
-        self.pain_images = self.get_images(self.path + '/pain')
-        self.walk_images = self.get_images(self.path + '/walk')
+        animation_path = "resources/sprites/npc/soldier/"
+        self.current_animation = "Idle"
+        self.animations = {
+            "Idle": {
+                "Frames": self.load_animation_textures(animation_path + "/idle"),
+                "Counter": 0,
+                "Animation Speed": 180,
+                "Animation Completed": False,
+            },
+            "Walk": {
+                "Frames": self.load_animation_textures(animation_path + "/walk"),
+                "Counter": 0,
+                "Animation Speed": 180,
+                "Animation Completed": False,
+            },
+            "Attack": {
+                "Frames": self.load_animation_textures(animation_path + "/attack"),
+                "Counter": 0,
+                "Animation Speed": 800,
+                "Attack Speed": 180,
+                "Animation Completed": False,
+            },
+            "Pain": {
+                "Frames": self.load_animation_textures(animation_path + "/pain"),
+                "Counter": 0,
+                "Animation Speed": 180,
+                "Animation Completed": False,
+            },
+            "Death": {
+                "Frames": self.load_animation_textures(animation_path + "/death"),
+                "Counter": 0,
+                "Animation Speed": 180,
+                "Animation Completed": False,
+            }
+        }
 
         # Sounds
         self.npc_attack = self.game.sound.npc_soldier_attack
@@ -61,25 +88,27 @@ class NPC(AnimatedSprite):
 
                 dist = math.hypot(self.x - self.player.pos_x, self.y - self.player.pos_y)
                 if dist < self.attack_dist:
-                    if self.current_time - self.previous_shot > self.shoot_delay * 5:
-                        self.animate(self.attack_images)
+                    if self.current_time - self.previous_shot > self.animations["Attack"]["Attack Speed"]:
+                        self.current_animation = "Attack"
+                        self.animate()
                         self.attack()
                 else:
-                    self.animate(self.walk_images)
+                    self.current_animation = "Walk"
+                    self.animate()
                     self.movement()
-
             elif self.player_search_trigger:
-                self.animate(self.walk_images)
+                self.current_animation = "Walk"
+                self.animate()
                 self.movement()
-
             else:
-                self.animate(self.idle_images)
+                self.current_animation = "Idle"
+                self.animate()
         else:
             self.animate_death()
 
     # Attack
     def attack(self):
-        if self.animation_trigger:
+        if self.animations[self.current_animation]["Animation Completed"]:
             self.create_bullet()
             self.game.sound.play_sound(self.npc_attack, self.grid_pos, self.player.exact_pos)
             self.previous_shot = pg.time.get_ticks()
@@ -106,6 +135,7 @@ class NPC(AnimatedSprite):
             self.game.sound.play_sound(self.npc_pain, self.grid_pos, self.player.grid_pos)
         else:
             self.alive = False
+            self.current_animation = "Death"
             self.game.sound.play_sound(self.npc_death, self.grid_pos, self.player.grid_pos)
 
     # Movement
@@ -124,16 +154,18 @@ class NPC(AnimatedSprite):
 
     # Animations
     def animate_pain(self):
-        self.animate(self.pain_images)
-        if self.animation_trigger:
+        self.current_animation = "Pain"
+        self.animate()
+        if self.animations[self.current_animation]["Animation Completed"]:
             self.pain = False
 
     def animate_death(self):
+        animation = self.animations[self.current_animation]
         if self.is_dead:
-            if self.animation_trigger and self.frame_counter < len(self.death_images) - 1:
-                self.frame_counter += 1
-                self.death_images.rotate(-1)
-                self.texture_path = self.death_images[0]
+            if animation["Animation Completed"] and animation["Counter"] < len(animation["Frames"]) - 1:
+                animation["Counter"] += 1
+                animation["Frames"].rotate(-1)
+                self.texture_path = animation["Frames"][0]
 
     # Ray casting
     def ray_cast_player_npc(self):
@@ -168,7 +200,7 @@ class NPC(AnimatedSprite):
             if tile_hor == self.grid_pos:
                 player_dist_h = depth_hor
                 break
-            if tile_hor in self.game.map.world_map:
+            if self.game.map.is_wall(x_hor, y_hor):
                 wall_dist_h = depth_hor
                 break
             x_hor += dx
@@ -189,7 +221,7 @@ class NPC(AnimatedSprite):
             if tile_vert == self.grid_pos:
                 player_dist_v = depth_vert
                 break
-            if tile_vert in self.game.map.world_map:
+            if self.game.map.is_wall(x_vert, y_vert):
                 wall_dist_v = depth_vert
                 break
             x_vert += dx

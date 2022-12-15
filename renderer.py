@@ -172,12 +172,12 @@ class Renderer:
 
         glBegin(GL_QUADS)
         glTexCoord2f(0, 0)
-        glVertex3f(0, 0, self.game.map.get_size()[1] + 1)
-        glTexCoord2f(self.game.map.get_size()[0] + 1, 0)
-        glVertex3f(self.game.map.get_size()[0] + 1, 0, self.game.map.get_size()[1] + 1)
-        glTexCoord2f(self.game.map.get_size()[0] + 1, self.game.map.get_size()[1] + 1)
-        glVertex3f(self.game.map.get_size()[0] + 1, 0, 0)
-        glTexCoord2f(0, self.game.map.get_size()[1] + 1)
+        glVertex3f(0, 0, self.game.map.get_size()[1])
+        glTexCoord2f(self.game.map.get_size()[0], 0)
+        glVertex3f(self.game.map.get_size()[0], 0, self.game.map.get_size()[1])
+        glTexCoord2f(self.game.map.get_size()[0], self.game.map.get_size()[1])
+        glVertex3f(self.game.map.get_size()[0], 0, 0)
+        glTexCoord2f(0, self.game.map.get_size()[1] )
         glVertex3f(0, 0, 0)
         glEnd()
 
@@ -188,12 +188,12 @@ class Renderer:
         glTexCoordPointer(2, GL_FLOAT, 5 * 4, ctypes.c_void_p(0))
         glVertexPointer(3, GL_FLOAT, 5 * 4, ctypes.c_void_p(2 * 4))
 
-        for i in range(self.game.map.get_size()[1] + 1):
-            for j in range(self.game.map.get_size()[0] + 1):
+        for i in range(self.game.map.height):
+            for j in range(self.game.map.width):
                 if not self.game.map.is_wall(j, i):
                     continue
 
-                texture_index = self.game.map.world_map[(j, i)]
+                texture_index = self.game.map.data[j + i * self.game.map.width]
                 glBindTexture(GL_TEXTURE_2D, self.textures["resources/textures/wall" + str(texture_index) + ".png"])
 
                 glPushMatrix()

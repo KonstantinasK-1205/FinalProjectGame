@@ -39,9 +39,9 @@ class Player:
                     self.game.state["Game"].in_map = True
 
             if event.key == pg.K_EQUALS:
-                self.add_health(1)
+                self.add_health(50)
             if event.key == pg.K_MINUS:
-                self.apply_damage(1)
+                self.apply_damage(25)
 
         elif event.type == pg.KEYUP:
             if event.key == pg.K_w:

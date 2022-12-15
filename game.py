@@ -26,7 +26,10 @@ class Game:
         self.object_handler = ObjectHandler()
         self.hud = Hud(self)
         self.map_lists = ["Level1", "Level2", "Level3", "Level4"]
-        # self.map_lists = ["T_Level1", "T_Level2", "T_Level3"]
+        #self.map_lists = ["T_Level1"]
+
+        self.font = pg.font.Font("resources/fonts/Font.ttf", 48)
+        self.font_small = pg.font.Font("resources/fonts/Font.ttf", 32)
 
         self.state = {
             "Intro": IntroState(self),

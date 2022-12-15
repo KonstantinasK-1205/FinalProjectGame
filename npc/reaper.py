@@ -5,16 +5,15 @@ import pygame as pg
 
 
 class Reaper(NPC):
-    def __init__(self, game, path='resources/sprites/npc/reaper/0.png', pos=(3, 3),
-                 scale=0.6, shift=0.38, animation_time=180):
-        super().__init__(game, path, pos, scale, shift, animation_time)
+    def __init__(self, game, pos, scale=0.6):
+        super().__init__(game, pos, scale)
 
         # NPC base stats
         self.pain = False
         self.alive = True
         self.health = 240
         self.speed = 0.03
-        self.damage = random.randint(21, 25)
+        self.damage = random.randint(7, 11)
         self.attack_dist = 1
         self.shoot_delay = 80
         self.bullet_lifetime = 150
@@ -22,14 +21,54 @@ class Reaper(NPC):
         self.width = 0.6
         self.height = 0.6
 
+        # NPC animation variables
+        animation_path = "resources/sprites/npc/reaper/"
+        self.current_animation = "Idle"
+        self.animations = {
+            "Idle": {
+                "Frames": self.load_animation_textures(animation_path + "/idle"),
+                "Counter": 0,
+                "Animation Speed": 180,
+                "Animation Completed": False,
+            },
+            "Walk": {
+                "Frames": self.load_animation_textures(animation_path + "/walk"),
+                "Counter": 0,
+                "Animation Speed": 180,
+                "Animation Completed": False,
+            },
+            "Attack": {
+                "Frames": self.load_animation_textures(animation_path + "/attack"),
+                "Counter": 0,
+                "Animation Speed": 250,
+                "Attack Speed": 250,
+                "Animation Completed": False,
+            },
+            "Teleportation": {
+                "Frames": self.load_animation_textures(animation_path + "/teleportation"),
+                "Counter": 0,
+                "Animation Speed": 150,
+                "Animation Completed": False,
+            },
+            "Pain": {
+                "Frames": self.load_animation_textures(animation_path + "/pain"),
+                "Counter": 0,
+                "Animation Speed": 300,
+                "Animation Completed": False,
+            },
+            "Death": {
+                "Frames": self.load_animation_textures(animation_path + "/death"),
+                "Counter": 0,
+                "Animation Speed": 120,
+                "Animation Completed": False,
+            }
+        }
+
         # NPC sound variables
         self.npc_pain = self.game.sound.npc_reaper_pain
         self.npc_death = self.game.sound.npc_reaper_death
         self.npc_attack = self.game.sound.npc_reaper_attack
         self.npc_teleportation = self.game.sound.npc_reaper_teleportation
-
-        # NPC animation variables
-        self.teleportation_images = self.get_images(self.path + '/teleportation')
 
         self.size = 35
         self.ray_cast_value = False
@@ -39,7 +78,6 @@ class Reaper(NPC):
 
         # Teleportation variables
         self.teleported = False
-        self.teleportation_counter = 0
         self.ready_for_teleportation = False
         self.last_teleportation_time = 0
         self.teleportation_cooldown = 2000
@@ -69,15 +107,18 @@ class Reaper(NPC):
                                     self.player.exact_pos[0] - self.exact_pos[0])
             self.last_teleportation_time = pg.time.get_ticks()
             self.teleported = True
-            self.teleportation_counter = 0
+            self.animations[self.current_animation]["Counter"] = 0
             self.ready_for_teleportation = False
+            self.current_animation = "Idle"
 
     def animate_teleportation(self):
         if not self.teleported:
-            if self.animation_trigger and self.teleportation_counter < len(self.teleportation_images) - 1:
-                self.teleportation_counter += 1
-                self.teleportation_images.rotate(-1)
-                self.texture_path = self.teleportation_images[0]
+            self.current_animation = "Teleportation"
+            animation = self.animations[self.current_animation]
+            if animation["Animation Completed"] and animation["Counter"] < len(animation["Frames"]) - 1:
+                animation["Frames"].rotate(-1)
+                self.texture_path = animation["Frames"][0]
+                animation["Counter"] += 1
 
-            if self.teleportation_counter == len(self.teleportation_images) - 1:
+            if animation["Counter"] == len(animation["Frames"]) - 1:
                 self.ready_for_teleportation = True

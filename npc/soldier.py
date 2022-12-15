@@ -4,9 +4,8 @@ import random
 
 
 class Soldier(NPC):
-    def __init__(self, game, path='resources/sprites/npc/soldier/0.png', pos=(3, 3),
-                 scale=0.6, shift=0.38, animation_time=180):
-        super().__init__(game, path, pos, scale, shift, animation_time)
+    def __init__(self, game, pos, scale=0.6):
+        super().__init__(game, pos, scale)
 
         # NPC base stats
         self.pain = False
