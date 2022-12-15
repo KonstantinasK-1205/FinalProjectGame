@@ -57,38 +57,63 @@ class Player:
 
     def update(self, dt):
         self.rel = max(-MOUSE_MAX_REL, min(MOUSE_MAX_REL, pg.mouse.get_rel()[0]))
-        self.angle += self.rel * MOUSE_SENSITIVITY * self.game.dt
+        self.angle = (self.angle + self.rel * MOUSE_SENSITIVITY * dt) % math.tau
 
         self.movement(dt)
         self.game.weapon.update()
 
     def movement(self, dt):
-        dx, dy = 0, 0
         speed = PLAYER_SPEED * dt
         speed_sin = speed * math.sin(self.angle)
         speed_cos = speed * math.cos(self.angle)
 
+        new_x = self.pos_x
+        new_y = self.pos_y
         if self.moving_forw:
-            dx += speed_cos
-            dy += speed_sin
+            new_x += speed_cos
+            new_y += speed_sin
         if self.moving_back:
-            dx += -speed_cos
-            dy += -speed_sin
+            new_x += -speed_cos
+            new_y += -speed_sin
         if self.moving_left:
-            dx += speed_sin
-            dy += -speed_cos
+            new_x += speed_sin
+            new_y += -speed_cos
         if self.moving_right:
-            dx += -speed_sin
-            dy += speed_cos
+            new_x += -speed_sin
+            new_y += speed_cos
 
-        if not (dx == 0 and dy == 0):
-            scale = PLAYER_SIZE_SCALE / dt
-            if not self.game.map.is_wall(int(self.pos_x + dx * scale), int(self.pos_y)):
-                self.pos_x += dx
-            if not self.game.map.is_wall(int(self.pos_x), int(self.pos_y + dy * scale)):
-                self.pos_y += dy
-            # Calculate new angle
-            self.angle %= math.tau
+        # Collision handling
+        # Player radius prevents the camera from getting too close to a wall
+        # Should not be greater than 0.5 (half wall size), as there is no
+        # support for collisions with 3 walls at the same time
+        playerRadius = 0.2
+
+        # Margin is used to push the player away from a wall and prevent the
+        # collision from persisting due to rounding or floating point error
+        margin = 0.001
+
+        # First handle motion and collision in the X axis
+        if new_x < self.pos_x:
+            if self.game.map.is_wall(new_x - playerRadius, self.pos_y - playerRadius) or \
+               self.game.map.is_wall(new_x - playerRadius, self.pos_y + playerRadius):
+                new_x = math.ceil(new_x - playerRadius) + playerRadius + margin
+        elif new_x > self.pos_x:
+            if self.game.map.is_wall(new_x + playerRadius, self.pos_y - playerRadius) or \
+               self.game.map.is_wall(new_x + playerRadius, self.pos_y + playerRadius):
+                new_x = math.floor(new_x + playerRadius) - playerRadius - margin
+
+        # Next handle motion and collision in the Y axis
+        if new_y < self.pos_y:
+            if self.game.map.is_wall(new_x - playerRadius, new_y - playerRadius) or \
+               self.game.map.is_wall(new_x + playerRadius, new_y - playerRadius):
+                new_y = math.ceil(new_y - playerRadius) + playerRadius + margin
+        elif new_y > self.pos_y:
+            if self.game.map.is_wall(new_x - playerRadius, new_y + playerRadius) or \
+               self.game.map.is_wall(new_x + playerRadius, new_y + playerRadius):
+                new_y = math.floor(new_y + playerRadius) - playerRadius - margin
+
+        self.pos_x = new_x
+        self.pos_y = new_y
 
     # Getters
     @property

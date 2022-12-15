@@ -18,6 +18,7 @@ class Game:
         pg.init()
         pg.display.set_mode(RES, pg.DOUBLEBUF | pg.OPENGL, vsync=VSYNC)
         pg.display.set_caption("Final Project")
+        pg.display.set_icon(pg.image.load("logo.png"))
 
         self.screen = pg.Surface((RES[0], RES[1]), pg.SRCALPHA)
         self.clock = pg.time.Clock()
