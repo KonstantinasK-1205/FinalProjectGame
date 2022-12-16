@@ -60,7 +60,7 @@ class GameState(State):
             self.screen.blit(image, pos)
         for enemy in self.game.object_handler.alive_npc_list:
             pg.draw.circle(self.screen, (255, 0, 0),
-                           (self.margin + enemy.exact_pos[0] * self.size, enemy.exact_pos[1] * self.size), 4)
+                           (self.margin + enemy.x * self.size, enemy.y * self.size), 4)
         pg.draw.circle(self.screen, (0, 255, 0),
-                       (self.margin + self.game.player.exact_pos[0] * self.size, self.game.player.exact_pos[1] * self.size), 4)
+                       (self.margin + self.game.player.x * self.size, self.game.player.y * self.size), 4)
         self.game.hud.draw_enemy_stats()

@@ -44,7 +44,7 @@ class ObjectHandler:
             npc.update()
 
         for npc in self.alive_npc_list:
-            if npc.is_dead:
+            if npc.dead:
                 self.alive_npc_list.pop(self.alive_npc_list.index(npc))
                 self.killed = self.killed + 1
 

@@ -100,5 +100,5 @@ class Hud:
         self.screen.blit(health_text, (MARGIN, RES[1] - self.game.font_small.get_linesize() * 4.3))
 
         pos_text = self.game.font_small.render(
-            "X: " + str(int(self.game.player.pos_x)) + " Y: " + str(int(self.game.player.pos_y)), True, (255, 255, 255))
+            "X: " + str(int(self.game.player.x)) + " Y: " + str(int(self.game.player.y)), True, (255, 255, 255))
         self.screen.blit(pos_text, (MARGIN, 0))

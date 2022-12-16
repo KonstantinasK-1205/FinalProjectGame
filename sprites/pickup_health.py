@@ -9,8 +9,7 @@ class PickupHealth(Sprite):
     def update(self):
         super().update()
 
-        d = int(abs(self.player.exact_pos[0] - self.x) + abs(self.player.exact_pos[1] - self.y))
-        if d == 0 and self.player.health < 100:
+        if self.distance_from(self.player) < 0.5 and self.player.health < 100:
             self.player.add_health(25)
             self.game.sound.pickup_health.play()
             self.delete = True

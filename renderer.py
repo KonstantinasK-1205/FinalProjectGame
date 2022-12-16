@@ -61,10 +61,10 @@ class Renderer:
         ])
 
         self.sky_vbo = self.load_vbo([
-            3, 0,  2, 0,
-            3, 1,  2, 1,
-            0, 1, -1, 1,
-            0, 0, -1, 0
+            3, 0,  2, -1,
+            3, 3,  2,  2,
+            0, 3, -1,  2,
+            0, 0, -1, -1
         ])
 
         self.hud_vbo = self.load_vbo([
@@ -125,9 +125,10 @@ class Renderer:
 
         glBindTexture(GL_TEXTURE_2D, self.textures["resources/textures/sky.jpg"])
 
-        offset = (self.game.player.angle % math.tau) / math.tau
+        offset_x = (self.game.player.angle % math.tau) / math.tau
+        offset_y = (-self.game.player.angle_ver % math.tau) / math.tau
 
-        glTranslatef(-offset, 0, 0)
+        glTranslatef(-offset_x, -offset_y, 0)
         glDrawArrays(GL_QUADS, 0, 4)
 
     def draw_2d_fg(self):
@@ -158,8 +159,9 @@ class Renderer:
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()
 
-        glRotatef(math.degrees(self.game.player.get_angle) + 90, 0, 1, 0)
-        glTranslatef(-self.game.player.pos_x, -0.5, -self.game.player.pos_y)
+        glRotatef(math.degrees(self.game.player.angle_ver), 1, 0, 0)
+        glRotatef(math.degrees(self.game.player.angle) + 90, 0, 1, 0)
+        glTranslatef(-self.game.player.x, -0.5, -self.game.player.y)
 
         self.draw_3d_floor()
         self.draw_3d_map()
@@ -213,7 +215,7 @@ class Renderer:
         # Objects must be sorted closest to player first for transparency to
         # work properly
         for o in self.objects_to_render:
-            o.distance_from_player = math.hypot(o.x - self.game.player.pos_x, o.y - self.game.player.pos_y)
+            o.distance_from_player = math.hypot(o.x - self.game.player.x, o.y - self.game.player.y, o.z - self.game.player.z)
 
         self.objects_to_render = sorted(self.objects_to_render, key=lambda t: t.distance_from_player, reverse=True)
 
@@ -225,7 +227,7 @@ class Renderer:
             glTranslatef(o.x, 0, o.y)
 
             glTranslatef(0, o.z, 0)
-            glRotatef(-math.degrees(self.game.player.get_angle) + 90, 0, 1, 0)
+            glRotatef(-math.degrees(self.game.player.angle) + 90, 0, 1, 0)
             glScalef(o.width, o.height, 1)
             glDrawArrays(GL_QUADS, 0, 4)
 

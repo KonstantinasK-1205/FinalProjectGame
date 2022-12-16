@@ -1,4 +1,4 @@
-from Bullet import *
+from bullet import Bullet
 from sprites.sprite import *
 from collections import deque
 import os
@@ -170,9 +170,10 @@ class Weapon:
 
     def create_bullet(self, state='Fire', lifetime=5000):
         weapon = self.weapon_info[self.current_weapon][state]
-        angle = self.game.player.angle + (math.pi * 2)
+        angle = self.game.player.angle
+        angle_ver = -self.game.player.angle_ver
         self.game.object_handler.add_bullet(Bullet(self.game, self.game.player.exact_pos,
-                                                   weapon["Damage"], angle, 'player', weapon["Bullet Lifetime"]))
+                                                   weapon["Damage"], angle, angle_ver, 'player', weapon["Bullet Lifetime"]))
 
     def change_weapon(self, weapon):
         self.current_weapon = weapon

@@ -9,8 +9,7 @@ class ShotgunPickupAmmo(Sprite):
     def update(self):
         super().update()
 
-        d = int(abs(self.player.exact_pos[0] - self.x) + abs(self.player.exact_pos[1] - self.y))
-        if d == 0:
+        if self.distance_from(self.player) < 0.5:
             self.game.weapon.add_bullets("Shotgun", 10)
             sound = self.game.sound
             sound.pickup_sound(sound.pickup_ammo)

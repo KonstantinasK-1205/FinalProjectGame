@@ -1,6 +1,7 @@
-from Bullet import *
+from bullet import Bullet
 from settings import *
 from sprites.sprite import Sprite
+import pygame as pg
 import random
 
 
@@ -86,8 +87,7 @@ class NPC(Sprite):
             elif self.ray_cast_value:
                 self.player_search_trigger = True
 
-                dist = math.hypot(self.x - self.player.pos_x, self.y - self.player.pos_y)
-                if dist < self.attack_dist:
+                if self.distance_from(self.player) < self.attack_dist:
                     if self.current_time - self.previous_shot > self.animations["Attack"]["Attack Speed"]:
                         self.current_animation = "Attack"
                         self.animate()
@@ -110,21 +110,20 @@ class NPC(Sprite):
     def attack(self):
         if self.animations[self.current_animation]["Animation Completed"]:
             self.create_bullet()
-            self.game.sound.play_sound(self.npc_attack, self.grid_pos, self.player.exact_pos)
+            self.game.sound.play_sound(self.npc_attack, self.exact_pos, self.player.exact_pos)
             self.previous_shot = pg.time.get_ticks()
 
     def create_bullet(self):
         # Add damage reduction based on how far Player from npc
-        distance = abs(self.player.grid_pos[0] - self.grid_pos[0]) + abs(self.player.grid_pos[1] - self.grid_pos[1])
+        distance = self.distance_from(self.player)
         if self.damage > distance:
             damage = int(self.damage - distance)
         else:
             damage = 0
         # Calculate enemy angle, so bullet flies exactly where NPC is looking
-        angle = math.atan2(self.player.grid_pos[1] - self.grid_pos[1],
-                           self.player.grid_pos[0] - self.grid_pos[0])
-        self.game.object_handler.add_bullet(Bullet(self.game, self.grid_pos,
-                                                   damage, angle, 'enemy', self.bullet_lifetime))
+        angle = math.atan2(self.player.y - self.y, self.player.x - self.x)
+        self.game.object_handler.add_bullet(Bullet(self.game, self.exact_pos,
+                                                   damage, angle, 0, "enemy", self.bullet_lifetime))
 
     def apply_damage(self, damage, weapon):
         self.pain = True
@@ -132,11 +131,11 @@ class NPC(Sprite):
             damage -= self.damage_reduction
         self.health -= damage
         if self.health > 1:
-            self.game.sound.play_sound(self.npc_pain, self.grid_pos, self.player.grid_pos)
+            self.game.sound.play_sound(self.npc_pain, self.exact_pos, self.player.exact_pos)
         else:
             self.alive = False
             self.current_animation = "Death"
-            self.game.sound.play_sound(self.npc_death, self.grid_pos, self.player.grid_pos)
+            self.game.sound.play_sound(self.npc_death, self.exact_pos, self.player.exact_pos)
 
     # Movement
     def movement(self):
@@ -149,8 +148,7 @@ class NPC(Sprite):
                 self.x += dx
             if not self.game.map.is_wall(int(self.x), int(self.y + dy * self.size)):
                 self.y += dy
-            self.angle = math.atan2(self.player.exact_pos[1] - self.exact_pos[1],
-                                    self.player.exact_pos[0] - self.exact_pos[0])
+            self.angle = math.atan2(self.player.y - self.y, self.player.x - self.x)
 
     # Animations
     def animate_pain(self):
@@ -161,7 +159,7 @@ class NPC(Sprite):
 
     def animate_death(self):
         animation = self.animations[self.current_animation]
-        if self.is_dead:
+        if self.dead:
             if animation["Animation Completed"] and animation["Counter"] < len(animation["Frames"]) - 1:
                 animation["Counter"] += 1
                 animation["Frames"].rotate(-1)
@@ -178,7 +176,7 @@ class NPC(Sprite):
         ox, oy = self.player.exact_pos
         x_map, y_map = self.player.grid_pos
 
-        ray_angle = math.atan2(self.y - self.player.pos_y, self.x - self.player.pos_x)
+        ray_angle = math.atan2(self.y - self.player.y, self.x - self.player.x)
 
         sin_a = math.sin(ray_angle)
         cos_a = math.cos(ray_angle)
@@ -245,9 +243,5 @@ class NPC(Sprite):
         return int(self.x), int(self.y)
 
     @property
-    def is_alive(self):
-        return self.alive
-
-    @property
-    def is_dead(self):
+    def dead(self):
         return not self.alive

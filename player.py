@@ -1,15 +1,17 @@
 import pygame as pg
 
 from settings import *
-
+import math
 
 class Player:
     def __init__(self, game):
         self.game = game
         self.rel = 0
-        self.pos_x = 0
-        self.pos_y = 0
+        self.x = 0
+        self.y = 0
+        self.z = 0
         self.angle = PLAYER_ANGLE
+        self.angle_ver = 0
         self.health = PLAYER_MAX_HEALTH
         self.health_recovery_delay = 10000
         self.time_prev = pg.time.get_ticks()
@@ -56,8 +58,16 @@ class Player:
         self.game.weapon.handle_events(event)
 
     def update(self, dt):
-        self.rel = max(-MOUSE_MAX_REL, min(MOUSE_MAX_REL, pg.mouse.get_rel()[0]))
+        rel = pg.mouse.get_rel()
+        self.rel = max(-MOUSE_MAX_REL, min(MOUSE_MAX_REL, rel[0]))
         self.angle = (self.angle + self.rel * MOUSE_SENSITIVITY * dt) % math.tau
+
+        rel_ver = max(-MOUSE_MAX_REL, min(MOUSE_MAX_REL, rel[1]))
+        self.angle_ver = (self.angle_ver + rel_ver * MOUSE_SENSITIVITY * dt) % math.tau
+        if self.angle_ver > math.radians(90) and self.angle_ver < math.radians(180):
+            self.angle_ver = math.radians(90)
+        elif self.angle_ver > math.radians(180) and self.angle_ver < math.radians(270):
+            self.angle_ver = math.radians(270)
 
         self.movement(dt)
         self.game.weapon.update()
@@ -67,8 +77,8 @@ class Player:
         speed_sin = speed * math.sin(self.angle)
         speed_cos = speed * math.cos(self.angle)
 
-        new_x = self.pos_x
-        new_y = self.pos_y
+        new_x = self.x
+        new_y = self.y
         if self.moving_forw:
             new_x += speed_cos
             new_y += speed_sin
@@ -93,45 +103,41 @@ class Player:
         margin = 0.001
 
         # First handle motion and collision in the X axis
-        if new_x < self.pos_x:
-            if self.game.map.is_wall(new_x - playerRadius, self.pos_y - playerRadius) or \
-               self.game.map.is_wall(new_x - playerRadius, self.pos_y + playerRadius):
+        if new_x < self.x:
+            if self.game.map.is_wall(new_x - playerRadius, self.y - playerRadius) or \
+               self.game.map.is_wall(new_x - playerRadius, self.y + playerRadius):
                 new_x = math.ceil(new_x - playerRadius) + playerRadius + margin
-        elif new_x > self.pos_x:
-            if self.game.map.is_wall(new_x + playerRadius, self.pos_y - playerRadius) or \
-               self.game.map.is_wall(new_x + playerRadius, self.pos_y + playerRadius):
+        elif new_x > self.x:
+            if self.game.map.is_wall(new_x + playerRadius, self.y - playerRadius) or \
+               self.game.map.is_wall(new_x + playerRadius, self.y + playerRadius):
                 new_x = math.floor(new_x + playerRadius) - playerRadius - margin
 
         # Next handle motion and collision in the Y axis
-        if new_y < self.pos_y:
+        if new_y < self.y:
             if self.game.map.is_wall(new_x - playerRadius, new_y - playerRadius) or \
                self.game.map.is_wall(new_x + playerRadius, new_y - playerRadius):
                 new_y = math.ceil(new_y - playerRadius) + playerRadius + margin
-        elif new_y > self.pos_y:
+        elif new_y > self.y:
             if self.game.map.is_wall(new_x - playerRadius, new_y + playerRadius) or \
                self.game.map.is_wall(new_x + playerRadius, new_y + playerRadius):
                 new_y = math.floor(new_y + playerRadius) - playerRadius - margin
 
-        self.pos_x = new_x
-        self.pos_y = new_y
+        self.x = new_x
+        self.y = new_y
 
     # Getters
     @property
-    def get_angle(self):
-        return self.angle
-
-    @property
     def exact_pos(self):
-        return self.pos_x, self.pos_y
+        return self.x, self.y
 
     @property
     def grid_pos(self):
-        return int(self.pos_x), int(self.pos_y)
+        return int(self.x), int(self.y)
 
     # Setters
     def set_spawn(self, x, y):
-        self.pos_x = x
-        self.pos_y = y
+        self.x = x
+        self.y = y
 
     def add_health(self, hp):
         # Increase player health value without exceeding max value
@@ -164,3 +170,6 @@ class Player:
             self.game.sound.player_pain.play()
         else:
             self.game.current_state = "Game over"
+
+    def distance_from(self, other):
+        return math.hypot(other.x - self.x, other.y - self.y, other.z - self.z)

@@ -1,4 +1,4 @@
-from Bullet import *
+from bullet import Bullet
 from npc.reaper import Reaper
 from npc.soldier import Soldier
 from sprites.sprite import Sprite

@@ -84,8 +84,7 @@ class Reaper(NPC):
 
     def movement(self):
         # If teleported or player is further than 3 blocks
-        distance_to_player = int(abs(self.player.exact_pos[0] - self.x) + abs(self.player.exact_pos[1] - self.y))
-        if distance_to_player > 3:
+        if self.distance_from(self.player) > 3:
             self.teleport()
         super().movement()
 
@@ -97,14 +96,13 @@ class Reaper(NPC):
     def teleport(self):
         self.animate_teleportation()
         if self.ready_for_teleportation:
-            next_pos_x = self.player.exact_pos[0] - random.randint(-1, 1)
-            next_pos_y = self.player.exact_pos[1] - random.randint(-1, 1)
-            self.game.sound.play_sound(self.npc_teleportation, self.grid_pos, self.player.exact_pos)
-            if not self.game.map.is_wall(next_pos_x, next_pos_y):
-                self.x = next_pos_x
-                self.y = next_pos_y
-            self.angle = math.atan2(self.player.exact_pos[1] - self.exact_pos[1],
-                                    self.player.exact_pos[0] - self.exact_pos[0])
+            next_x = self.player.x - random.randint(-1, 1)
+            next_y = self.player.y - random.randint(-1, 1)
+            self.game.sound.play_sound(self.npc_teleportation, self.exact_pos, self.player.exact_pos)
+            if not self.game.map.is_wall(next_x, next_y):
+                self.x = next_x
+                self.y = next_y
+            self.angle = math.atan2(self.player.y - self.y, self.player.x - self.x)
             self.last_teleportation_time = pg.time.get_ticks()
             self.teleported = True
             self.animations[self.current_animation]["Counter"] = 0

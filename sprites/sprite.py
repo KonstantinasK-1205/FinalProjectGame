@@ -69,3 +69,5 @@ class Sprite:
     def set_width(self, width):
         self.width = width
 
+    def distance_from(self, other):
+        return math.hypot(other.x - self.x, other.y - self.y, other.z - self.z)

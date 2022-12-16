@@ -9,8 +9,7 @@ class PickupArmor(Sprite):
     def update(self):
         super().update()
 
-        d = int(abs(self.player.exact_pos[0] - self.x) + abs(self.player.exact_pos[1] - self.y))
-        if d == 0 and self.player.armor < 100:
+        if self.distance_from(self.player) < 0.5 and self.player.armor < 100:
             self.player.add_armor(25)
             sound = self.game.sound
             sound.pickup_sound(sound.pickup_armor)
