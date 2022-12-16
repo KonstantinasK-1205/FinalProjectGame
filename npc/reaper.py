@@ -72,7 +72,7 @@ class Reaper(NPC):
 
         self.size = 35
         self.ray_cast_value = False
-        self.player_search_trigger = False
+        self.approaching_player = False
         self.angle = 0
         self.current_time = 0
 

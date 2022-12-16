@@ -66,8 +66,7 @@ class NPC(Sprite):
         self.npc_death = self.game.sound.npc_soldier_death
 
         self.size = 50
-        self.ray_cast_value = False
-        self.player_search_trigger = False
+        self.approaching_player = False
         self.angle = 0
         self.current_time = 0
         self.previous_shot = 0
@@ -79,13 +78,17 @@ class NPC(Sprite):
 
     def run_logic(self):
         if self.alive:
-            self.ray_cast_value = self.ray_cast_player_npc()
+            # NPC angle is always opposing player - used for movement and sight
+            # calculation
+            self.angle = math.atan2(self.player.y - self.y, self.player.x - self.x)
+
+            # May be computationally intensive, so calculate only once per tick
+            can_see_player = self.can_see_player()
 
             if self.pain:
                 self.animate_pain()
-
-            elif self.ray_cast_value:
-                self.player_search_trigger = True
+            elif can_see_player:
+                self.approaching_player = True
 
                 if self.distance_from(self.player) < self.attack_dist:
                     if self.current_time - self.previous_shot > self.animations["Attack"]["Attack Speed"]:
@@ -96,7 +99,7 @@ class NPC(Sprite):
                     self.current_animation = "Walk"
                     self.animate()
                     self.movement()
-            elif self.player_search_trigger:
+            elif self.approaching_player:
                 self.current_animation = "Walk"
                 self.animate()
                 self.movement()
@@ -148,7 +151,6 @@ class NPC(Sprite):
                 self.x += dx
             if not self.game.map.is_wall(int(self.x), int(self.y + dy * self.size)):
                 self.y += dy
-            self.angle = math.atan2(self.player.y - self.y, self.player.x - self.x)
 
     # Animations
     def animate_pain(self):
@@ -165,72 +167,25 @@ class NPC(Sprite):
                 animation["Frames"].rotate(-1)
                 self.texture_path = animation["Frames"][0]
 
-    # Ray casting
-    def ray_cast_player_npc(self):
-        if self.player.grid_pos == self.grid_pos:
-            return True
+    def can_see_player(self):
+        # Larger step sizes are more efficient, but may cause NPC to see through
+        # the player
+        STEP = 0.5
+        # Limiting the max number of steps makes NPC near-sighted, but prevents
+        # the check from taking too long
+        MAX_STEPS = 100
 
-        wall_dist_v, wall_dist_h = 0, 0
-        player_dist_v, player_dist_h = 0, 0
-
-        ox, oy = self.player.exact_pos
-        x_map, y_map = self.player.grid_pos
-
-        ray_angle = math.atan2(self.y - self.player.y, self.x - self.player.x)
-
-        sin_a = math.sin(ray_angle)
-        cos_a = math.cos(ray_angle)
-
-        # Horizontals
-        y_hor, dy = (y_map + 1, 1) if sin_a > 0 else (y_map - 1e-6, -1)
-
-        # Fixes crash, when Sin reaches 0, game crashes, this one line fix it
-        if sin_a == 0.0:
-            sin_a = 0.0000000000001
-        depth_hor = (y_hor - oy) / sin_a
-        x_hor = ox + depth_hor * cos_a
-
-        delta_depth = dy / sin_a
-        dx = delta_depth * cos_a
-
-        for i in range(MAX_DEPTH):
-            tile_hor = int(x_hor), int(y_hor)
-            if tile_hor == self.grid_pos:
-                player_dist_h = depth_hor
+        # If it is possible to walk straight line to the player, it means that
+        # NPC can see them
+        x, y = self.exact_pos
+        for i in range(MAX_STEPS):
+            x += math.cos(self.angle) * STEP
+            y += math.sin(self.angle) * STEP
+            if self.game.map.is_wall(x, y):
                 break
-            if self.game.map.is_wall(x_hor, y_hor):
-                wall_dist_h = depth_hor
-                break
-            x_hor += dx
-            y_hor += dy
-            depth_hor += delta_depth
+            elif self.player.grid_pos == (int(x), int(y)):
+                return True
 
-        # Verticals
-        x_vert, dx = (x_map + 1, 1) if cos_a > 0 else (x_map - 1e-6, -1)
-
-        depth_vert = (x_vert - ox) / cos_a
-        y_vert = oy + depth_vert * sin_a
-
-        delta_depth = dx / cos_a
-        dy = delta_depth * sin_a
-
-        for i in range(MAX_DEPTH):
-            tile_vert = int(x_vert), int(y_vert)
-            if tile_vert == self.grid_pos:
-                player_dist_v = depth_vert
-                break
-            if self.game.map.is_wall(x_vert, y_vert):
-                wall_dist_v = depth_vert
-                break
-            x_vert += dx
-            y_vert += dy
-            depth_vert += delta_depth
-
-        player_dist = max(player_dist_v, player_dist_h)
-        wall_dist = max(wall_dist_v, wall_dist_h)
-
-        if 0 < player_dist < wall_dist or not wall_dist:
-            return True
         return False
 
     # Getters

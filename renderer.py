@@ -220,6 +220,9 @@ class Renderer:
         self.objects_to_render = sorted(self.objects_to_render, key=lambda t: t.distance_from_player, reverse=True)
 
         for o in self.objects_to_render:
+            if o.texture_path not in self.textures:
+                continue
+
             glBindTexture(GL_TEXTURE_2D, self.textures[o.texture_path])
 
             glPushMatrix()
