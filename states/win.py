@@ -18,9 +18,9 @@ class WinState(State):
         if self.elapsed_ms > STATE_WAIT_MS:
             if event.type == pg.KEYUP:
                 if event.key == pg.K_RETURN or event.key == pg.K_SPACE:
-                    self.game.is_running = False
+                    self.game.running = False
             if event.type == pg.MOUSEBUTTONUP and event.button == 1:
-                self.game.is_running = False
+                self.game.running = False
 
     def update(self, dt):
         self.elapsed_ms = pg.time.get_ticks() - self.on_set_ms

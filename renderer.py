@@ -141,7 +141,7 @@ class Renderer:
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surface.get_width(), surface.get_height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, bitmap)
 
     def render(self):
-        glViewport(0, 0, pg.display.get_window_size()[0], pg.display.get_window_size()[1])
+        glViewport(0, 0, self.game.width, self.game.height)
 
         if self.draw_world:
             self.draw_2d_bg()
@@ -149,7 +149,7 @@ class Renderer:
         self.draw_2d_fg()
 
     def draw_fullscreen_rect(self, texture=None, color=(255, 255, 255, 255)):
-        self.draw_rect(0, 0, pg.display.get_window_size()[0], pg.display.get_window_size()[1], texture, color)
+        self.draw_rect(0, 0, self.game.width, self.game.height, texture, color)
 
     def draw_rect(self, x, y, width, height, texture=None, color=(255, 255, 255, 255)):
         self.rects_to_render.append((x, y, width, height, texture, color))
@@ -187,7 +187,7 @@ class Renderer:
 
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        glOrtho(0, pg.display.get_window_size()[0], pg.display.get_window_size()[1], 0, 0, 100)
+        glOrtho(0, self.game.width, self.game.height, 0, 0, 100)
 
         glMatrixMode(GL_MODELVIEW)
 
@@ -223,7 +223,7 @@ class Renderer:
 
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        gluPerspective(FOV, pg.display.get_window_size()[0] / pg.display.get_window_size()[1], 0.1, 100)
+        gluPerspective(FOV, self.game.width / self.game.height, 0.1, 100)
 
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()

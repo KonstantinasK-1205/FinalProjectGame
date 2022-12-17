@@ -118,29 +118,32 @@ class Player:
         self.y = new_y
 
     def fill_map_visited(self):
-        RADIUS = 10
+        RADIUS = 25
 
-        mark = deque()
-        mark.append(self.grid_pos)
+        done = set()
+        visit = deque()
+
+        visit.append(self.grid_pos)
         for i in range(RADIUS):
-            pos = mark.popleft()
+            if len(visit) == 0:
+                break
+
+            pos = visit.popleft()
+            self.game.map.set_visited(pos[0], pos[1])
+            done.add(pos)
 
             new_pos = (pos[0] - 1, pos[1])
-            if not self.game.map.is_wall(new_pos[0], new_pos[1]):
-                self.game.map.set_visited(new_pos[0], new_pos[1])
-                mark.append(new_pos)
+            if not new_pos in done and not self.game.map.is_wall(new_pos[0], new_pos[1]):
+                visit.append(new_pos)
             new_pos = (pos[0] + 1, pos[1])
-            if not self.game.map.is_wall(new_pos[0], new_pos[1]):
-                self.game.map.set_visited(new_pos[0], new_pos[1])
-                mark.append(new_pos)
+            if not new_pos in done and not self.game.map.is_wall(new_pos[0], new_pos[1]):
+                visit.append(new_pos)
             new_pos = (pos[0], pos[1] - 1)
-            if not self.game.map.is_wall(new_pos[0], new_pos[1]):
-                self.game.map.set_visited(new_pos[0], new_pos[1])
-                mark.append(new_pos)
+            if not new_pos in done and not self.game.map.is_wall(new_pos[0], new_pos[1]):
+                visit.append(new_pos)
             new_pos = (pos[0], pos[1] + 1)
-            if not self.game.map.is_wall(new_pos[0], new_pos[1]):
-                self.game.map.set_visited(new_pos[0], new_pos[1])
-                mark.append(new_pos)
+            if not new_pos in done and not self.game.map.is_wall(new_pos[0], new_pos[1]):
+                visit.append(new_pos)
 
     # Getters
     @property

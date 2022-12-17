@@ -137,10 +137,10 @@ class Weapon:
         self.reset_weapon_pos()
         self.game.renderer.load_texture_from_surface("weapon", self.cur_display[0])
         self.game.renderer.draw_rect(
-            self.weapon_pos[0] / self.WIDTH * pg.display.get_window_size()[0],
-            self.weapon_pos[1] / self.HEIGHT * pg.display.get_window_size()[1],
-            self.cur_display[0].get_width() / self.WIDTH * pg.display.get_window_size()[0],
-            self.cur_display[0].get_height() / self.HEIGHT * pg.display.get_window_size()[1],
+            self.weapon_pos[0] / self.WIDTH * self.game.width,
+            self.weapon_pos[1] / self.HEIGHT * self.game.height,
+            self.cur_display[0].get_width() / self.WIDTH * self.game.width,
+            self.cur_display[0].get_height() / self.HEIGHT * self.game.height,
             "weapon"
         )
 

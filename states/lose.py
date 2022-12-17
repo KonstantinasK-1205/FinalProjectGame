@@ -21,7 +21,7 @@ class LoseState(State):
                     self.game.current_state = "Loading"
                     self.game.new_game("resources/levels/" + self.game.map_lists[0] + ".txt")
                 if event.key == pg.K_ESCAPE:
-                    self.game.is_running = False
+                    self.game.running = False
 
             if event.type == pg.MOUSEBUTTONUP and event.button == 1:
                 self.game.current_state = "Loading"
