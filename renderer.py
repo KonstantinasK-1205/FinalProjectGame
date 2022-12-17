@@ -11,6 +11,7 @@ class Renderer:
         self.game = game
         self.objects_to_render = []
         self.textures = {}
+        self.vbos = {}
         self.draw_world = False
 
         glEnable(GL_TEXTURE_2D)
@@ -18,6 +19,12 @@ class Renderer:
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_CULL_FACE)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
+        glEnable(GL_FOG)
+        glFogfv(GL_FOG_COLOR, (0, 0, 0))
+        glFogi(GL_FOG_MODE, GL_LINEAR)
+        glFogf(GL_FOG_START, 5)
+        glFogf(GL_FOG_END, 15)
 
         glEnableClientState(GL_TEXTURE_COORD_ARRAY)
         glEnableClientState(GL_VERTEX_ARRAY)
@@ -31,7 +38,7 @@ class Renderer:
         self.load_texture_from_file("resources/textures/wall3.png")
         self.load_texture_from_file("resources/textures/wall4.png")
 
-        self.wall_vbo = self.load_vbo([
+        self.load_vbo("wall", [
             0, 0, 0, 0, 1,
             1, 0, 1, 0, 1,
             1, 1, 1, 1, 1,
@@ -53,36 +60,63 @@ class Renderer:
             0, 1, 0, 1, 0
         ])
 
-        self.object_vbo = self.load_vbo([
+        self.load_vbo("object", [
             1, 0, -0.5, 0, 0,
             0, 0,  0.5, 0, 0,
             0, 1,  0.5, 1, 0,
             1, 1, -0.5, 1, 0
         ])
 
-        self.sky_vbo = self.load_vbo([
+        self.load_vbo("sky", [
             3, 0,  2, -1,
             3, 3,  2,  2,
             0, 3, -1,  2,
             0, 0, -1, -1
         ])
 
-        self.hud_vbo = self.load_vbo([
+        self.load_vbo("hud", [
             1, 0,  1, -1,
             1, 1,  1,  1,
             0, 1, -1,  1,
             0, 0, -1, -1
         ])
 
-    def load_vbo(self, data):
+        self.map_size = (0, 0)
+
+    def update_floor_vbo(self):
+        if self.game.map.size == self.map_size:
+            return
+
+        self.floor_vbo_verts = 0
+
+        data = []
+        for i in range(self.game.map.height):
+            for j in range(self.game.map.width):
+                if self.game.map.is_wall(j, i):
+                    continue
+
+                data.extend([
+                    0, 0, j + 0, 0, i + 1,
+                    1, 0, j + 1, 0, i + 1,
+                    1, 1, j + 1, 0, i + 0,
+                    0, 1, j + 0, 0, i + 0
+                ])
+                self.floor_vbo_verts += 4
+
+        self.load_vbo("floor", data)
+        self.map_size = self.game.map.size
+
+    def load_vbo(self, name, data):
         data_array = array("f", data)
         array_bytes = data_array.tobytes()
 
-        vbo = glGenBuffers(1)
-        glBindBuffer(GL_ARRAY_BUFFER, vbo)
-        glBufferData(GL_ARRAY_BUFFER, len(array_bytes), array_bytes, GL_STATIC_DRAW)
+        # Is the GL VBO already created?
+        if not name in self.vbos:
+            vbo = glGenBuffers(1)
+            self.vbos[name] = vbo
 
-        return vbo
+        glBindBuffer(GL_ARRAY_BUFFER, self.vbos[name])
+        glBufferData(GL_ARRAY_BUFFER, len(array_bytes), array_bytes, GL_STATIC_DRAW)
 
     def load_texture_from_file(self, path):
         surface = pg.image.load(path)
@@ -119,7 +153,7 @@ class Renderer:
         self.draw_2d_bg_sky()
 
     def draw_2d_bg_sky(self):
-        glBindBuffer(GL_ARRAY_BUFFER, self.sky_vbo)
+        glBindBuffer(GL_ARRAY_BUFFER, self.vbos["sky"])
         glTexCoordPointer(2, GL_FLOAT, 4 * 4, ctypes.c_void_p(0))
         glVertexPointer(2, GL_FLOAT, 4 * 4, ctypes.c_void_p(2 * 4))
 
@@ -132,7 +166,7 @@ class Renderer:
         glDrawArrays(GL_QUADS, 0, 4)
 
     def draw_2d_fg(self):
-        glBindBuffer(GL_ARRAY_BUFFER, self.hud_vbo)
+        glBindBuffer(GL_ARRAY_BUFFER, self.vbos["hud"])
         glTexCoordPointer(2, GL_FLOAT, 4 * 4, ctypes.c_void_p(0))
         glVertexPointer(2, GL_FLOAT, 4 * 4, ctypes.c_void_p(2 * 4))
 
@@ -168,25 +202,20 @@ class Renderer:
         self.draw_3d_objects()
 
     def draw_3d_floor(self):
+        self.update_floor_vbo()
+
         glBindTexture(GL_TEXTURE_2D, self.textures["resources/textures/floor.png"])
 
+        glBindBuffer(GL_ARRAY_BUFFER, self.vbos["floor"])
+        glTexCoordPointer(2, GL_FLOAT, 5 * 4, ctypes.c_void_p(0))
+        glVertexPointer(3, GL_FLOAT, 5 * 4, ctypes.c_void_p(2 * 4))
+
         glPushMatrix()
-
-        glBegin(GL_QUADS)
-        glTexCoord2f(0, 0)
-        glVertex3f(0, 0, self.game.map.get_size()[1])
-        glTexCoord2f(self.game.map.get_size()[0], 0)
-        glVertex3f(self.game.map.get_size()[0], 0, self.game.map.get_size()[1])
-        glTexCoord2f(self.game.map.get_size()[0], self.game.map.get_size()[1])
-        glVertex3f(self.game.map.get_size()[0], 0, 0)
-        glTexCoord2f(0, self.game.map.get_size()[1] )
-        glVertex3f(0, 0, 0)
-        glEnd()
-
+        glDrawArrays(GL_QUADS, 0, self.floor_vbo_verts)
         glPopMatrix()
 
     def draw_3d_map(self):
-        glBindBuffer(GL_ARRAY_BUFFER, self.wall_vbo)
+        glBindBuffer(GL_ARRAY_BUFFER, self.vbos["wall"])
         glTexCoordPointer(2, GL_FLOAT, 5 * 4, ctypes.c_void_p(0))
         glVertexPointer(3, GL_FLOAT, 5 * 4, ctypes.c_void_p(2 * 4))
 
@@ -208,7 +237,7 @@ class Renderer:
     def draw_3d_objects(self):
         glDisable(GL_CULL_FACE)
 
-        glBindBuffer(GL_ARRAY_BUFFER, self.object_vbo)
+        glBindBuffer(GL_ARRAY_BUFFER, self.vbos["object"])
         glTexCoordPointer(2, GL_FLOAT, 5 * 4, ctypes.c_void_p(0))
         glVertexPointer(3, GL_FLOAT, 5 * 4, ctypes.c_void_p(2 * 4))
 

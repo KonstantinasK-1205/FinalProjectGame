@@ -14,6 +14,7 @@ class Map:
         self.width = 0
         self.height = 0
         self.data = []
+        self.data_visited = []
         self.enemy_amount = 0
         self.map_loaded = False
 
@@ -48,6 +49,7 @@ class Map:
         self.height = y
 
         self.data = [0] * self.width * self.height
+        self.data_visited = [False] * self.width * self.height
 
         # Read map data
         map_file.seek(0)
@@ -77,13 +79,13 @@ class Map:
                     self.game.object_handler.add_npc(Reaper(self.game, pos=(x + 0.5, y + 0.5)))
                     self.enemy_amount += 1
                 elif char == "h":
-                    self.game.object_handler.add_sprite(PickupHealth(self.game, pos=(x + 0.5, y + 0.5)))
+                    self.game.object_handler.add_pickup(PickupHealth(self.game, pos=(x + 0.5, y + 0.5)))
                 elif char == "b":
-                    self.game.object_handler.add_sprite(ShotgunPickupAmmo(self.game, pos=(x + 0.5, y + 0.5)))
+                    self.game.object_handler.add_pickup(ShotgunPickupAmmo(self.game, pos=(x + 0.5, y + 0.5)))
                 elif char == "m":
-                    self.game.object_handler.add_sprite(MachinegunPickupAmmo(self.game, pos=(x + 0.5, y + 0.5)))
+                    self.game.object_handler.add_pickup(MachinegunPickupAmmo(self.game, pos=(x + 0.5, y + 0.5)))
                 elif char == "a":
-                    self.game.object_handler.add_sprite(PickupArmor(self.game, pos=(x + 0.5, y + 0.5)))
+                    self.game.object_handler.add_pickup(PickupArmor(self.game, pos=(x + 0.5, y + 0.5)))
                 x += 1
             y += 1
 
@@ -94,8 +96,16 @@ class Map:
             return True
         return self.data[int(x) + int(y) * self.width] != 0
 
-    def get_enemy_amount(self):
-        return self.enemy_amount
+    def is_visited(self, x, y):
+        if x < 0 or x >= self.width or y < 0 or y >= self.height:
+            return False
+        return self.data_visited[int(x) + int(y) * self.width] == True
 
-    def get_size(self):
+    def set_visited(self, x, y, value=True):
+        if x < 0 or x >= self.width or y < 0 or y >= self.height:
+            return
+        self.data_visited[int(x) + int(y) * self.width] = value
+
+    @property
+    def size(self):
         return self.width, self.height

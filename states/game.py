@@ -5,9 +5,7 @@ class GameState(State):
     def __init__(self, game):
         super().__init__(game)
         self.in_map = False
-        self.mini_map = []
-        self.margin = 0
-        self.size = 0
+        self.surface = pg.Surface(RES, pg.SRCALPHA)
 
     def on_set(self):
         pg.mouse.set_visible(False)
@@ -27,40 +25,60 @@ class GameState(State):
 
     def draw(self):
         self.game.object_handler.draw()
+
         self.game.weapon.draw()
+
         if self.in_map:
-            self.game.state["Game"].draw_mini_map()
+            self.game.state["Game"].draw_minimap()
+            self.game.hud.draw_enemy_stats()
         else:
             self.game.hud.draw_in_game_gui()
 
-    def init_mini_map(self):
-        world_size = self.game.map.get_size()
-        self.mini_map = []
+    def draw_minimap(self):
+        # Define maximum minimap size
+        # A margin is used so that the minimap does not take up all screen
+        minimap_width = WIDTH - WIDTH / 10
+        minimap_height = HEIGHT - HEIGHT / 5
 
-        self.size = [(RES[0] - (0.05 * RES[0])) / world_size[0],
-                    (RES[1] - (0.05 * RES[1])) / world_size[1]]
-        self.size = min(self.size[0], self.size[1])
-        map_width = RES[0] - (world_size[0] * self.size)
-        self.margin = map_width / 2
+        # Calculate maximum tile size that can fit and reduce minimap size to
+        # fit all tiles (necessary for centering)
+        tile_size = min(int(minimap_width / self.game.map.width), int(minimap_height / self.game.map.height))
+        minimap_width = tile_size * self.game.map.width
+        minimap_height = tile_size * self.game.map.height
 
+        # Center minimap
+        minimap_x = WIDTH / 2 - minimap_width / 2
+        # Offset Y by margin
+        minimap_y = HEIGHT / 20
+
+        self.surface.fill((0, 0, 0, 0))
+
+        # Draw walls
         for i in range(self.game.map.height):
             for j in range(self.game.map.width):
+                color = (0, 0, 0, 224)
+
                 if not self.game.map.is_wall(j, i):
-                    continue
+                    if not self.game.map.is_visited(j, i):
+                        color = (0, 0, 0, 96)
+                    else:
+                        continue
 
-                wall_column = pg.Surface((self.size + 1, self.size + 1))
-                wall_column.fill((0, 0, 0))
-                self.mini_map.append((wall_column, (self.margin + j * self.size, i * self.size)))
+                pg.draw.rect(self.surface, color, (minimap_x + j * tile_size, minimap_y + i * tile_size, tile_size, tile_size))
 
-    def draw_mini_map(self):
-        surface = pg.Surface((RES[0], RES[1]), pg.SRCALPHA)
-        surface.fill(HIT_FLASH_COLOR)
-        self.screen.blit(surface, (0, 0))
-        for image, pos in self.mini_map:
-            self.screen.blit(image, pos)
+        # Draw enemies
         for enemy in self.game.object_handler.alive_npc_list:
-            pg.draw.circle(self.screen, (255, 0, 0),
-                           (self.margin + enemy.x * self.size, enemy.y * self.size), 4)
-        pg.draw.circle(self.screen, (0, 255, 0),
-                       (self.margin + self.game.player.x * self.size, self.game.player.y * self.size), 4)
-        self.game.hud.draw_enemy_stats()
+            if self.game.map.is_visited(enemy.x, enemy.y):
+                pg.draw.circle(self.surface, (255, 0, 0), (minimap_x + enemy.x * tile_size, minimap_y + enemy.y * tile_size), 4)
+
+        # Draw pickups
+        for pickup in self.game.object_handler.pickup_list:
+            if self.game.map.is_visited(pickup.x, pickup.y):
+                pg.draw.circle(self.surface, (0, 0, 255), (minimap_x + pickup.x * tile_size, minimap_y + pickup.y * tile_size), 4)
+
+        # Draw player
+        pg.draw.circle(self.surface, (0, 255, 0), (minimap_x + self.game.player.x * tile_size, minimap_y + self.game.player.y * tile_size), 4)
+
+        # Minimap is drawn to a separate surface and then blitted to avoid
+        # issues with transparency
+        self.game.screen.blit(self.surface, (0, 0))

@@ -5,6 +5,7 @@ from settings import *
 class ObjectHandler:
     def __init__(self):
         self.npc_list = []
+        self.pickup_list = []
         self.sprite_list = []
         self.bullet_list = []
         self.alive_npc_list = []
@@ -62,6 +63,8 @@ class ObjectHandler:
     def draw(self):
         for npc in self.npc_list:
             npc.draw()
+        for pickup in self.pickup_list:
+            pickup.draw()
         for sprite in self.sprite_list:
             sprite.draw()
 
@@ -86,22 +89,25 @@ class ObjectHandler:
         # Create new array in which we will stores
         # index of element we remove
         remove = []
-        for index, sprite in enumerate(self.sprite_list):
+        for index, pickup in enumerate(self.pickup_list):
             # If sprite wasn't used just update it,
             # otherwise add to remove array
-            if not sprite.delete:
-                sprite.update()
+            if not pickup.delete:
+                pickup.update()
             else:
                 remove.append(index)
 
         # Iterate each remove element and remove
         # each sprite from main array
         for index in remove:
-            self.sprite_list.pop(index)
+            self.pickup_list.pop(index)
 
     def add_npc(self, npc):
         self.npc_list.append(npc)
         self.alive_npc_list.append(npc)
+
+    def add_pickup(self, pickup):
+        self.pickup_list.append(pickup)
 
     def add_sprite(self, sprite):
         self.sprite_list.append(sprite)
@@ -111,6 +117,7 @@ class ObjectHandler:
 
     def reset(self):
         self.npc_list = []
+        self.pickup_list = []
         self.sprite_list = []
         self.alive_npc_list = []
         self.npc_positions = {}

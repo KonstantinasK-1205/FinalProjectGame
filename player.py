@@ -2,6 +2,8 @@ import pygame as pg
 
 from settings import *
 import math
+from collections import deque
+
 
 class Player:
     def __init__(self, game):
@@ -37,7 +39,6 @@ class Player:
                 if self.game.state["Game"].in_map:
                     self.game.state["Game"].in_map = False
                 else:
-                    self.game.state["Game"].init_mini_map()
                     self.game.state["Game"].in_map = True
 
             if event.key == pg.K_EQUALS:
@@ -71,6 +72,7 @@ class Player:
 
         self.movement(dt)
         self.game.weapon.update()
+        self.fill_map_visited()
 
     def movement(self, dt):
         speed = PLAYER_SPEED * dt
@@ -124,6 +126,31 @@ class Player:
 
         self.x = new_x
         self.y = new_y
+
+    def fill_map_visited(self):
+        RADIUS = 10
+
+        mark = deque()
+        mark.append(self.grid_pos)
+        for i in range(RADIUS):
+            pos = mark.popleft()
+
+            new_pos = (pos[0] - 1, pos[1])
+            if not self.game.map.is_wall(new_pos[0], new_pos[1]):
+                self.game.map.set_visited(new_pos[0], new_pos[1])
+                mark.append(new_pos)
+            new_pos = (pos[0] + 1, pos[1])
+            if not self.game.map.is_wall(new_pos[0], new_pos[1]):
+                self.game.map.set_visited(new_pos[0], new_pos[1])
+                mark.append(new_pos)
+            new_pos = (pos[0], pos[1] - 1)
+            if not self.game.map.is_wall(new_pos[0], new_pos[1]):
+                self.game.map.set_visited(new_pos[0], new_pos[1])
+                mark.append(new_pos)
+            new_pos = (pos[0], pos[1] + 1)
+            if not self.game.map.is_wall(new_pos[0], new_pos[1]):
+                self.game.map.set_visited(new_pos[0], new_pos[1])
+                mark.append(new_pos)
 
     # Getters
     @property
