@@ -70,9 +70,15 @@ class Weapon:
                 }
             }
         }
+
+        # Hardcode drawing width/height for now as I do not understand how to
+        # implement rescaling here yet
+        self.WIDTH = 1280
+        self.HEIGHT = 720
+        self.screen = pg.Surface((self.WIDTH, self.HEIGHT), pg.SRCALPHA)
+
         self.cur_display = self.weapon_info[self.current_weapon][self.current_state]["Sprites"]
-        self.weapon_pos = (HALF_WIDTH - self.cur_display[0].get_width() // 2,
-                           HEIGHT - self.cur_display[0].get_height())
+        self.weapon_pos = (0, 0)
 
         self.fired = False
         self.damage_buff = 1
@@ -129,7 +135,10 @@ class Weapon:
         self.animate()
 
     def draw(self):
-        self.game.screen.blit(self.cur_display[0], self.weapon_pos)
+        self.reset_weapon_pos()
+        self.screen.fill((0, 0, 0,0))
+        self.screen.blit(self.cur_display[0], self.weapon_pos)
+        self.game.screen.blit(pg.transform.smoothscale(self.screen, self.game.screen.get_size()), (0, 0))
 
     def reload(self):
         weapon = self.weapon_info[self.current_weapon]["Fire"]
@@ -178,12 +187,14 @@ class Weapon:
     def change_weapon(self, weapon):
         self.current_weapon = weapon
         self.cur_display = self.weapon_info[self.current_weapon][self.current_state]["Sprites"]
-        if weapon == 'Shotgun':
-            self.weapon_pos = (HALF_WIDTH - self.cur_display[0].get_width() // 2,
-                               HEIGHT - self.cur_display[0].get_height())
-        elif weapon == 'Machinegun':
-            self.weapon_pos = (HALF_WIDTH / 1.6 - self.cur_display[0].get_width() // 2,
-                               HEIGHT - self.cur_display[0].get_height())
+
+    def reset_weapon_pos(self):
+        if self.current_weapon == 'Shotgun':
+            self.weapon_pos = (self.WIDTH / 2 - self.cur_display[0].get_width() // 2,
+                               self.HEIGHT - self.cur_display[0].get_height())
+        elif self.current_weapon == 'Machinegun':
+            self.weapon_pos = (self.WIDTH / 2 / 1.6 - self.cur_display[0].get_width() // 2,
+                               self.HEIGHT - self.cur_display[0].get_height())
 
     def animate(self):
         # Make animation

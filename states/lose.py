@@ -5,7 +5,6 @@ class LoseState(State):
     def __init__(self, game):
         super().__init__(game)
         self.lose_image = pg.image.load('resources/textures/game_over.png').convert_alpha()
-        self.lose_image = pg.transform.scale(self.lose_image, RES)
         self.on_set_ms = 0
         self.elapsed_ms = 0
 
@@ -32,4 +31,5 @@ class LoseState(State):
         self.elapsed_ms = pg.time.get_ticks() - self.on_set_ms
 
     def draw(self):
-        self.screen.blit(self.lose_image, (0, 0))
+        lose_image = pg.transform.scale(self.lose_image, self.game.screen.get_size())
+        self.game.screen.blit(lose_image, (0, 0))

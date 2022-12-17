@@ -16,23 +16,19 @@ from weapon import *
 class Game:
     def __init__(self):
         pg.init()
-        pg.display.set_mode(RES, pg.DOUBLEBUF | pg.OPENGL, vsync=VSYNC)
+        pg.display.set_mode((WIDTH, HEIGHT), pg.RESIZABLE | pg.DOUBLEBUF | pg.OPENGL, vsync=VSYNC)
         pg.display.set_caption("Final Project")
         pg.display.set_icon(pg.image.load("logo.png"))
 
-        self.screen = pg.Surface((RES[0], RES[1]), pg.SRCALPHA)
+        self.screen = pg.Surface((WIDTH, HEIGHT), pg.SRCALPHA)
         self.clock = pg.time.Clock()
         self.renderer = Renderer(self)
         self.object_handler = ObjectHandler()
         self.hud = Hud(self)
         self.map_lists = ["Level1", "Level2", "Level3", "Level4"]
-        #self.map_lists = ["T_Level1"]
 
-        self.font = pg.font.Font("resources/fonts/Font.ttf", 48)
-        self.font_small = pg.font.Font("resources/fonts/Font.ttf", 32)
-
-        self.font = pg.font.Font("resources/fonts/Font.ttf", 48)
-        self.font_small = pg.font.Font("resources/fonts/Font.ttf", 32)
+        self.font = pg.font.Font("resources/fonts/Font.ttf", int(36 / 1280 * WIDTH))
+        self.font_small = pg.font.Font("resources/fonts/Font.ttf", int(24 / 1280 * WIDTH))
 
         self.state = {
             "Intro": IntroState(self),
@@ -57,6 +53,10 @@ class Game:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.is_running = False
+            elif event.type == pg.VIDEORESIZE:
+                self.screen = pg.Surface((event.w, event.h), pg.SRCALPHA)
+                self.font = pg.font.Font("resources/fonts/Font.ttf", int(36 / 1280 * event.w))
+                self.font_small = pg.font.Font("resources/fonts/Font.ttf", int(24 / 1280 * event.w))
             elif event.type == self.PRINTFPSEVENT:
                print(str(int(self.clock.get_fps())) + " FPS")
             self.state[self.current_state].handle_events(event)
@@ -72,7 +72,7 @@ class Game:
         self.state[self.current_state].draw()
 
         if self.hit_flash_ms < HIT_FLASH_MS:
-            surface = pg.Surface((RES[0], RES[1]), pg.SRCALPHA)
+            surface = pg.Surface(self.screen.get_size(), pg.SRCALPHA)
             surface.fill(HIT_FLASH_COLOR)
             self.screen.blit(surface, (0, 0))
 

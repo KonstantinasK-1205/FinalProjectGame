@@ -29,8 +29,6 @@ class Renderer:
         glEnableClientState(GL_TEXTURE_COORD_ARRAY)
         glEnableClientState(GL_VERTEX_ARRAY)
 
-        glViewport(0, 0, WIDTH, HEIGHT)
-
         self.load_texture_from_file("resources/textures/sky.jpg")
         self.load_texture_from_file("resources/textures/floor.png")
         self.load_texture_from_file("resources/textures/wall1.png")
@@ -136,6 +134,8 @@ class Renderer:
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surface.get_width(), surface.get_height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, bitmap)
 
     def render(self):
+        glViewport(0, 0, pg.display.get_window_size()[0], pg.display.get_window_size()[1])
+
         if self.draw_world:
             self.draw_2d_bg()
             self.draw_3d()
@@ -188,7 +188,7 @@ class Renderer:
 
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        gluPerspective(FOV, WIDTH / HEIGHT, 0.1, 100)
+        gluPerspective(FOV, pg.display.get_window_size()[0] / pg.display.get_window_size()[1], 0.1, 100)
 
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()

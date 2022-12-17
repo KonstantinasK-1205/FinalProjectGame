@@ -6,16 +6,15 @@ from settings import *
 class Hud:
     def __init__(self, game):
         self.game = game
-        self.screen = game.screen
 
-        # GUI
-        # Health bar
-        self.armor_icon = self.get_texture('resources/icons/gui_armor.png', (RES[0] / 35, RES[1] / 25))
-        self.health_icon = self.get_texture('resources/icons/gui_health.png', (RES[0] / 35, RES[1] / 25))
+        self.armor_icon = pg.image.load("resources/icons/gui_armor.png").convert_alpha()
+        self.health_icon = pg.image.load("resources/icons/gui_health.png").convert_alpha()
 
     def draw_health_bar(self):
-        health_bar_width = RES[0] / 8
-        health_bar_height = RES[1] / 25
+        health_icon = pg.transform.scale(self.health_icon, (self.res[0] / 35, self.res[1] / 25))
+
+        health_bar_width = self.res[0] / 8
+        health_bar_height = self.res[1] / 25
         health_pixel_size = (health_bar_width / 100)
         health_bar_hp = health_pixel_size * self.game.player.health
 
@@ -27,16 +26,18 @@ class Hud:
         health_bar_fg.fill((6, 100, 32))
         health_bar_fg.set_alpha(200)
 
-        self.screen.blit(self.health_icon, (0, RES[1] - self.health_icon.get_height()))
-        self.screen.blit(health_bar_bg, (self.health_icon.get_width() + 5, RES[1] - self.health_icon.get_height()))
-        self.screen.blit(health_bar_fg, (self.health_icon.get_width() + 5, RES[1] - self.health_icon.get_height()))
+        self.game.screen.blit(health_icon, (self.margin, self.res[1] - health_icon.get_height() - self.margin))
+        self.game.screen.blit(health_bar_bg, (self.margin + health_icon.get_width() + 5, self.res[1] - health_icon.get_height() - self.margin))
+        self.game.screen.blit(health_bar_fg, (self.margin + health_icon.get_width() + 5, self.res[1] - health_icon.get_height() - self.margin))
 
         health_text = self.game.font_small.render(str(self.game.player.health), False, (0, 64, 0))
-        self.screen.blit(health_text, (self.health_icon.get_width() + 5 + health_bar_width / 2 - health_text.get_width() / 2, RES[1] - self.health_icon.get_height()))
+        self.game.screen.blit(health_text, (self.margin + health_icon.get_width() + 5 + health_bar_width / 2 - health_text.get_width() / 2, self.res[1] - health_icon.get_height() - self.margin))
 
     def draw_armor_bar(self):
-        armor_bar_width = RES[0] / 8
-        armor_bar_height = RES[1] / 25
+        armor_icon = pg.transform.scale(self.armor_icon, (self.res[0] / 35, self.res[1] / 25))
+
+        armor_bar_width = self.res[0] / 8
+        armor_bar_height = self.res[1] / 25
         armor_pixel_size = (armor_bar_width / 100)
         armor_bar_hp = armor_pixel_size * self.game.player.armor
 
@@ -48,18 +49,22 @@ class Hud:
         armor_bar_fg.fill((12, 32, 100))
         armor_bar_fg.set_alpha(200)
 
-        self.screen.blit(self.armor_icon, (0, RES[1] - (self.armor_icon.get_height() * 2)))
-        self.screen.blit(armor_bar_bg, (self.armor_icon.get_width() + 5, RES[1] - (self.armor_icon.get_height() * 2)))
-        self.screen.blit(armor_bar_fg, (self.armor_icon.get_width() + 5, RES[1] - (self.armor_icon.get_height() * 2)))
+        self.game.screen.blit(armor_icon, (self.margin, self.res[1] - armor_icon.get_height() * 2 - self.margin))
+        self.game.screen.blit(armor_bar_bg, (self.margin + armor_icon.get_width() + 5, self.res[1] - armor_icon.get_height() * 2 - self.margin))
+        self.game.screen.blit(armor_bar_fg, (self.margin + armor_icon.get_width() + 5, self.res[1] - armor_icon.get_height() * 2 - self.margin))
 
         armor_text = self.game.font_small.render(str(self.game.player.armor), False, (0, 0, 64))
-        self.screen.blit(armor_text, (self.armor_icon.get_width() + 5 + armor_bar_width / 2 - armor_text.get_width() / 2, RES[1] - (self.armor_icon.get_height() * 2)))
+        self.game.screen.blit(armor_text, (self.margin + armor_icon.get_width() + 5 + armor_bar_width / 2 - armor_text.get_width() / 2, self.res[1] - armor_icon.get_height() * 2 - self.margin))
 
     def draw_enemy_stats(self):
         killed_text = self.game.font_small.render("Enemies killed: " + str(self.game.object_handler.killed), True, (255, 255, 255))
-        self.screen.blit(killed_text, (RES[0] - killed_text.get_size()[0], RES[1] - (self.armor_icon.get_height() * 3)))
         left_text = self.game.font_small.render("Enemies left: " + str(self.game.map.enemy_amount - self.game.object_handler.killed), True, (255, 255, 255))
-        self.screen.blit(left_text, (RES[0] - killed_text.get_size()[0], RES[1] - (self.armor_icon.get_height() * 2)))
+        
+        text_width = max(killed_text.get_size()[0], left_text.get_size()[0])
+        text_height = killed_text.get_size()[1] + left_text.get_size()[1]
+
+        self.game.screen.blit(killed_text, (self.res[0] - text_width - self.margin, self.res[1] - text_height - self.margin))
+        self.game.screen.blit(left_text, (self.res[0] - text_width - self.margin, self.res[1] - text_height + killed_text.get_size()[1] - self.margin))
 
     def draw_in_game_gui(self):
         self.draw_armor_bar()
@@ -68,37 +73,89 @@ class Hud:
         # Draw Bullet amount
         total_bullet = self.game.font_small.render("Ammo: " + str(self.game.weapon.get_cartridge_bullet_left()) +
                                         " / " + str(self.game.weapon.get_total_bullet_left()), True, (255, 255, 255))
-        self.screen.blit(total_bullet, (0, RES[1] - (self.armor_icon.get_height() * 3)))
+        self.game.screen.blit(total_bullet, (self.margin, self.res[1] - self.margin - self.res[1] / 25 * 3))
 
-    @staticmethod
-    def get_texture(path, res=(TEXTURE_SIZE, TEXTURE_SIZE)):
-        texture = pg.image.load(path).convert_alpha()
-        return pg.transform.scale(texture, res)
+    def draw_minimap(self, small):
+        # TODO: Draw minimap in OpenGL as PyGame is too slow
 
-    # In Game Texts
-    def draw_old_in_game_gui(self):
-        # Draw Killed Amount
-        killed_text = self.game.font_small.render(
-            "Enemy left: " + str(self.game.map.enemy_amount - self.game.object_handler.killed), True, (255, 255, 255))
-        self.screen.blit(killed_text, (RES[0] - killed_text.get_size()[0], RES[1] - self.game.font_small.get_linesize()))
+        # Draw to separate surface first to avoid transparency issues
+        self.surface = pg.Surface(self.res, pg.SRCALPHA)
 
-        # Draw Killed Amount
-        killed_text = self.game.font_small.render("Killed: " + str(self.game.object_handler.killed), True, (255, 255, 255))
-        self.screen.blit(killed_text, (MARGIN, RES[1] - self.game.font_small.get_linesize()))
+        # Display a small minimap
+        if small:
+            # Maximum minimap size
+            minimap_width = self.res[0] / 3
+            minimap_height = self.res[1] / 2
 
-        # Draw Bullet amount
-        total_bullet = self.game.font_small.render("Bullet: " + str(self.game.weapon.get_cartridge_bullet_left()) +
-                                        " / " + str(self.game.weapon.get_total_bullet_left()), True, (255, 255, 255))
-        self.screen.blit(total_bullet, (MARGIN, RES[1] - self.game.font_small.get_linesize() * 2.1))
+            # Maximum tile size
+            tile_size = min(int(minimap_width / self.game.map.width), int(minimap_height / self.game.map.height))
 
-        # Draw Armor left amount
-        armor_text = self.game.font_small.render("Armor: " + str(self.game.player.armor), True, (255, 255, 255))
-        self.screen.blit(armor_text, (MARGIN, RES[1] - self.game.font_small.get_linesize() * 3.2))
+            # Reduce minimap size to fit tiles
+            minimap_width = tile_size * self.game.map.width
+            minimap_height = tile_size * self.game.map.height
 
-        # Draw HP
-        health_text = self.game.font_small.render("HP: " + str(self.game.player.health) + " %", True, (255, 255, 255))
-        self.screen.blit(health_text, (MARGIN, RES[1] - self.game.font_small.get_linesize() * 4.3))
+            # Offset minimap from top right
+            minimap_x = self.res[0] - minimap_width - self.margin
+            minimap_y = self.margin
 
-        pos_text = self.game.font_small.render(
-            "X: " + str(int(self.game.player.x)) + " Y: " + str(int(self.game.player.y)), True, (255, 255, 255))
-        self.screen.blit(pos_text, (MARGIN, 0))
+        # Display a large minimap
+        else:
+            # Maximum minimap size
+            minimap_width = self.res[0] - self.margin * 2
+            minimap_height = self.res[1] - self.margin * 2 - self.res[1] / 8
+
+            # Maximum tile size
+            tile_size = min(int(minimap_width / self.game.map.width), int(minimap_height / self.game.map.height))
+
+            # Reduce minimap size to fit tiles
+            minimap_width = tile_size * self.game.map.width
+            minimap_height = tile_size * self.game.map.height
+
+            # Center minimap and offset from top
+            minimap_x = self.res[0] / 2 - minimap_width / 2
+            minimap_y = self.margin
+
+        self.surface.fill((0, 0, 0, 0))
+
+        # Draw walls
+        for i in range(self.game.map.height):
+            for j in range(self.game.map.width):
+                color = (0, 0, 0, 224)
+
+                if not self.game.map.is_wall(j, i):
+                    if not self.game.map.is_visited(j, i):
+                        color = (0, 0, 0, 96)
+                    else:
+                        continue
+
+                pg.draw.rect(self.surface, color, (minimap_x + j * tile_size, minimap_y + i * tile_size, tile_size, tile_size))
+
+        # Draw enemies
+        for enemy in self.game.object_handler.alive_npc_list:
+            if self.game.map.is_visited(enemy.x, enemy.y):
+                pg.draw.circle(self.surface, (255, 0, 0), (minimap_x + enemy.x * tile_size, minimap_y + enemy.y * tile_size), 4)
+
+        # Draw pickups
+        for pickup in self.game.object_handler.pickup_list:
+            if self.game.map.is_visited(pickup.x, pickup.y):
+                pg.draw.circle(self.surface, (0, 0, 255), (minimap_x + pickup.x * tile_size, minimap_y + pickup.y * tile_size), 4)
+
+        # Draw player
+        pg.draw.circle(self.surface, (0, 255, 0), (minimap_x + self.game.player.x * tile_size, minimap_y + self.game.player.y * tile_size), 4)
+
+        # Minimap is drawn to a separate surface and then blitted to avoid
+        # issues with transparency
+        self.game.screen.blit(self.surface, (0, 0))
+
+    def draw(self, map_state):
+        self.res = self.game.screen.get_size()
+        self.margin = self.res[0] / 100
+
+        # Draw small minimap
+        if map_state == 1:
+            self.draw_minimap(True)
+        # Draw large minimap
+        elif map_state == 2:
+            self.draw_minimap(False)
+        self.draw_enemy_stats()
+        self.draw_in_game_gui()

@@ -35,12 +35,6 @@ class Player:
                 self.moving_left = True
             if event.key == pg.K_d:
                 self.moving_right = True
-            if event.key == pg.K_TAB:
-                if self.game.state["Game"].in_map:
-                    self.game.state["Game"].in_map = False
-                else:
-                    self.game.state["Game"].in_map = True
-
             if event.key == pg.K_EQUALS:
                 self.add_health(50)
             if event.key == pg.K_MINUS:

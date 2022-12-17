@@ -25,5 +25,5 @@ class PauseState(State):
         pass
 
     def draw(self):
-        pg.draw.rect(self.screen, (44, 44, 44), pg.Rect(0, 0, RES[0], RES[1]))
+        pg.draw.rect(self.game.screen, (44, 44, 44), pg.Rect(0, 0, self.game.screen.get_width(), self.game.screen.get_height()))
         self.draw_state_text()

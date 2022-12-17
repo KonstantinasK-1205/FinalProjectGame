@@ -5,7 +5,6 @@ from settings import *
 class State:
     def __init__(self, game):
         self.game = game
-        self.screen = game.screen
 
         self.title_text = ""
         self.text = []
@@ -39,6 +38,7 @@ class State:
             self.text_height += surface.get_height()
 
     def draw_state_text(self):
+        self.update_state_text()
         for surface in self.text_surfaces:
-            self.screen.blit(surface[1], (WIDTH / 2 - surface[1].get_width() / 2,
-                                          HEIGHT / 2 - self.text_height / 2 + surface[0]))
+            self.game.screen.blit(surface[1], (self.game.screen.get_width() / 2 - surface[1].get_width() / 2,
+                                               self.game.screen.get_height() / 2 - self.text_height / 2 + surface[0]))
