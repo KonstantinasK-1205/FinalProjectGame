@@ -10,6 +10,7 @@ class Renderer:
     def __init__(self, game):
         self.game = game
         self.objects_to_render = []
+        self.rects_to_render = []
         self.textures = {}
         self.vbos = {}
         self.draw_world = False
@@ -73,10 +74,10 @@ class Renderer:
         ])
 
         self.load_vbo("hud", [
-            1, 0,  1, -1,
-            1, 1,  1,  1,
-            0, 1, -1,  1,
-            0, 0, -1, -1
+            1, 0,  1, 1,
+            1, 1,  1,  0,
+            0, 1, 0,  0,
+            0, 0, 0, 1
         ])
 
         self.map_size = (0, 0)
@@ -141,6 +142,12 @@ class Renderer:
             self.draw_3d()
         self.draw_2d_fg()
 
+    def draw_fullscreen_rect(self, texture=None, color=(255, 255, 255, 255)):
+        self.draw_rect(0, 0, pg.display.get_window_size()[0], pg.display.get_window_size()[1], texture, color)
+
+    def draw_rect(self, x, y, width, height, texture=None, color=(255, 255, 255, 255)):
+        self.rects_to_render.append((x, y, width, height, texture, color))
+
     def draw_2d_bg(self):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
@@ -166,22 +173,43 @@ class Renderer:
         glDrawArrays(GL_QUADS, 0, 4)
 
     def draw_2d_fg(self):
+        glDisable(GL_DEPTH_TEST)
+
         glBindBuffer(GL_ARRAY_BUFFER, self.vbos["hud"])
         glTexCoordPointer(2, GL_FLOAT, 4 * 4, ctypes.c_void_p(0))
         glVertexPointer(2, GL_FLOAT, 4 * 4, ctypes.c_void_p(2 * 4))
 
-        glClear(GL_DEPTH_BUFFER_BIT)
-
-        self.load_texture_from_surface("hud", self.game.screen)
-        glBindTexture(GL_TEXTURE_2D, self.textures["hud"])
-
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
+        glOrtho(0, pg.display.get_window_size()[0], pg.display.get_window_size()[1], 0, 0, 100)
 
         glMatrixMode(GL_MODELVIEW)
-        glLoadIdentity()
 
-        glDrawArrays(GL_QUADS, 0, 4)
+        for rect in self.rects_to_render:
+            x = rect[0]
+            y = rect[1]
+            width = rect[2]
+            height = rect[3]
+            texture = rect[4]
+            color = rect[5]
+
+            if texture == None:
+                glBindTexture(GL_TEXTURE_2D, 0)
+            else:
+                glBindTexture(GL_TEXTURE_2D, self.textures[texture])
+            if len(color) == 3:
+                glColor3f(color[0] / 255, color[1] / 255, color[2] / 255)
+            else:
+                glColor4f(color[0] / 255, color[1] / 255, color[2] / 255, color[3] / 255)
+
+            glLoadIdentity()
+            glTranslatef(x, y, 0)
+            glScalef(width, height, 1)
+            glDrawArrays(GL_QUADS, 0, 4)
+
+        self.rects_to_render = []
+        glEnable(GL_DEPTH_TEST)
+        glColor4f(1, 1, 1, 1)
 
     def draw_3d(self):
         glClear(GL_DEPTH_BUFFER_BIT)

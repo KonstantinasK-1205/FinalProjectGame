@@ -20,7 +20,6 @@ class Game:
         pg.display.set_caption("Final Project")
         pg.display.set_icon(pg.image.load("logo.png"))
 
-        self.screen = pg.Surface((WIDTH, HEIGHT), pg.SRCALPHA)
         self.clock = pg.time.Clock()
         self.renderer = Renderer(self)
         self.object_handler = ObjectHandler()
@@ -67,18 +66,13 @@ class Game:
         self.state[self.current_state].update(self.dt)
 
     def draw(self):
-        self.screen.fill((0, 0, 0, 0))
+        self.renderer.render()
 
         self.state[self.current_state].draw()
 
         if self.hit_flash_ms < HIT_FLASH_MS:
-            surface = pg.Surface(self.screen.get_size(), pg.SRCALPHA)
-            surface.fill(HIT_FLASH_COLOR)
-            self.screen.blit(surface, (0, 0))
-
+            self.renderer.draw_rect(0, 0, pg.display.get_window_size()[0], pg.display.get_window_size()[1], None, HIT_FLASH_COLOR)
             self.hit_flash_ms = self.hit_flash_ms + self.dt
-
-        self.renderer.render()
 
         pg.display.flip()
 

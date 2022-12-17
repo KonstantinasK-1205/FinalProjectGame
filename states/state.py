@@ -39,6 +39,13 @@ class State:
 
     def draw_state_text(self):
         self.update_state_text()
-        for surface in self.text_surfaces:
-            self.game.screen.blit(surface[1], (self.game.screen.get_width() / 2 - surface[1].get_width() / 2,
-                                               self.game.screen.get_height() / 2 - self.text_height / 2 + surface[0]))
+        for i in range(len(self.text_surfaces)):
+            surface = self.text_surfaces[i]
+            self.game.renderer.load_texture_from_surface("state_text_" + str(i), surface[1])
+            self.game.renderer.draw_rect(
+                pg.display.get_window_size()[0] / 2 - surface[1].get_width() / 2,
+                pg.display.get_window_size()[1] / 2 - self.text_height / 2 + surface[0],
+                surface[1].get_width(),
+                surface[1].get_height(),
+                "state_text_" + str(i)
+            )

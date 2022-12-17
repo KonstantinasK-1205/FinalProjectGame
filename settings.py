@@ -3,8 +3,8 @@ import math
 # Game Settings
 WIDTH = 1280
 HEIGHT = 720
-VSYNC = 1
-PRINT_FPS = 0
+VSYNC = 0
+PRINT_FPS = 1
 
 # On mini map
 PLAYER_ANGLE = 1.5

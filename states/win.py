@@ -4,7 +4,7 @@ from states.state import *
 class WinState(State):
     def __init__(self, game):
         super().__init__(game)
-        self.victory_image = pg.image.load('resources/textures/win.png').convert_alpha()
+        self.game.renderer.load_texture_from_file("resources/textures/win.png")
         self.on_set_ms = 0
         self.elapsed_ms = 0
 
@@ -26,5 +26,4 @@ class WinState(State):
         self.elapsed_ms = pg.time.get_ticks() - self.on_set_ms
 
     def draw(self):
-        victory_image = pg.transform.scale(self.victory_image, self.game.screen.get_size())
-        self.game.screen.blit(victory_image, (0, 0))
+        self.game.renderer.draw_fullscreen_rect("resources/textures/win.png")
