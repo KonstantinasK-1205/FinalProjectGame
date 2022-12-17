@@ -39,10 +39,10 @@ class ObjectHandler:
         self.kill_reward()
         self.npc_positions = {npc.grid_pos for npc in self.npc_list if npc.alive}
         self.handle_pickups()
-        self.handle_bullets()
+        self.handle_bullets(dt)
 
         for npc in self.npc_list:
-            npc.update()
+            npc.update(dt)
 
         for npc in self.alive_npc_list:
             if npc.dead:
@@ -68,7 +68,7 @@ class ObjectHandler:
         for sprite in self.sprite_list:
             sprite.draw()
 
-    def handle_bullets(self):
+    def handle_bullets(self, dt):
         # Create new array in which we will store
         # index of element we remove
         remove = []
@@ -76,7 +76,7 @@ class ObjectHandler:
             # If sprite wasn't used just update it,
             # otherwise add to remove array
             if not bullet.collided:
-                bullet.update()
+                bullet.update(dt)
             else:
                 remove.append(index)
 

@@ -30,12 +30,12 @@ class Renderer:
         glEnableClientState(GL_TEXTURE_COORD_ARRAY)
         glEnableClientState(GL_VERTEX_ARRAY)
 
-        self.load_texture_from_file("resources/textures/sky.jpg")
-        self.load_texture_from_file("resources/textures/floor.png")
-        self.load_texture_from_file("resources/textures/wall1.png")
-        self.load_texture_from_file("resources/textures/wall2.png")
-        self.load_texture_from_file("resources/textures/wall3.png")
-        self.load_texture_from_file("resources/textures/wall4.png")
+        self.load_texture_from_file("resources/textures/sky.jpg", True)
+        self.load_texture_from_file("resources/textures/floor.png", True)
+        self.load_texture_from_file("resources/textures/wall1.png", True)
+        self.load_texture_from_file("resources/textures/wall2.png", True)
+        self.load_texture_from_file("resources/textures/wall3.png", True)
+        self.load_texture_from_file("resources/textures/wall4.png", True)
 
         self.load_vbo("wall", [
             0, 0, 0, 0, 1,
@@ -117,11 +117,11 @@ class Renderer:
         glBindBuffer(GL_ARRAY_BUFFER, self.vbos[name])
         glBufferData(GL_ARRAY_BUFFER, len(array_bytes), array_bytes, GL_STATIC_DRAW)
 
-    def load_texture_from_file(self, path):
+    def load_texture_from_file(self, path, repeat = False):
         surface = pg.image.load(path)
-        self.load_texture_from_surface(path, surface)
+        self.load_texture_from_surface(path, surface, repeat)
 
-    def load_texture_from_surface(self, path, surface):
+    def load_texture_from_surface(self, path, surface, repeat = False):
         bitmap = pg.image.tostring(surface, "RGBA", 1)
 
         # Is the GL texture already created?
@@ -132,6 +132,12 @@ class Renderer:
         glBindTexture(GL_TEXTURE_2D, self.textures[path])
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+        if repeat:
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
+        else:
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surface.get_width(), surface.get_height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, bitmap)
 
     def render(self):
@@ -186,10 +192,11 @@ class Renderer:
         glMatrixMode(GL_MODELVIEW)
 
         for rect in self.rects_to_render:
-            x = rect[0]
-            y = rect[1]
-            width = rect[2]
-            height = rect[3]
+            # Position and size should be rounded to avoid blurry text, etc.
+            x = round(rect[0])
+            y = round(rect[1])
+            width = round(rect[2])
+            height = round(rect[3])
             texture = rect[4]
             color = rect[5]
 

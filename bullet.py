@@ -14,7 +14,7 @@ class Bullet:
         self.height = 0.3
         self.angle = angle
         self.angle_ver = angle_ver
-        self.speed = 0.2
+        self.speed = 0.012
         self.scale = 0.005
         self.owner = owner
         self.damage = damage
@@ -24,7 +24,7 @@ class Bullet:
         self.time_to_live = lifetime
         self.creation_time = pg.time.get_ticks()
 
-    def update(self):
+    def update(self, dt):
         # If bullet alive for longer period than it should, count as collided
         if self.time_alive >= self.time_to_live:
             self.collided = True
@@ -44,9 +44,9 @@ class Bullet:
                     self.player.apply_damage(self.damage)
 
             # Calculate relative velocity for next frame
-            dx = self.speed * math.cos(self.angle) * math.cos(self.angle_ver)
-            dy = self.speed * math.sin(self.angle) * math.cos(self.angle_ver)
-            dz = self.speed * math.sin(self.angle_ver)
+            dx = self.speed * math.cos(self.angle) * math.cos(self.angle_ver) * dt
+            dy = self.speed * math.sin(self.angle) * math.cos(self.angle_ver) * dt
+            dz = self.speed * math.sin(self.angle_ver) * dt
 
             # Check collision with walls on X axis
             if not self.collision_with_wall((int(self.x + dx * self.scale), int(self.y))):

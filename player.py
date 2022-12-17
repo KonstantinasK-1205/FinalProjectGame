@@ -8,7 +8,6 @@ from collections import deque
 class Player:
     def __init__(self, game):
         self.game = game
-        self.rel = 0
         self.x = 0
         self.y = 0
         self.z = 0
@@ -54,11 +53,8 @@ class Player:
 
     def update(self, dt):
         rel = pg.mouse.get_rel()
-        self.rel = max(-MOUSE_MAX_REL, min(MOUSE_MAX_REL, rel[0]))
-        self.angle = (self.angle + self.rel * MOUSE_SENSITIVITY * dt) % math.tau
-
-        rel_ver = max(-MOUSE_MAX_REL, min(MOUSE_MAX_REL, rel[1]))
-        self.angle_ver = (self.angle_ver + rel_ver * MOUSE_SENSITIVITY * dt) % math.tau
+        self.angle = (self.angle + rel[0] * MOUSE_SENSITIVITY) % math.tau
+        self.angle_ver = (self.angle_ver + rel[1] * MOUSE_SENSITIVITY) % math.tau
         if self.angle_ver > math.radians(90) and self.angle_ver < math.radians(180):
             self.angle_ver = math.radians(90)
         elif self.angle_ver > math.radians(180) and self.angle_ver < math.radians(270):

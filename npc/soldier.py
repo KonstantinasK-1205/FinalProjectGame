@@ -11,7 +11,7 @@ class Soldier(NPC):
         self.pain = False
         self.alive = True
         self.health = 100
-        self.speed = 0.03
+        self.speed = 0.002
         self.damage = random.randint(15, 20)
         self.attack_dist = random.randint(3, 5)
         self.shoot_delay = 250

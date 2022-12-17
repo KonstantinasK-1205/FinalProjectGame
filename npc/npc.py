@@ -17,7 +17,7 @@ class NPC(Sprite):
         self.pain = False
         self.alive = True
         self.health = 100
-        self.speed = 0.03
+        self.speed = 0.002
         self.damage = 0
         self.damage_reduction = 0
         self.attack_dist = 0
@@ -71,12 +71,12 @@ class NPC(Sprite):
         self.current_time = 0
         self.previous_shot = 0
 
-    def update(self):
+    def update(self, dt):
         self.current_time = pg.time.get_ticks()
         self.check_animation_time()
-        self.run_logic()
+        self.run_logic(dt)
 
-    def run_logic(self):
+    def run_logic(self, dt):
         if self.alive:
             # NPC angle is always opposing player - used for movement and sight
             # calculation
@@ -98,11 +98,11 @@ class NPC(Sprite):
                 else:
                     self.current_animation = "Walk"
                     self.animate()
-                    self.movement()
+                    self.movement(dt)
             elif self.approaching_player:
                 self.current_animation = "Walk"
                 self.animate()
-                self.movement()
+                self.movement(dt)
             else:
                 self.current_animation = "Idle"
                 self.animate()
@@ -141,11 +141,11 @@ class NPC(Sprite):
             self.game.sound.play_sound(self.npc_death, self.exact_pos, self.player.exact_pos)
 
     # Movement
-    def movement(self):
+    def movement(self, dt):
         next_pos = self.game.pathfinding.get_path(self.grid_pos, self.player.grid_pos)
         if next_pos not in self.game.object_handler.npc_positions:
-            dx = math.cos(self.angle) * self.speed
-            dy = math.sin(self.angle) * self.speed
+            dx = math.cos(self.angle) * self.speed * dt
+            dy = math.sin(self.angle) * self.speed * dt
 
             if not self.game.map.is_wall(int(self.x + dx * self.size), int(self.y)):
                 self.x += dx

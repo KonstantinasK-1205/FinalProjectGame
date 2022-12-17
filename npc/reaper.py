@@ -12,7 +12,7 @@ class Reaper(NPC):
         self.pain = False
         self.alive = True
         self.health = 240
-        self.speed = 0.03
+        self.speed = 0.002
         self.damage = random.randint(7, 11)
         self.attack_dist = 1
         self.shoot_delay = 80
@@ -88,8 +88,8 @@ class Reaper(NPC):
             self.teleport()
         super().movement()
 
-    def update(self):
-        super().update()
+    def update(self, dt):
+        super().update(dt)
         if self.current_time - self.last_teleportation_time > self.teleportation_cooldown:
             self.teleported = False
 

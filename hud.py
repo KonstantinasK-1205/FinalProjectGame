@@ -36,12 +36,12 @@ class Hud:
         self.game.renderer.draw_rect(
             self.margin + health_icon_width + 5,
             self.res[1] - health_icon_height - self.margin,
-            health_bar_width,
+            health_bar_hp,
             health_bar_height,
             color=(6, 100, 32, 200)
         )
 
-        health_text = self.game.font_small.render(str(self.game.player.health), False, (0, 64, 0))
+        health_text = self.game.font_small.render(str(self.game.player.health), True, (0, 64, 0))
         self.game.renderer.load_texture_from_surface("health_text", health_text)
         self.game.renderer.draw_rect(
             self.margin + health_icon_width + 5 + health_bar_width / 2 - health_text.get_width() / 2,
@@ -77,12 +77,12 @@ class Hud:
         self.game.renderer.draw_rect(
             self.margin + armor_icon_width + 5,
             self.res[1] - armor_icon_height * 2 - self.margin,
-            armor_bar_width,
+            armor_bar_hp,
             armor_bar_height,
             color=(12, 32, 100, 200)
         )
 
-        armor_text = self.game.font_small.render(str(self.game.player.armor), False, (0, 0, 64))
+        armor_text = self.game.font_small.render(str(self.game.player.armor), True, (0, 0, 64))
         self.game.renderer.load_texture_from_surface("armor_text", armor_text)
         self.game.renderer.draw_rect(
             self.margin + armor_icon_width + 5 + armor_bar_width / 2 - armor_text.get_width() / 2,
