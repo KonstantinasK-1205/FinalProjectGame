@@ -22,6 +22,8 @@ class NPC(Sprite):
         self.damage_reduction = 0
         self.attack_dist = 0
         self.bullet_lifetime = 0
+        self.reaction_time = random.randrange(600, 1200, 100)
+        self.reaction_time_passed = 0
 
         # NPC animation variables
         self.current_animation = "Idle"
@@ -78,10 +80,12 @@ class NPC(Sprite):
     # Attack
     def attack(self):
         if self.animations[self.current_animation]["Animation Completed"]:
-            if self.current_time - self.previous_shot > self.animations["Attack"]["Attack Speed"]:
-                self.create_bullet()
-                self.game.sound.play_sound(self.npc_attack, self.exact_pos, self.player.exact_pos)
-                self.previous_shot = pg.time.get_ticks()
+            if self.current_time - self.reaction_time_passed > self.reaction_time:
+                if self.current_time - self.previous_shot > self.animations["Attack"]["Attack Speed"]:
+                    self.create_bullet()
+                    self.game.sound.play_sound(self.npc_attack, self.exact_pos, self.player.exact_pos)
+                    self.previous_shot = pg.time.get_ticks()
+                    self.reaction_time_passed = pg.time.get_ticks()
 
     def create_bullet(self):
         # Add damage reduction based on how far Player from npc
@@ -91,7 +95,7 @@ class NPC(Sprite):
         else:
             damage = 0
         # Calculate enemy angle, so bullet flies exactly where NPC is looking
-        angle = math.atan2(self.player.y - self.y, self.player.x - self.x)
+        angle = math.atan2(self.player.y - random.random() - self.y, self.player.x - random.random() - self.x)
         self.game.object_handler.add_bullet(Bullet(self.game, self.exact_pos,
                                                    damage, angle, 0, "enemy", self.bullet_lifetime))
 
