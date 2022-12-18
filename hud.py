@@ -11,7 +11,7 @@ class Hud:
         self.game.renderer.load_texture_from_file("resources/icons/gui_health.png")
 
     def draw_health_bar(self):
-        health_icon_width = self.game.width / 35
+        health_icon_width = self.game.width / 40
         health_icon_height = self.game.height / 25
 
         health_bar_width = self.game.width / 8
@@ -52,7 +52,7 @@ class Hud:
         )
 
     def draw_armor_bar(self):
-        armor_icon_width = self.game.width / 35
+        armor_icon_width = self.game.width / 40
         armor_icon_height = self.game.height / 25
 
         armor_bar_width = self.game.width / 8
@@ -136,8 +136,8 @@ class Hud:
         # Display a small minimap
         if small:
             # Maximum minimap size
-            minimap_width = self.game.width / 3
-            minimap_height = self.game.height / 2
+            minimap_width = self.game.width / 5
+            minimap_height = self.game.height / 4
 
             # Maximum tile size
             tile_size = min(int(minimap_width / self.game.map.width), int(minimap_height / self.game.map.height))
@@ -228,5 +228,5 @@ class Hud:
         # Draw large minimap
         elif map_state == 2:
             self.draw_minimap(False)
-        self.draw_enemy_stats()
+            self.draw_enemy_stats()
         self.draw_in_game_gui()

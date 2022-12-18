@@ -15,6 +15,14 @@ class Sound:
         self.shotgun_melee = pg.mixer.Sound(self.path + 'weapon_shotgun_melee.wav')
 
         # NPC Sounds
+        self.npc_zombie_pain = pg.mixer.Sound(self.path + 'npc_zombie_pain.wav')
+        self.npc_zombie_death = pg.mixer.Sound(self.path + 'npc_zombie_death.wav')
+        self.npc_zombie_attack = pg.mixer.Sound(self.path + 'npc_zombie_attack.wav')
+
+        self.npc_battlelord_pain = pg.mixer.Sound(self.path + 'npc_battlelord_pain.wav')
+        self.npc_battlelord_death = pg.mixer.Sound(self.path + 'npc_battlelord_death.wav')
+        self.npc_battlelord_attack = pg.mixer.Sound(self.path + 'npc_battlelord_attack.wav')
+
         self.npc_soldier_pain = pg.mixer.Sound(self.path + 'npc_soldier_pain.wav')
         self.npc_soldier_death = pg.mixer.Sound(self.path + 'npc_soldier_death.wav')
         self.npc_soldier_attack = pg.mixer.Sound(self.path + 'npc_soldier_attack.wav')

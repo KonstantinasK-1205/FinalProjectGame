@@ -1,6 +1,10 @@
 from bullet import Bullet
 from npc.reaper import Reaper
 from npc.soldier import Soldier
+from npc.lostsoul import LostSoul
+from npc.pinky import Pinky
+from npc.battlelord import Battlelord
+from npc.zombie import Zombie
 from sprites.sprite import Sprite
 from sprites.pickup_ammo_machinegun import MachinegunPickupAmmo
 from sprites.pickup_ammo_shotgun import ShotgunPickupAmmo
@@ -75,8 +79,20 @@ class Map:
                 elif char == "e":
                     self.game.object_handler.add_npc(Soldier(self.game, pos=(x + 0.5, y + 0.5)))
                     self.enemy_amount += 1
+                elif char == "l":
+                    self.game.object_handler.add_npc(LostSoul(self.game, pos=(x + 0.5, y + 0.5)))
+                    self.enemy_amount += 1
                 elif char == "r":
                     self.game.object_handler.add_npc(Reaper(self.game, pos=(x + 0.5, y + 0.5)))
+                    self.enemy_amount += 1
+                elif char == "B":
+                    self.game.object_handler.add_npc(Battlelord(self.game, pos=(x + 0.5, y + 0.5)))
+                    self.enemy_amount += 1
+                elif char == "z":
+                    self.game.object_handler.add_npc(Zombie(self.game, pos=(x + 0.5, y + 0.5)))
+                    self.enemy_amount += 1
+                elif char == "P":
+                    self.game.object_handler.add_npc(Pinky(self.game, pos=(x + 0.5, y + 0.5)))
                     self.enemy_amount += 1
                 elif char == "h":
                     self.game.object_handler.add_pickup(PickupHealth(self.game, pos=(x + 0.5, y + 0.5)))

@@ -17,6 +17,7 @@ class Sprite:
         self.height = scale
 
         # Init texture and animation variables
+        self.spritesheet = None
         self.texture_path = None
         self.current_animation = None
         self.animations = {}
@@ -42,6 +43,17 @@ class Sprite:
                 texture_path = path + '/' + file_name
                 self.game.renderer.load_texture_from_file(texture_path)
                 images.append(texture_path)
+        return images
+
+    def images_at(self, texture_name, rects):
+        frame = 0
+        images = deque()
+        for rect in rects:
+            texture = texture_name + str(frame)
+            image = self.spritesheet.subsurface(rect)
+            self.game.renderer.load_texture_from_surface(texture, image)
+            images.append(texture)
+            frame += 1
         return images
 
     def animate(self):

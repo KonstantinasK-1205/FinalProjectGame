@@ -55,9 +55,9 @@ class Player:
         rel = pg.mouse.get_rel()
         self.angle = (self.angle + rel[0] * MOUSE_SENSITIVITY) % math.tau
         self.angle_ver = (self.angle_ver + rel[1] * MOUSE_SENSITIVITY) % math.tau
-        if self.angle_ver > math.radians(90) and self.angle_ver < math.radians(180):
+        if math.radians(90) < self.angle_ver < math.radians(180):
             self.angle_ver = math.radians(90)
-        elif self.angle_ver > math.radians(180) and self.angle_ver < math.radians(270):
+        elif math.radians(180) < self.angle_ver < math.radians(270):
             self.angle_ver = math.radians(270)
 
         self.movement(dt)

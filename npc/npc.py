@@ -24,41 +24,8 @@ class NPC(Sprite):
         self.bullet_lifetime = 0
 
         # NPC animation variables
-        animation_path = "resources/sprites/npc/soldier/"
         self.current_animation = "Idle"
-        self.animations = {
-            "Idle": {
-                "Frames": self.load_animation_textures(animation_path + "/idle"),
-                "Counter": 0,
-                "Animation Speed": 180,
-                "Animation Completed": False,
-            },
-            "Walk": {
-                "Frames": self.load_animation_textures(animation_path + "/walk"),
-                "Counter": 0,
-                "Animation Speed": 180,
-                "Animation Completed": False,
-            },
-            "Attack": {
-                "Frames": self.load_animation_textures(animation_path + "/attack"),
-                "Counter": 0,
-                "Animation Speed": 800,
-                "Attack Speed": 180,
-                "Animation Completed": False,
-            },
-            "Pain": {
-                "Frames": self.load_animation_textures(animation_path + "/pain"),
-                "Counter": 0,
-                "Animation Speed": 180,
-                "Animation Completed": False,
-            },
-            "Death": {
-                "Frames": self.load_animation_textures(animation_path + "/death"),
-                "Counter": 0,
-                "Animation Speed": 180,
-                "Animation Completed": False,
-            }
-        }
+        self.animations = {}
 
         # Sounds
         self.npc_attack = self.game.sound.npc_soldier_attack
@@ -91,10 +58,9 @@ class NPC(Sprite):
                 self.approaching_player = True
 
                 if self.distance_from(self.player) < self.attack_dist:
-                    if self.current_time - self.previous_shot > self.animations["Attack"]["Attack Speed"]:
-                        self.current_animation = "Attack"
-                        self.animate()
-                        self.attack()
+                    self.current_animation = "Attack"
+                    self.animate()
+                    self.attack()
                 else:
                     self.current_animation = "Walk"
                     self.animate()
@@ -112,9 +78,10 @@ class NPC(Sprite):
     # Attack
     def attack(self):
         if self.animations[self.current_animation]["Animation Completed"]:
-            self.create_bullet()
-            self.game.sound.play_sound(self.npc_attack, self.exact_pos, self.player.exact_pos)
-            self.previous_shot = pg.time.get_ticks()
+            if self.current_time - self.previous_shot > self.animations["Attack"]["Attack Speed"]:
+                self.create_bullet()
+                self.game.sound.play_sound(self.npc_attack, self.exact_pos, self.player.exact_pos)
+                self.previous_shot = pg.time.get_ticks()
 
     def create_bullet(self):
         # Add damage reduction based on how far Player from npc
@@ -173,7 +140,7 @@ class NPC(Sprite):
         STEP = 0.5
         # Limiting the max number of steps makes NPC near-sighted, but prevents
         # the check from taking too long
-        MAX_STEPS = 100
+        MAX_STEPS = 25
 
         # If it is possible to walk straight line to the player, it means that
         # NPC can see them
