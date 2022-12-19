@@ -64,7 +64,8 @@ class Game:
                 self.font = pg.font.Font("resources/fonts/Font.ttf", int(36 / 1280 * event.w))
                 self.font_small = pg.font.Font("resources/fonts/Font.ttf", int(24 / 1280 * event.w))
             elif event.type == self.PRINTFPSEVENT:
-               print(str(int(self.clock.get_fps())) + " FPS")
+                print(str(int(self.clock.get_fps())) + " FPS")
+
             self.state[self.current_state].handle_events(event)
 
     def update(self):
@@ -81,7 +82,7 @@ class Game:
         if self.hit_flash_ms < HIT_FLASH_MS:
             self.renderer.draw_fullscreen_rect(color=HIT_FLASH_COLOR)
 
-        self.renderer.render()
+        self.renderer.draw_queued()
         pg.display.flip()
 
     def new_game(self, level):

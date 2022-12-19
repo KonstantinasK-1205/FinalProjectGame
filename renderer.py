@@ -9,7 +9,7 @@ from settings import *
 class Renderer:
     def __init__(self, game):
         self.game = game
-        self.objects_to_render = []
+        self.sprites_to_render = []
         self.rects_to_render = []
         self.textures = {}
         self.vbos = {}
@@ -38,25 +38,25 @@ class Renderer:
         self.load_texture_from_file("resources/textures/wall4.png", True)
 
         self.load_vbo("wall", [
-            0, 0, 0, 0, 1,
-            1, 0, 1, 0, 1,
-            1, 1, 1, 1, 1,
-            0, 1, 0, 1, 1,
+            0, 0  , 0, 0  , 1,
+            1, 0  , 1, 0  , 1,
+            1, 1.5, 1, 1.5, 1,
+            0, 1.5, 0, 1.5, 1,
 
-            1, 0, 0, 0, 0,
-            1, 1, 0, 1, 0,
-            0, 1, 1, 1, 0,
-            0, 0, 1, 0, 0,
+            1, 0  , 0, 0  , 0,
+            1, 1.5, 0, 1.5, 0,
+            0, 1.5, 1, 1.5, 0,
+            0, 0  , 1, 0  , 0,
 
-            1, 0, 1, 0, 0,
-            1, 1, 1, 1, 0,
-            0, 1, 1, 1, 1,
-            0, 0, 1, 0, 1,
+            1, 0  , 1, 0  , 0,
+            1, 1.5, 1, 1.5, 0,
+            0, 1.5, 1, 1.5, 1,
+            0, 0  , 1, 0  , 1,
 
-            0, 0, 0, 0, 0,
-            1, 0, 0, 0, 1,
-            1, 1, 0, 1, 1,
-            0, 1, 0, 1, 0
+            0, 0  , 0, 0  , 0,
+            1, 0  , 0, 0  , 1,
+            1, 1.5, 0, 1.5, 1,
+            0, 1.5, 0, 1.5, 0
         ])
 
         self.load_vbo("object", [
@@ -74,9 +74,9 @@ class Renderer:
         ])
 
         self.load_vbo("hud", [
-            1, 0,  1, 1,
-            1, 1,  1,  0,
-            0, 1, 0,  0,
+            1, 0, 1, 1,
+            1, 1, 1, 0,
+            0, 1, 0, 0,
             0, 0, 0, 1
         ])
 
@@ -140,19 +140,22 @@ class Renderer:
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surface.get_width(), surface.get_height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, bitmap)
 
-    def render(self):
+    def draw_rect(self, x, y, width, height, texture=None, color=(255, 255, 255, 255)):
+        self.rects_to_render.append(self.Renderable(x, y, None, width, height, texture, color))
+
+    def draw_fullscreen_rect(self, texture=None, color=(255, 255, 255, 255)):
+        self.draw_rect(0, 0, self.game.width, self.game.height, texture, color)
+
+    def draw_sprite(self, x, y, z, width, height, texture=None, color=(255, 255, 255, 255)):
+        self.sprites_to_render.append(self.Renderable(x, y, z, width, height, texture, color))
+
+    def draw_queued(self):
         glViewport(0, 0, self.game.width, self.game.height)
 
         if self.draw_world:
             self.draw_2d_bg()
             self.draw_3d()
         self.draw_2d_fg()
-
-    def draw_fullscreen_rect(self, texture=None, color=(255, 255, 255, 255)):
-        self.draw_rect(0, 0, self.game.width, self.game.height, texture, color)
-
-    def draw_rect(self, x, y, width, height, texture=None, color=(255, 255, 255, 255)):
-        self.rects_to_render.append((x, y, width, height, texture, color))
 
     def draw_2d_bg(self):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -193,29 +196,31 @@ class Renderer:
 
         for rect in self.rects_to_render:
             # Position and size should be rounded to avoid blurry text, etc.
-            x = round(rect[0])
-            y = round(rect[1])
-            width = round(rect[2])
-            height = round(rect[3])
-            texture = rect[4]
-            color = rect[5]
+            rect.x = round(rect.x)
+            rect.y = round(rect.y)
+            rect.width = round(rect.width)
+            rect.height = round(rect.height)
 
-            if texture == None:
+            if rect.texture == None:
                 glBindTexture(GL_TEXTURE_2D, 0)
             else:
-                glBindTexture(GL_TEXTURE_2D, self.textures[texture])
-            if len(color) == 3:
-                glColor3f(color[0] / 255, color[1] / 255, color[2] / 255)
-            else:
-                glColor4f(color[0] / 255, color[1] / 255, color[2] / 255, color[3] / 255)
+                glBindTexture(GL_TEXTURE_2D, self.textures[rect.texture])
+
+            glColor4f(1, 1, 1, 1)
+            if not rect.color == None:
+                if len(rect.color) == 3:
+                    glColor3f(rect.color[0] / 255, rect.color[1] / 255, rect.color[2] / 255)
+                elif len(rect.color) == 4:
+                    glColor4f(rect.color[0] / 255, rect.color[1] / 255, rect.color[2] / 255, rect.color[3] / 255)
 
             glLoadIdentity()
-            glTranslatef(x, y, 0)
-            glScalef(width, height, 1)
+            glTranslatef(rect.x, rect.y, 0)
+            glScalef(rect.width, rect.height, 1)
             glDrawArrays(GL_QUADS, 0, 4)
 
         self.rects_to_render = []
         glEnable(GL_DEPTH_TEST)
+
         glColor4f(1, 1, 1, 1)
 
     def draw_3d(self):
@@ -230,7 +235,7 @@ class Renderer:
 
         glRotatef(math.degrees(self.game.player.angle_ver), 1, 0, 0)
         glRotatef(math.degrees(self.game.player.angle) + 90, 0, 1, 0)
-        glTranslatef(-self.game.player.x, -0.5, -self.game.player.y)
+        glTranslatef(-self.game.player.x, -self.game.player.z - 0.6, -self.game.player.y)
 
         self.draw_3d_floor()
         self.draw_3d_map()
@@ -271,23 +276,32 @@ class Renderer:
 
     def draw_3d_objects(self):
         glDisable(GL_CULL_FACE)
-
+ 
         glBindBuffer(GL_ARRAY_BUFFER, self.vbos["object"])
         glTexCoordPointer(2, GL_FLOAT, 5 * 4, ctypes.c_void_p(0))
         glVertexPointer(3, GL_FLOAT, 5 * 4, ctypes.c_void_p(2 * 4))
 
         # Objects must be sorted closest to player first for transparency to
         # work properly
-        for o in self.objects_to_render:
-            o.distance_from_player = math.hypot(o.x - self.game.player.x, o.y - self.game.player.y, o.z - self.game.player.z)
+        for o in self.sprites_to_render:
+            o.__distance_from_player = math.hypot(o.x - self.game.player.x, o.y - self.game.player.y, o.z - self.game.player.z)
+        self.sprites_to_render = sorted(self.sprites_to_render, key=lambda t: t.__distance_from_player, reverse=True)
 
-        self.objects_to_render = sorted(self.objects_to_render, key=lambda t: t.distance_from_player, reverse=True)
-
-        for o in self.objects_to_render:
-            if o.texture_path not in self.textures:
+        for o in self.sprites_to_render:
+            if o.texture not in self.textures:
                 continue
 
-            glBindTexture(GL_TEXTURE_2D, self.textures[o.texture_path])
+            if o.texture == None:
+                glBindTexture(GL_TEXTURE_2D, 0)
+            else:
+                glBindTexture(GL_TEXTURE_2D, self.textures[o.texture])
+
+            glColor4f(1, 1, 1, 1)
+            if not o.color == None:
+                if len(o.color) == 3:
+                    glColor3f(o.color[0] / 255, o.color[1] / 255, o.color[2] / 255)
+                elif len(o.color) == 4:
+                    glColor4f(o.color[0] / 255, o.color[1] / 255, o.color[2] / 255, o.color[3] / 255)
 
             glPushMatrix()
 
@@ -300,6 +314,19 @@ class Renderer:
 
             glPopMatrix()
 
-        self.objects_to_render = []
+        self.sprites_to_render = []
 
         glEnable(GL_CULL_FACE)
+
+        glColor4f(1, 1, 1, 1)
+
+
+    class Renderable:
+        def __init__(self, x, y, z, width, height, texture, color):
+            self.x = x
+            self.y = y
+            self.z = z
+            self.width = width
+            self.height = height
+            self.texture = texture
+            self.color = color
