@@ -6,7 +6,7 @@
 1	1	1	1			c	1			1	1			1	a	1		b		1	h	1									1									1
 1			1	z			1			1	1	e	z	1	1						1	1								1									l	1
 1		e				P	1			1	1				z				z			1	1	1	1	1	1	1	1											1
-1			1				1				z	z						r									P	b	b	a					r				P	1
+1			1				1				z	z					P	r									P	b	b	a					r				P	1
 1	a	h	1	e			1		z								z			z		1	1	1	1	1	1	1	1											1
 1	1	1	1				1			1	1		e	1	1						1	1								1									l	1
 1	b	b	1	b			1			1	1			1	1	1	c		c	1	1										1									1
@@ -15,17 +15,17 @@
 1	p						1						e	1		1	a		a	1
 1	a	a	c	1			1			z			b	1		1	c		c	1
 1	1	1	1	1			1	1	1	1	1	1	1	1	1	1	z		z	1
-1	a	a	1				1	h							h	1	e		e	1
-1	b	m	1		r		1	a							a	1	c		c	1
-1	h	h	1				1									1	h	z	h	1
-1			1	b	a	h	1									1	h		h	1
+1	a	a	1				1	h		a					h	1	e		e	1
+1	b	m	1		r		1	a							a	1	c	l	c	1
+1	h	h	1			l	1	a								1	h	z	h	1
+1			1	b	a	h	1	a								1	h		h	1
 1	1		1	1	1	1	1									1	c		c	1
-1	m									B						1	b	z	b	1
+1	m				h	h				B						1	b	z	b	1
 1																1	b		b	1
 1																1	c	e	c	1
-1																1				1
-1																1				1
-1																1	c	m	c	1
+1															h	1	m		m	1
+1															h	1				1
+1																1	c	b	c	1
 1																				1
-1															m	1	c	z	z	1
+1					a	a	a					h	h		m	1	c	z	z	1
 1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1

@@ -6,6 +6,7 @@ from renderer import *
 from sound import *
 from states.game import GameState
 from states.intro import IntroState
+from states.menu import MenuState
 from states.loading import LoadingState
 from states.lose import LoseState
 from states.pause import PauseState
@@ -33,6 +34,7 @@ class Game:
 
         self.state = {
             "Intro": IntroState(self),
+            "Menu": MenuState(self),
             "Loading": LoadingState(self),
             "Game": GameState(self),
             "Pause": PauseState(self),

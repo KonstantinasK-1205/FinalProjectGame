@@ -17,11 +17,9 @@ class IntroState(State):
     def handle_events(self, event):
         if event.type == pg.KEYUP:
             if event.key == pg.K_RETURN or event.key == pg.K_SPACE:
-                self.game.current_state = "Loading"
-                self.game.new_game("resources/levels/" + self.game.map_lists[0] + ".txt")
+                self.game.current_state = "Menu"
         if event.type == pg.MOUSEBUTTONUP and event.button == 1:
-            self.game.current_state = "Loading"
-            self.game.new_game("resources/levels/" + self.game.map_lists[0] + ".txt")
+            self.game.current_state = "Menu"
 
     def update(self, dt):
         pass
