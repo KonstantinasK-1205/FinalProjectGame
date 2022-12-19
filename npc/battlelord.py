@@ -69,7 +69,6 @@ class Battlelord(NPC):
         }
 
         # NPC sound variables
-        self.npc_pain = self.game.sound.npc_battlelord_pain
-        self.npc_death = self.game.sound.npc_battlelord_death
-        self.npc_attack = self.game.sound.npc_battlelord_attack
-
+        self.sfx_attack = "Battlelord attack"
+        self.sfx_pain = "Battlelord pain"
+        self.sfx_death = "Battlelord death"

@@ -83,10 +83,9 @@ class Pinky(NPC):
         }
 
         # NPC sound variables
-        self.npc_pain = self.game.sound.npc_reaper_pain
-        self.npc_death = self.game.sound.npc_reaper_death
-        self.npc_attack = self.game.sound.npc_reaper_attack
-        self.npc_teleportation = self.game.sound.npc_reaper_teleportation
+        self.sfx_attack = "Soldier attack"
+        self.sfx_pain = "Soldier pain"
+        self.sfx_death = "Soldier death"
 
     def update(self, dt):
         super().update(dt)

@@ -12,7 +12,7 @@ class WinState(State):
         self.on_set_ms = pg.time.get_ticks()
         self.elapsed_ms = 0
         pg.mixer.stop()
-        self.game.sound.win.play()
+        self.game.sound.play_sfx("Win")
 
     def handle_events(self, event):
         if self.elapsed_ms > STATE_WAIT_MS:

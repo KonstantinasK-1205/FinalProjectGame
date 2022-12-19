@@ -28,7 +28,7 @@ class ObjectHandler:
         reward = self.killed
         if self.game.map.enemy_amount > 10 and reward > int(self.game.map.enemy_amount / 1.5) and not self.dmgIncreased:
             self.game.weapon.set_damage_buff(1.5)
-            self.game.sound.buff_damage.play()
+            self.game.sound.play_sfx("Player dmg buff")
             self.dmgIncreased = True
 
         if reward >= self.game.map.enemy_amount:

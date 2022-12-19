@@ -63,7 +63,7 @@ class Bullet:
 
     def collision_with_wall(self, pos):
         if self.game.map.is_wall(pos[0], pos[1]):
-            self.game.sound.bullet_wall.play()
+            self.game.sound.play_sfx("Bullet in wall")
             self.collided = True
             return True
         return False

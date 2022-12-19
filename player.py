@@ -34,10 +34,6 @@ class Player:
                 self.moving_left = True
             if event.key == pg.K_d:
                 self.moving_right = True
-            if event.key == pg.K_EQUALS:
-                self.add_health(50)
-            if event.key == pg.K_MINUS:
-                self.apply_damage(25)
 
         elif event.type == pg.KEYUP:
             if event.key == pg.K_w:
@@ -187,7 +183,7 @@ class Player:
         # Give audible & visual feedback to player, if he is still alive
         if self.health > 1:
             self.game.hit_flash_ms = 0
-            self.game.sound.player_pain.play()
+            self.game.sound.play_sfx("Player pain")
         else:
             self.game.current_state = "Game over"
 

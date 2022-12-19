@@ -7,8 +7,8 @@ class IntroState(State):
 
         self.title_text = "Welcome to Final Project!"
         self.text.append("")
-        self.text.append("You must kill all enemies to proceed to the next level.")
-        self.text.append("Press Space or Left Mouse Button to start!")
+        self.text.append("In this game you must kill all enemies to proceed to the next level.")
+        self.text.append("Press Space or Left Mouse Button to proceed to menu!")
         self.update_state_text()
 
     def on_set(self):

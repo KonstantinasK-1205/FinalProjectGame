@@ -15,7 +15,7 @@ class GameState(State):
         self.game.player.handle_events(event)
         if event.type == pg.KEYUP:
             if event.key == pg.K_ESCAPE:
-                self.game.current_state = "Pause"
+                self.game.current_state = "Menu"
             elif event.key == pg.K_TAB:
                 self.map_state = (self.map_state + 1) % 3
 

@@ -70,6 +70,6 @@ class Zombie(NPC):
         }
 
         # Sounds
-        self.npc_attack = self.game.sound.npc_zombie_attack
-        self.npc_pain = self.game.sound.npc_zombie_pain
-        self.npc_death = self.game.sound.npc_zombie_death
+        self.sfx_attack = "Zombie attack"
+        self.sfx_pain = "Zombie pain"
+        self.sfx_death = "Zombie death"

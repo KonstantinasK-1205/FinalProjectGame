@@ -78,10 +78,9 @@ class LostSoul(NPC):
         }
 
         # NPC sound variables
-        self.npc_pain = self.game.sound.npc_reaper_pain
-        self.npc_death = self.game.sound.npc_reaper_death
-        self.npc_attack = self.game.sound.npc_reaper_attack
-        self.npc_teleportation = self.game.sound.npc_reaper_teleportation
+        self.sfx_attack = "Soldier attack"
+        self.sfx_pain = "Soldier pain"
+        self.sfx_death = "Soldier death"
 
         # New variables
         self.dx = 0
@@ -114,6 +113,6 @@ class LostSoul(NPC):
     def attack(self):
         if self.animations[self.current_animation]["Animation Completed"]:
             self.create_bullet()
-            self.game.sound.play_sound(self.npc_attack, self.exact_pos, self.player.exact_pos)
+            self.game.sound.play_sfx(self.npc_attack, self.exact_pos, self.player.exact_pos)
             self.previous_shot = pg.time.get_ticks()
             self.apply_damage(50, None)

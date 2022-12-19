@@ -7,6 +7,7 @@ from sound import *
 from states.game import GameState
 from states.intro import IntroState
 from states.menu import MenuState
+from states.options import OptionsState
 from states.loading import LoadingState
 from states.lose import LoseState
 from states.pause import PauseState
@@ -17,7 +18,7 @@ from weapon import *
 class Game:
     def __init__(self):
         pg.init()
-        pg.display.set_mode((WIDTH, HEIGHT), pg.RESIZABLE | pg.DOUBLEBUF | pg.OPENGL, vsync=VSYNC)
+        pg.display.set_mode((WIDTH, HEIGHT), pg.RESIZABLE | pg.OPENGL | pg.DOUBLEBUF, vsync=VSYNC)
         pg.display.set_caption("Final Project")
         pg.display.set_icon(pg.image.load("logo.png"))
 
@@ -31,10 +32,12 @@ class Game:
 
         self.font = pg.font.Font("resources/fonts/Font.ttf", int(36 / 1280 * WIDTH))
         self.font_small = pg.font.Font("resources/fonts/Font.ttf", int(24 / 1280 * WIDTH))
+        self.sound = Sound()
 
         self.state = {
             "Intro": IntroState(self),
             "Menu": MenuState(self),
+            "Options": OptionsState(self),
             "Loading": LoadingState(self),
             "Game": GameState(self),
             "Pause": PauseState(self),
@@ -87,7 +90,6 @@ class Game:
         self.hud = Hud(self)
         self.map = Map(self)
 
-        self.sound = Sound()
         self.weapon = Weapon(self)
         self.map.get_map(level)
         self.pathfinding = PathFinding(self)

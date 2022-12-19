@@ -12,7 +12,7 @@ class LoseState(State):
         self.on_set_ms = pg.time.get_ticks()
         self.elapsed_ms = 0
         pg.mixer.stop()
-        self.game.sound.lose.play()
+        self.game.sound.play_sfx("Lose")
 
     def handle_events(self, event):
         if self.elapsed_ms > STATE_WAIT_MS:

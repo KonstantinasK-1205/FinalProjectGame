@@ -30,9 +30,9 @@ class NPC(Sprite):
         self.animations = {}
 
         # Sounds
-        self.npc_attack = self.game.sound.npc_soldier_attack
-        self.npc_pain = self.game.sound.npc_soldier_pain
-        self.npc_death = self.game.sound.npc_soldier_death
+        self.sfx_attack = "Soldier attack"
+        self.sfx_pain = "Soldier pain"
+        self.sfx_death = "Soldier death"
 
         self.size = 50
         self.approaching_player = False
@@ -83,7 +83,7 @@ class NPC(Sprite):
             if self.current_time - self.reaction_time_passed > self.reaction_time:
                 if self.current_time - self.previous_shot > self.animations["Attack"]["Attack Speed"]:
                     self.create_bullet()
-                    self.game.sound.play_sound(self.npc_attack, self.exact_pos, self.player.exact_pos)
+                    self.game.sound.play_sfx(self.sfx_attack, [self.exact_pos, self.player.exact_pos])
                     self.previous_shot = pg.time.get_ticks()
                     self.reaction_time_passed = pg.time.get_ticks()
 
@@ -105,11 +105,11 @@ class NPC(Sprite):
             damage -= self.damage_reduction
         self.health -= damage
         if self.health > 1:
-            self.game.sound.play_sound(self.npc_pain, self.exact_pos, self.player.exact_pos)
+            self.game.sound.play_sfx(self.sfx_pain, [self.exact_pos, self.player.exact_pos])
         else:
             self.alive = False
             self.current_animation = "Death"
-            self.game.sound.play_sound(self.npc_death, self.exact_pos, self.player.exact_pos)
+            self.game.sound.play_sfx(self.sfx_death, [self.exact_pos, self.player.exact_pos])
 
     # Movement
     def movement(self, dt):

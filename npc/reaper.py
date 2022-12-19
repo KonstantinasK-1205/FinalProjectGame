@@ -89,10 +89,10 @@ class Reaper(NPC):
         }
 
         # NPC sound variables
-        self.npc_pain = self.game.sound.npc_reaper_pain
-        self.npc_death = self.game.sound.npc_reaper_death
-        self.npc_attack = self.game.sound.npc_reaper_attack
-        self.npc_teleportation = self.game.sound.npc_reaper_teleportation
+        self.sfx_attack = "Reaper attack"
+        self.sfx_pain = "Reaper pain"
+        self.sfx_death = "Reaper death"
+        self.sfx_teleportation = "Reaper teleportation"
 
         # Teleportation variables
         self.teleported = False
@@ -117,7 +117,7 @@ class Reaper(NPC):
         if self.ready_for_teleportation:
             next_x = self.player.x - random.randint(-1, 1)
             next_y = self.player.y - random.randint(-1, 1)
-            self.game.sound.play_sound(self.npc_teleportation, self.exact_pos, self.player.exact_pos)
+            self.game.sound.play_sfx(self.sfx_teleportation, [self.exact_pos, self.player.exact_pos])
             if not self.game.map.is_wall(next_x, next_y):
                 self.x = next_x
                 self.y = next_y

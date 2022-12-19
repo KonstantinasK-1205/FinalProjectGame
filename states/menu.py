@@ -11,6 +11,9 @@ class MenuState(State):
 
     def on_set(self):
         self.create_menu_text()
+        pg.mouse.set_visible(True)
+        pg.event.set_grab(False)
+        pg.mixer.stop()
 
     def handle_events(self, event):
         if event.type == pg.MOUSEMOTION:
@@ -48,6 +51,8 @@ class MenuState(State):
                         if menu == "New Game":
                             self.game.current_state = "Loading"
                             self.game.new_game("resources/levels/" + self.game.map_lists[0] + ".txt")
+                        if menu == "Options":
+                            self.game.current_state = "Options"
                         if menu == "Exit":
                             self.game.running = False
 

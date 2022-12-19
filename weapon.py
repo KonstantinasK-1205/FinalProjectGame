@@ -46,8 +46,7 @@ class Weapon:
                     "Currently in Cartridge": 1,
                     "Maximum in Cartridge": 1,
                     "Bullet Left": 10,
-                    "Bullet Lifetime": 600,
-                    "Sound": self.game.sound.shotgun_fire
+                    "Bullet Lifetime": 600
                 }
             },
             "Machinegun": {
@@ -65,8 +64,7 @@ class Weapon:
                     "Currently in Cartridge": 0,
                     "Maximum in Cartridge": 50,
                     "Bullet Left": 0,
-                    "Bullet Lifetime": 3000,
-                    "Sound": self.game.sound.machgun_fire
+                    "Bullet Lifetime": 3000
                 }
             }
         }
@@ -112,20 +110,20 @@ class Weapon:
                         weapon["Currently in Cartridge"] -= 1
                         if weapon["Currently in Cartridge"] <= 0:
                             self.reload()
-                        weapon["Sound"].play()
+                        self.game.sound.play_sfx(self.current_weapon + " " + self.current_state)
                         self.create_bullet()
                         self.previous_shot = pg.time.get_ticks()
                     else:
                         self.reload()
                         if weapon["Bullet Left"] < 1 and weapon["Currently in Cartridge"] < 1:
-                            self.game.sound.shotgun_empty.play()
+                            self.game.sound.play_sfx("Shotgun Empty")
 
             if event.button == 3 and self.current_weapon == "Shotgun":
                 if self.current_time - self.previous_shot > self.weapon_info["Shotgun"]["Melee"]["Speed"] * 5:
                     self.fired = True
                     self.current_state = "Melee"
                     self.frame_counter = 0
-                    self.game.sound.shotgun_melee.play()
+                    self.game.sound.play_sfx("Shotgun Melee")
                     self.create_bullet('Melee', 150)
                     self.previous_shot = pg.time.get_ticks()
 
