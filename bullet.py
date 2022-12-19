@@ -1,5 +1,7 @@
 import math
 import pygame as pg
+from sprites.particle import *
+from collision import *
 
 
 class Bullet:
@@ -9,7 +11,7 @@ class Bullet:
 
         self.x = pos[0]
         self.y = pos[1]
-        self.z = 0
+        self.z = pos[2]
         self.width = 0.3
         self.height = 0.3
         self.angle = angle
@@ -24,7 +26,7 @@ class Bullet:
         self.time_to_live = lifetime
         self.creation_time = pg.time.get_ticks()
 
-    def update(self, dt):
+    def update(self):
         # If bullet alive for longer period than it should, count as collided
         if self.time_alive >= self.time_to_live:
             self.collided = True
@@ -44,29 +46,27 @@ class Bullet:
                     self.player.apply_damage(self.damage)
 
             # Calculate relative velocity for next frame
-            dx = self.speed * math.cos(self.angle) * math.cos(self.angle_ver) * dt
-            dy = self.speed * math.sin(self.angle) * math.cos(self.angle_ver) * dt
-            dz = self.speed * math.sin(self.angle_ver) * dt
+            dx = self.speed * math.cos(self.angle) * math.cos(self.angle_ver) * self.game.dt
+            dy = self.speed * math.sin(self.angle) * math.cos(self.angle_ver) * self.game.dt
+            dz = self.speed * math.sin(self.angle_ver) * self.game.dt
 
-            # Check collision with walls on X axis
-            if not self.collision_with_wall((int(self.x + dx * self.scale), int(self.y))):
-                self.x += dx
+            # Check for collision
+            res = resolve_collision(self.x, self.y, dx, dy, self.game.map, 0.01)
 
-            # Check collision with walls on Y axis
-            if not self.collision_with_wall((int(self.x), int(self.y + dy * self.scale))):
-                self.y += dy
+            if not res.collided == None:
+                for i in range(5):
+                    self.game.object_handler.add_sprite(Particle(self.game, (res.x, res.y, self.z), res.collided))
+
+                self.game.sound.play_sfx("Bullet in wall")
+                self.collided = True
+
+            self.x = res.x
+            self.y = res.y
 
             self.z += dz
 
         # Update how long bullet is being alive
         self.time_alive = (pg.time.get_ticks() - self.creation_time)
-
-    def collision_with_wall(self, pos):
-        if self.game.map.is_wall(pos[0], pos[1]):
-            self.game.sound.play_sfx("Bullet in wall")
-            self.collided = True
-            return True
-        return False
 
     def distance_from(self, other):
         return math.hypot(other.x - self.x, other.y - self.y, other.z - self.z)

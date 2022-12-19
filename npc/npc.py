@@ -3,6 +3,7 @@ from settings import *
 from sprites.sprite import Sprite
 import pygame as pg
 import random
+from collision import *
 
 
 class NPC(Sprite):
@@ -40,12 +41,12 @@ class NPC(Sprite):
         self.current_time = 0
         self.previous_shot = 0
 
-    def update(self, dt):
+    def update(self):
         self.current_time = pg.time.get_ticks()
         self.check_animation_time()
-        self.run_logic(dt)
+        self.run_logic()
 
-    def run_logic(self, dt):
+    def run_logic(self):
         if self.alive:
             # NPC angle is always opposing player - used for movement and sight
             # calculation
@@ -66,11 +67,11 @@ class NPC(Sprite):
                 else:
                     self.current_animation = "Walk"
                     self.animate()
-                    self.movement(dt)
+                    self.movement()
             elif self.approaching_player:
                 self.current_animation = "Walk"
                 self.animate()
-                self.movement(dt)
+                self.movement()
             else:
                 self.current_animation = "Idle"
                 self.animate()
@@ -112,16 +113,15 @@ class NPC(Sprite):
             self.game.sound.play_sfx(self.sfx_death, [self.exact_pos, self.player.exact_pos])
 
     # Movement
-    def movement(self, dt):
+    def movement(self):
         next_pos = self.game.pathfinding.get_path(self.grid_pos, self.player.grid_pos)
         if next_pos not in self.game.object_handler.npc_positions:
-            dx = math.cos(self.angle) * self.speed * dt
-            dy = math.sin(self.angle) * self.speed * dt
+            dx = math.cos(self.angle) * self.speed * self.game.dt
+            dy = math.sin(self.angle) * self.speed * self.game.dt
 
-            if not self.game.map.is_wall(int(self.x + dx * self.size), int(self.y)):
-                self.x += dx
-            if not self.game.map.is_wall(int(self.x), int(self.y + dy * self.size)):
-                self.y += dy
+            res = resolve_collision(self.x, self.y, dx, dy, self.game.map, 0.15)
+            self.x = res.x
+            self.y = res.y
 
     # Animations
     def animate_pain(self):
@@ -148,7 +148,7 @@ class NPC(Sprite):
 
         # If it is possible to walk straight line to the player, it means that
         # NPC can see them
-        x, y = self.exact_pos
+        x, y, z = self.exact_pos
         for i in range(MAX_STEPS):
             x += math.cos(self.angle) * STEP
             y += math.sin(self.angle) * STEP
@@ -162,7 +162,7 @@ class NPC(Sprite):
     # Getters
     @property
     def exact_pos(self):
-        return self.x, self.y
+        return self.x, self.y, self.z
 
     @property
     def grid_pos(self):

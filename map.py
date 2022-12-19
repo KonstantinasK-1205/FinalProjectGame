@@ -107,6 +107,11 @@ class Map:
 
             self.map_loaded = True
 
+    def get_tile(self, x, y):
+        if x < 0 or x >= self.width or y < 0 or y >= self.height:
+            return 0
+        return self.data[int(x) + int(y) * self.width]
+
     def is_wall(self, x, y):
         if x < 0 or x >= self.width or y < 0 or y >= self.height:
             return True

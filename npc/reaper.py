@@ -101,14 +101,14 @@ class Reaper(NPC):
         self.last_teleportation_time = 0
         self.teleportation_cooldown = 2000
 
-    def movement(self, dt):
+    def movement(self):
         # If teleported or player is further than 3 blocks
         if self.distance_from(self.player) > 3 or self.teleportation_begin:
             self.teleport()
-        super().movement(dt)
+        super().movement()
 
-    def update(self, dt):
-        super().update(dt)
+    def update(self):
+        super().update()
         if self.current_time - self.last_teleportation_time > self.teleportation_cooldown:
             self.teleported = False
 

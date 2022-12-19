@@ -17,7 +17,7 @@ class State:
     def handle_events(self, events):
         pass
 
-    def update(self, dt):
+    def update(self):
         pass
 
     def draw(self):

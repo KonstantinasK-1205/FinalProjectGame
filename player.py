@@ -3,6 +3,7 @@ import pygame as pg
 from settings import *
 import math
 from collections import deque
+from collision import *
 
 
 class Player:
@@ -47,7 +48,7 @@ class Player:
 
         self.game.weapon.handle_events(event)
 
-    def update(self, dt):
+    def update(self):
         rel = pg.mouse.get_rel()
         self.angle = (self.angle + rel[0] * MOUSE_SENSITIVITY) % math.tau
         self.angle_ver = (self.angle_ver + rel[1] * MOUSE_SENSITIVITY) % math.tau
@@ -56,62 +57,37 @@ class Player:
         elif math.radians(180) < self.angle_ver < math.radians(270):
             self.angle_ver = math.radians(270)
 
-        self.movement(dt)
+        self.movement()
         self.game.weapon.update()
         self.fill_map_visited()
 
-    def movement(self, dt):
-        speed = PLAYER_SPEED * dt
+    def movement(self):
+        speed = PLAYER_SPEED * self.game.dt
         speed_sin = speed * math.sin(self.angle)
         speed_cos = speed * math.cos(self.angle)
 
-        new_x = self.x
-        new_y = self.y
+        dx = 0
+        dy = 0
         if self.moving_forw:
-            new_x += speed_cos
-            new_y += speed_sin
+            dx += speed_cos
+            dy += speed_sin
         if self.moving_back:
-            new_x += -speed_cos
-            new_y += -speed_sin
+            dx += -speed_cos
+            dy += -speed_sin
         if self.moving_left:
-            new_x += speed_sin
-            new_y += -speed_cos
+            dx += speed_sin
+            dy += -speed_cos
         if self.moving_right:
-            new_x += -speed_sin
-            new_y += speed_cos
+            dx += -speed_sin
+            dy += speed_cos
 
         # Collision handling
         # Player radius prevents the camera from getting too close to a wall
         # Should not be greater than 0.5 (half wall size), as there is no
         # support for collisions with 3 walls at the same time
-        playerRadius = 0.2
-
-        # Margin is used to push the player away from a wall and prevent the
-        # collision from persisting due to rounding or floating point error
-        margin = 0.001
-
-        # First handle motion and collision in the X axis
-        if new_x < self.x:
-            if self.game.map.is_wall(new_x - playerRadius, self.y - playerRadius) or \
-               self.game.map.is_wall(new_x - playerRadius, self.y + playerRadius):
-                new_x = math.ceil(new_x - playerRadius) + playerRadius + margin
-        elif new_x > self.x:
-            if self.game.map.is_wall(new_x + playerRadius, self.y - playerRadius) or \
-               self.game.map.is_wall(new_x + playerRadius, self.y + playerRadius):
-                new_x = math.floor(new_x + playerRadius) - playerRadius - margin
-
-        # Next handle motion and collision in the Y axis
-        if new_y < self.y:
-            if self.game.map.is_wall(new_x - playerRadius, new_y - playerRadius) or \
-               self.game.map.is_wall(new_x + playerRadius, new_y - playerRadius):
-                new_y = math.ceil(new_y - playerRadius) + playerRadius + margin
-        elif new_y > self.y:
-            if self.game.map.is_wall(new_x - playerRadius, new_y + playerRadius) or \
-               self.game.map.is_wall(new_x + playerRadius, new_y + playerRadius):
-                new_y = math.floor(new_y + playerRadius) - playerRadius - margin
-
-        self.x = new_x
-        self.y = new_y
+        res = resolve_collision(self.x, self.y, dx, dy, self.game.map, 0.2)
+        self.x = res.x
+        self.y = res.y
 
     def fill_map_visited(self):
         RADIUS = 25
@@ -144,7 +120,7 @@ class Player:
     # Getters
     @property
     def exact_pos(self):
-        return self.x, self.y
+        return self.x, self.y, self.z
 
     @property
     def grid_pos(self):

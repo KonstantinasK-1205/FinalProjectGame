@@ -35,14 +35,17 @@ class ObjectHandler:
             self.map_change = True
             self.map_change_wait_s = 0
 
-    def update(self, dt):
+    def update(self):
         self.kill_reward()
         self.npc_positions = {npc.grid_pos for npc in self.npc_list if npc.alive}
         self.handle_pickups()
-        self.handle_bullets(dt)
+        self.handle_bullets()
 
         for npc in self.npc_list:
-            npc.update(dt)
+            npc.update()
+
+        for sprite in self.sprite_list:
+            sprite.update()
 
         for npc in self.alive_npc_list:
             if npc.dead:
@@ -50,7 +53,7 @@ class ObjectHandler:
                 self.killed = self.killed + 1
 
         if self.map_change:
-            self.map_change_wait_ms = self.map_change_wait_ms + dt
+            self.map_change_wait_ms = self.map_change_wait_ms + self.game.dt
             if self.map_change_wait_ms >= MAP_CHANGE_WAIT_MS:
                 self.map_change = False
                 if len(self.game.map_lists) > 1:
@@ -68,7 +71,7 @@ class ObjectHandler:
         for sprite in self.sprite_list:
             sprite.draw()
 
-    def handle_bullets(self, dt):
+    def handle_bullets(self):
         # Create new array in which we will store
         # index of element we remove
         remove = []
@@ -76,7 +79,7 @@ class ObjectHandler:
             # If sprite wasn't used just update it,
             # otherwise add to remove array
             if not bullet.collided:
-                bullet.update(dt)
+                bullet.update()
             else:
                 remove.append(index)
 

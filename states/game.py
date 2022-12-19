@@ -19,9 +19,9 @@ class GameState(State):
             elif event.key == pg.K_TAB:
                 self.map_state = (self.map_state + 1) % 3
 
-    def update(self, dt):
-        self.game.object_handler.update(dt)
-        self.game.player.update(dt)
+    def update(self):
+        self.game.object_handler.update()
+        self.game.player.update()
         self.game.sound.update()
 
     def draw(self):

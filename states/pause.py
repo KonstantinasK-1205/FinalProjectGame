@@ -21,7 +21,7 @@ class PauseState(State):
         if event.type == pg.MOUSEBUTTONUP and event.button == 1:
             self.game.current_state = "Game"
 
-    def update(self, dt):
+    def update(self):
         pass
 
     def draw(self):

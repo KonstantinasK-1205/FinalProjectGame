@@ -87,8 +87,8 @@ class Pinky(NPC):
         self.sfx_pain = "Soldier pain"
         self.sfx_death = "Soldier death"
 
-    def update(self, dt):
-        super().update(dt)
+    def update(self):
+        super().update()
 
     def animate_stomp(self):
         animation = self.animations[self.current_animation]

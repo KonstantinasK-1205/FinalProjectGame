@@ -53,6 +53,8 @@ class Game:
 
         self.hit_flash_ms = HIT_FLASH_MS
 
+        self.dt = 0
+
     def __del__(self):
         pg.quit()
 
@@ -69,12 +71,12 @@ class Game:
             self.state[self.current_state].handle_events(event)
 
     def update(self):
-        dt = self.clock.tick()
+        self.dt = self.clock.tick()
 
-        self.state[self.current_state].update(dt)
+        self.state[self.current_state].update()
 
         if self.hit_flash_ms < HIT_FLASH_MS:
-            self.hit_flash_ms = self.hit_flash_ms + dt
+            self.hit_flash_ms = self.hit_flash_ms + self.dt
 
     def draw(self):
         self.state[self.current_state].draw()

@@ -72,7 +72,7 @@ class MenuState(State):
             for menu in self.menu_list:
                 self.create_menu_text()
 
-    def update(self, dt):
+    def update(self):
         pass
 
     def draw(self):

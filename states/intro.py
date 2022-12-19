@@ -21,7 +21,7 @@ class IntroState(State):
         if event.type == pg.MOUSEBUTTONUP and event.button == 1:
             self.game.current_state = "Menu"
 
-    def update(self, dt):
+    def update(self):
         pass
 
     def draw(self):

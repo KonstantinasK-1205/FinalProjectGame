@@ -22,7 +22,7 @@ class WinState(State):
             if event.type == pg.MOUSEBUTTONUP and event.button == 1:
                 self.game.running = False
 
-    def update(self, dt):
+    def update(self):
         self.elapsed_ms = pg.time.get_ticks() - self.on_set_ms
 
     def draw(self):

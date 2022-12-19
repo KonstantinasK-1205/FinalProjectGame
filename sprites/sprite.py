@@ -12,7 +12,10 @@ class Sprite:
         # Init position and dimension
         self.x = pos[0]
         self.y = pos[1]
-        self.z = 0
+        if len(pos) == 3:
+            self.z = pos[2]
+        else:
+            self.z = 0
         self.width = scale
         self.height = scale
 

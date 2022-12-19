@@ -22,7 +22,7 @@ class LoadingState(State):
             elif event.type == pg.MOUSEBUTTONUP and event.button == 1:
                 self.game.current_state = "Game"
 
-    def update(self, dt):
+    def update(self):
         self.elapsed_ms = pg.time.get_ticks() - self.on_set_ms
 
         if self.elapsed_ms < STATE_WAIT_MS:

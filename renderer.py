@@ -288,9 +288,6 @@ class Renderer:
         self.sprites_to_render = sorted(self.sprites_to_render, key=lambda t: t.__distance_from_player, reverse=True)
 
         for o in self.sprites_to_render:
-            if o.texture not in self.textures:
-                continue
-
             if o.texture == None:
                 glBindTexture(GL_TEXTURE_2D, 0)
             else:

@@ -27,7 +27,7 @@ class LoseState(State):
                 self.game.current_state = "Loading"
                 self.game.new_game("resources/levels/" + self.game.map_lists[0] + ".txt")
 
-    def update(self, dt):
+    def update(self):
         self.elapsed_ms = pg.time.get_ticks() - self.on_set_ms
 
     def draw(self):

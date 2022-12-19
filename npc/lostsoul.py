@@ -89,15 +89,15 @@ class LostSoul(NPC):
         self.rush_cooldown = 2500
         self.last_rushed_time = 0
 
-    def movement(self, dt):
+    def movement(self):
         next_pos = self.game.pathfinding.get_path(self.grid_pos, self.player.grid_pos)
         if not self.rush_activated:
             self.rush_activated = True
             self.last_rushed_time = pg.time.get_ticks()
 
             if next_pos not in self.game.object_handler.npc_positions:
-                self.dx = math.cos(self.angle) * self.speed * dt
-                self.dy = math.sin(self.angle) * self.speed * dt
+                self.dx = math.cos(self.angle) * self.speed * self.game.dt
+                self.dy = math.sin(self.angle) * self.speed * self.game.dt
 
         if not self.game.map.is_wall(int(self.x + self.dx * self.size), int(self.y)):
             self.x += self.dx
@@ -105,8 +105,8 @@ class LostSoul(NPC):
         if not self.game.map.is_wall(int(self.x), int(self.y + self.dy * self.size)):
             self.y += self.dy
 
-    def update(self, dt):
-        super().update(dt)
+    def update(self):
+        super().update()
         if self.current_time - self.last_rushed_time > self.rush_cooldown:
             self.rush_activated = False
 
