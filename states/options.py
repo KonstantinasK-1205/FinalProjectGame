@@ -29,10 +29,15 @@ class OptionsState(State):
             }}
         self.current_resolution = (WIDTH, HEIGHT)
 
+        self.initialized = False
+
     def on_set(self):
         self.create_menu_text()
 
     def handle_events(self, event):
+        if not self.initialized:
+            return
+
         if event.type == pg.MOUSEMOTION:
             for menu in self.menu_list:
                 mouse_pos = pg.mouse.get_pos()
@@ -50,8 +55,7 @@ class OptionsState(State):
                         self.on_hover(menu, False)
                 else:
                     self.on_hover(menu, False)
-
-        if event.type == pg.MOUSEBUTTONUP:
+        elif event.type == pg.MOUSEBUTTONUP:
             for menu in self.menu_list:
                 mouse_pos = pg.mouse.get_pos()
                 # Menu positions
@@ -68,6 +72,9 @@ class OptionsState(State):
                             self.apply_settings()
                         if "Back" in menu:
                             self.game.current_state = "Menu"
+        elif event.type == pg.VIDEORESIZE:
+            for menu in self.menu_list:
+                self.create_menu_text()
 
     def update(self, dt):
         pass
@@ -75,6 +82,7 @@ class OptionsState(State):
     def draw(self):
         self.game.renderer.draw_fullscreen_rect(color=(44, 44, 44))
         self.draw_menu_text()
+        self.initialized = True
 
     def apply_settings(self):
         if self.menu_list["Full screen"]["Option"]:

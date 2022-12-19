@@ -28,6 +28,7 @@ class Game:
         self.renderer = Renderer(self)
         self.object_handler = ObjectHandler()
         self.hud = Hud(self)
+        self.map = Map(self)
         self.map_lists = ["Level1", "Level2", "Level3", "Level4"]
 
         self.font = pg.font.Font("resources/fonts/Font.ttf", int(36 / 1280 * WIDTH))
@@ -60,7 +61,6 @@ class Game:
             if event.type == pg.QUIT:
                 self.running = False
             elif event.type == pg.VIDEORESIZE:
-                self.screen = pg.Surface((event.w, event.h), pg.SRCALPHA)
                 self.font = pg.font.Font("resources/fonts/Font.ttf", int(36 / 1280 * event.w))
                 self.font_small = pg.font.Font("resources/fonts/Font.ttf", int(24 / 1280 * event.w))
             elif event.type == self.PRINTFPSEVENT:

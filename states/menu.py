@@ -7,15 +7,27 @@ class MenuState(State):
 
         self.menu_surfaces = []
         self.menu_height = 0
-        self.menu_list = {"Final Project!": {}, "New Game": {}, "Options": {}, "Exit": {}}
+        self.menu_list = {}
+
+        self.initialized = False
 
     def on_set(self):
+        if self.game.map.map_loaded:
+            self.menu_list = {"Final Project!": {}, "New Game": {}, "Resume Game": {}, "Options": {}, "Exit": {}}
+        else:
+            self.menu_list = {"Final Project!": {}, "New Game": {}, "Options": {}, "Exit": {}}
+
+        self.initialized = False
+
         self.create_menu_text()
         pg.mouse.set_visible(True)
         pg.event.set_grab(False)
         pg.mixer.stop()
 
     def handle_events(self, event):
+        if not self.initialized:
+            return
+
         if event.type == pg.MOUSEMOTION:
             for menu in self.menu_list:
                 mouse_pos = pg.mouse.get_pos()
@@ -35,8 +47,7 @@ class MenuState(State):
                         self.update_menu_text(False, menu)
                 else:
                     self.update_menu_text(False, menu)
-
-        if event.type == pg.MOUSEBUTTONUP:
+        elif event.type == pg.MOUSEBUTTONUP:
             for menu in self.menu_list:
                 mouse_pos = pg.mouse.get_pos()
                 # Menu positions
@@ -51,10 +62,15 @@ class MenuState(State):
                         if menu == "New Game":
                             self.game.current_state = "Loading"
                             self.game.new_game("resources/levels/" + self.game.map_lists[0] + ".txt")
-                        if menu == "Options":
+                        elif menu == "Resume Game":
+                            self.game.current_state = "Game"
+                        elif menu == "Options":
                             self.game.current_state = "Options"
-                        if menu == "Exit":
+                        elif menu == "Exit":
                             self.game.running = False
+        elif event.type == pg.VIDEORESIZE:
+            for menu in self.menu_list:
+                self.create_menu_text()
 
     def update(self, dt):
         pass
@@ -62,6 +78,7 @@ class MenuState(State):
     def draw(self):
         self.game.renderer.draw_fullscreen_rect(color=(44, 44, 44))
         self.draw_menu_text()
+        self.initialized = True
 
     def create_menu_text(self):
         self.menu_surfaces = []

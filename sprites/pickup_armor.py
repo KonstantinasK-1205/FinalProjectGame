@@ -11,6 +11,5 @@ class PickupArmor(Sprite):
 
         if self.distance_from(self.player) < 0.5 and self.player.armor < 100:
             self.player.add_armor(25)
-            sound = self.game.sound
-            sound.pickup_sound(sound.pickup_armor)
+            self.game.sound.play_sfx("Pickup armor")
             self.delete = True
