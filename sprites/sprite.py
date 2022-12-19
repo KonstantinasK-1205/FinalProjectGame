@@ -30,7 +30,7 @@ class Sprite:
             self.animate()
 
     def draw(self):
-        self.game.renderer.objects_to_render.append(self)
+        self.game.renderer.draw_sprite(self.x, self.y, self.z, self.width, self.height, self.texture_path)
 
     def load_texture(self, path):
         self.texture_path = path
