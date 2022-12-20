@@ -26,7 +26,7 @@ class Game:
 
         self.clock = pg.time.Clock()
         self.renderer = Renderer(self)
-        self.object_handler = ObjectHandler()
+        self.object_handler = ObjectHandler(self)
         self.hud = Hud(self)
         self.map = Map(self)
         self.map_lists = ["Level1", "Level2", "Level3", "Level4"]
@@ -89,14 +89,13 @@ class Game:
 
     def new_game(self, level):
         self.player = Player(self)
-        self.object_handler = ObjectHandler()
+        self.object_handler = ObjectHandler(self)
         self.hud = Hud(self)
         self.map = Map(self)
 
         self.weapon = Weapon(self)
         self.map.get_map(level)
         self.pathfinding = PathFinding(self)
-        self.object_handler.load_map(self)
 
         self.renderer.draw_world = True
 

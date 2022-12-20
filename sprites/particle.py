@@ -16,9 +16,11 @@ class Particle(Sprite):
         self.dy = 0
         self.dz = 0
 
-        self.dx = random.uniform(-0.02, 0.02)
-        self.dy = random.uniform(-0.02, 0.02)
-        self.dz = random.uniform(-0.001, 0.001)
+        self.dx = random.uniform(-0.03, 0.03)
+        self.dy = random.uniform(-0.03, 0.03)
+        self.dz = random.uniform(-0.002, 0.002)
+
+        self.lifetime = 1
 
         # Try to find collided wall texture
         if collided_tile > 0:
@@ -26,7 +28,7 @@ class Particle(Sprite):
 
     def update(self):
         super().update()
-
+ 
         # Keep collision radius same as bullet to avoid colliding at a position
         # where the bullet was not
         res = resolve_collision(self.x, self.y, self.dx, self.dy, self.game.map, 0.01)
@@ -40,11 +42,23 @@ class Particle(Sprite):
         self.dz -= 0.00001 * self.game.dt
         self.z += self.dz * self.game.dt
 
+        # If hit ground, apply friction and bounce up
         if self.z < 0:
-            self.remove = True
+            self.dx = self.dx / 2
+            self.dy = self.dy / 2
+            self.dz = -self.dz / 2
+            self.z = 0
+
+        # Lifetime counts seconds, dt is millisecond based, so divide by 1000
+        # Only delete once reached -1 seconds to allow for a fade out
+        self.lifetime -= self.game.dt / 1000
+        if self.lifetime < -1:
+            self.delete = True
 
     def draw(self):
+        # Once lifetime reaches 0..-1, it will fade out
+        a = min(255, 255 + self.lifetime * 255)
         if self.texture_path:
-            self.game.renderer.draw_sprite(self.x, self.y, self.z, self.width, self.height, self.texture_path)
+            self.game.renderer.draw_sphere(self.x, self.y, self.z, self.width, self.height, self.texture_path, (255, 255, 255, a))
         else:
-            self.game.renderer.draw_sprite(self.x, self.y, self.z, self.width, self.height, None, (32, 32, 32))
+            self.game.renderer.draw_sphere(self.x, self.y, self.z, self.width, self.height, None, (32, 32, 32, a))

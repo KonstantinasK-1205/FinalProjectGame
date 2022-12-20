@@ -41,6 +41,10 @@ class NPC(Sprite):
         self.current_time = 0
         self.previous_shot = 0
 
+        self.dx = 0
+        self.dy = 0
+        self.seeing_player = False
+
     def update(self):
         self.current_time = pg.time.get_ticks()
         self.check_animation_time()
@@ -53,11 +57,11 @@ class NPC(Sprite):
             self.angle = math.atan2(self.player.y - self.y, self.player.x - self.x)
 
             # May be computationally intensive, so calculate only once per tick
-            can_see_player = self.can_see_player()
+            self.seeing_player = self.can_see_player()
 
             if self.pain:
                 self.animate_pain()
-            elif can_see_player:
+            elif self.seeing_player:
                 self.approaching_player = True
 
                 if self.distance_from(self.player) < self.attack_dist:
@@ -114,12 +118,26 @@ class NPC(Sprite):
 
     # Movement
     def movement(self):
-        next_pos = self.game.pathfinding.get_path(self.grid_pos, self.player.grid_pos)
-        if next_pos not in self.game.object_handler.npc_positions:
-            dx = math.cos(self.angle) * self.speed * self.game.dt
-            dy = math.sin(self.angle) * self.speed * self.game.dt
+        if self.seeing_player:
+            self.angle = math.atan2(self.game.player.y - self.y, self.game.player.x - self.x)
+            self.dx = math.cos(self.angle) * self.speed * self.game.dt
+            self.dy = math.sin(self.angle) * self.speed * self.game.dt
+        else:
+            next_pos = self.game.pathfinding.get_path(self.grid_pos, self.player.grid_pos)
+            next_x = next_pos[0] + 0.5
+            next_y = next_pos[1] + 0.5
 
-            res = resolve_collision(self.x, self.y, dx, dy, self.game.map, 0.15)
+            # Update velocity only if pathfinding gave correct result
+            if (math.hypot(next_x - self.x, next_y - self.y) < 2):
+                self.angle = math.atan2(next_y - self.y, next_x - self.x)
+
+                self.dx = math.cos(self.angle) * self.speed * self.game.dt
+                self.dy = math.sin(self.angle) * self.speed * self.game.dt
+
+        new_grid_pos = int(self.x + self.dx), int(self.y + self.dy)
+        #if new_grid_pos not in self.game.object_handler.npc_positions:
+        if True:
+            res = resolve_collision(self.x, self.y, self.dx, self.dy, self.game.map, 0.15)
             self.x = res.x
             self.y = res.y
 

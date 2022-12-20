@@ -21,28 +21,28 @@ class Bullet:
         self.owner = owner
         self.damage = damage
 
-        self.collided = False
+        self.delete = False
         self.time_alive = 0
         self.time_to_live = lifetime
         self.creation_time = pg.time.get_ticks()
 
     def update(self):
-        # If bullet alive for longer period than it should, count as collided
+        # If bullet is alive for too long, delete it
         if self.time_alive >= self.time_to_live:
-            self.collided = True
+            self.delete = True
         else:
             # If fired by player, check collision with npc
             if self.owner == 'player':
                 for enemy in self.game.object_handler.alive_npc_list:
                     if self.distance_from(enemy) < 0.3:
-                        self.collided = True
+                        self.delete = True
                         enemy.apply_damage(self.damage, [self.game.weapon.current_weapon,
                                                          self.game.weapon.current_state])
 
             # If fired by enemy, check collision with player
             if self.owner == 'enemy':
                 if self.distance_from(self.player) < 0.9:
-                    self.collided = True
+                    self.delete = True
                     self.player.apply_damage(self.damage)
 
             # Calculate relative velocity for next frame
@@ -59,7 +59,7 @@ class Bullet:
                         self.game.object_handler.add_sprite(Particle(self.game, (res.x, res.y, self.z), res.collided))
 
                     self.game.sound.play_sfx("Bullet in wall")
-                self.collided = True
+                self.delete = True
 
             self.x = res.x
             self.y = res.y

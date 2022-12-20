@@ -3,26 +3,20 @@ from settings import *
 
 
 class ObjectHandler:
-    def __init__(self):
+    def __init__(self, game):
+        self.game = game
         self.npc_list = []
         self.pickup_list = []
         self.sprite_list = []
         self.bullet_list = []
         self.alive_npc_list = []
-        self.npc_positions = {}
+        self.npc_positions = []
         self.killed = 0
-
-        self.game = None
-        self.gameMap = None
 
         self.dmgIncreased = False
 
         self.map_change = False
         self.map_change_wait_ms = 0
-
-    def load_map(self, game):
-        self.game = game
-        self.gameMap = Map(game)
 
     def kill_reward(self):
         reward = self.killed
@@ -33,24 +27,28 @@ class ObjectHandler:
 
         if reward >= self.game.map.enemy_amount:
             self.map_change = True
-            self.map_change_wait_s = 0
 
     def update(self):
-        self.kill_reward()
-        self.npc_positions = {npc.grid_pos for npc in self.npc_list if npc.alive}
-        self.handle_pickups()
-        self.handle_bullets()
-
+        self.npc_positions = [npc.grid_pos for npc in self.npc_list if npc.alive]
         for npc in self.npc_list:
             npc.update()
+            if npc in self.alive_npc_list and npc.dead:
+                self.alive_npc_list.pop(self.alive_npc_list.index(npc))
+                self.killed += 1
+
+        for pickup in self.pickup_list:
+            pickup.update()
+        self.pickup_list = [pickup for pickup in self.pickup_list if not pickup.delete]
 
         for sprite in self.sprite_list:
             sprite.update()
+        self.sprite_list = [sprite for sprite in self.sprite_list if not sprite.delete]
 
-        for npc in self.alive_npc_list:
-            if npc.dead:
-                self.alive_npc_list.pop(self.alive_npc_list.index(npc))
-                self.killed = self.killed + 1
+        for bullet in self.bullet_list:
+            bullet.update()
+        self.bullet_list = [bullet for bullet in self.bullet_list if not bullet.delete]
+
+        self.kill_reward()
 
         if self.map_change:
             self.map_change_wait_ms = self.map_change_wait_ms + self.game.dt
@@ -71,40 +69,6 @@ class ObjectHandler:
         for sprite in self.sprite_list:
             sprite.draw()
 
-    def handle_bullets(self):
-        # Create new array in which we will store
-        # index of element we remove
-        remove = []
-        for index, bullet in enumerate(self.bullet_list):
-            # If sprite wasn't used just update it,
-            # otherwise add to remove array
-            if not bullet.collided:
-                bullet.update()
-            else:
-                remove.append(index)
-
-        # Iterate each remove element and remove
-        # each sprite from main array
-        for index in remove[::-1]:
-            self.bullet_list.pop(index)
-
-    def handle_pickups(self):
-        # Create new array in which we will stores
-        # index of element we remove
-        remove = []
-        for index, pickup in enumerate(self.pickup_list):
-            # If sprite wasn't used just update it,
-            # otherwise add to remove array
-            if not pickup.delete:
-                pickup.update()
-            else:
-                remove.append(index)
-
-        # Iterate each remove element and remove
-        # each sprite from main array
-        for index in remove:
-            self.pickup_list.pop(index)
-
     def add_npc(self, npc):
         self.npc_list.append(npc)
         self.alive_npc_list.append(npc)
@@ -123,4 +87,4 @@ class ObjectHandler:
         self.pickup_list = []
         self.sprite_list = []
         self.alive_npc_list = []
-        self.npc_positions = {}
+        self.npc_positions = []

@@ -9,8 +9,9 @@ from settings import *
 class Renderer:
     def __init__(self, game):
         self.game = game
-        self.sprites_to_render = []
         self.rects_to_render = []
+        self.sprites_to_render = []
+        self.spheres_to_render = []
         self.textures = {}
         self.vbos = {}
         self.draw_world = False
@@ -80,6 +81,8 @@ class Renderer:
             0, 0, 0, 1
         ])
 
+        self.update_sphere_vbo()
+
         self.map_size = (0, 0)
 
     def update_floor_vbo(self):
@@ -104,6 +107,37 @@ class Renderer:
 
         self.load_vbo("floor", data)
         self.map_size = self.game.map.size
+
+    def update_sphere_vbo(self):
+        # More steps - less square circle, but more vertices
+        STEPS = 20
+        ANGLE_STEP = math.pi / STEPS
+
+        self.sphere_vbo_verts = 0
+
+        data = []
+        for i in range(STEPS):
+            angle = ANGLE_STEP * i
+
+            x = math.sin(angle) / 2
+            y = (math.sin(angle + math.pi * 1.5) + 1) / 2
+            y2 = (math.sin(angle + ANGLE_STEP + math.pi * 1.5) + 1) / 2
+            h = y2 - y
+
+            tx1 = -(x - 0.5)
+            ty1 = y
+            tx2 = 1 - tx1
+            ty2 = ty1 + h
+
+            data.extend([
+                tx1, ty1, -x, y + h, 0,
+                tx2, ty1,  x, y + h, 0,
+                tx2, ty2,  x, y + 0, 0,
+                tx1, ty2, -x, y + 0, 0
+            ])
+            self.sphere_vbo_verts += 4
+
+        self.load_vbo("sphere", data)
 
     def load_vbo(self, name, data):
         data_array = array("f", data)
@@ -152,6 +186,9 @@ class Renderer:
 
     def draw_sprite(self, x, y, z, width, height, texture=None, color=(255, 255, 255, 255)):
         self.sprites_to_render.append(self.Renderable(x, y, z, width, height, texture, color))
+
+    def draw_sphere(self, x, y, z, width, height, texture=None, color=(255, 255, 255, 255)):
+        self.spheres_to_render.append(self.Renderable(x, y, z, width, height, texture, color))
 
     def draw_queued(self):
         glViewport(0, 0, self.game.width, self.game.height)
@@ -244,6 +281,7 @@ class Renderer:
         self.draw_3d_floor()
         self.draw_3d_map()
         self.draw_3d_objects()
+        self.draw_3d_spheres()
 
     def draw_3d_floor(self):
         self.update_floor_vbo()
@@ -316,6 +354,49 @@ class Renderer:
             glPopMatrix()
 
         self.sprites_to_render = []
+
+        glEnable(GL_CULL_FACE)
+
+        glColor4f(1, 1, 1, 1)
+
+    def draw_3d_spheres(self):
+        glDisable(GL_CULL_FACE)
+
+        glBindBuffer(GL_ARRAY_BUFFER, self.vbos["sphere"])
+        glTexCoordPointer(2, GL_FLOAT, 5 * 4, ctypes.c_void_p(0))
+        glVertexPointer(3, GL_FLOAT, 5 * 4, ctypes.c_void_p(2 * 4))
+
+        # Objects must be sorted closest to player first for transparency to
+        # work properly
+        for o in self.spheres_to_render:
+            o.__distance_from_player = math.hypot(o.x - self.game.player.x, o.y - self.game.player.y, o.z - self.game.player.z)
+        self.spheres_to_render = sorted(self.spheres_to_render, key=lambda t: t.__distance_from_player, reverse=True)
+
+        for o in self.spheres_to_render:
+            if o.texture == None:
+                glBindTexture(GL_TEXTURE_2D, 0)
+            else:
+                glBindTexture(GL_TEXTURE_2D, self.textures[o.texture])
+
+            glColor4f(1, 1, 1, 1)
+            if not o.color == None:
+                if len(o.color) == 3:
+                    glColor3f(o.color[0] / 255, o.color[1] / 255, o.color[2] / 255)
+                elif len(o.color) == 4:
+                    glColor4f(o.color[0] / 255, o.color[1] / 255, o.color[2] / 255, o.color[3] / 255)
+
+            glPushMatrix()
+
+            glTranslatef(o.x, 0, o.y)
+
+            glTranslatef(0, o.z, 0)
+            glRotatef(-math.degrees(self.game.player.angle) + 90, 0, 1, 0)
+            glScalef(o.width, o.height, 1)
+            glDrawArrays(GL_QUADS, 0, self.sphere_vbo_verts)
+
+            glPopMatrix()
+
+        self.spheres_to_render = []
 
         glEnable(GL_CULL_FACE)
 
