@@ -11,7 +11,6 @@ class Renderer:
         self.game = game
         self.rects_to_render = []
         self.sprites_to_render = []
-        self.spheres_to_render = []
         self.textures = {}
         self.vbos = {}
         self.draw_world = False
@@ -179,16 +178,16 @@ class Renderer:
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surface.get_width(), surface.get_height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, bitmap)
 
     def draw_rect(self, x, y, width, height, texture=None, color=(255, 255, 255, 255)):
-        self.rects_to_render.append(self.Renderable(x, y, None, width, height, texture, color))
+        self.rects_to_render.append(self.Renderable(x, y, None, width, height, texture, color, False))
 
     def draw_fullscreen_rect(self, texture=None, color=(255, 255, 255, 255)):
         self.draw_rect(0, 0, self.game.width, self.game.height, texture, color)
 
     def draw_sprite(self, x, y, z, width, height, texture=None, color=(255, 255, 255, 255)):
-        self.sprites_to_render.append(self.Renderable(x, y, z, width, height, texture, color))
+        self.sprites_to_render.append(self.Renderable(x, y, z, width, height, texture, color, False))
 
     def draw_sphere(self, x, y, z, width, height, texture=None, color=(255, 255, 255, 255)):
-        self.spheres_to_render.append(self.Renderable(x, y, z, width, height, texture, color))
+        self.sprites_to_render.append(self.Renderable(x, y, z, width, height, texture, color, True))
 
     def draw_queued(self):
         glViewport(0, 0, self.game.width, self.game.height)
@@ -281,7 +280,6 @@ class Renderer:
         self.draw_3d_floor()
         self.draw_3d_map()
         self.draw_3d_objects()
-        self.draw_3d_spheres()
 
     def draw_3d_floor(self):
         self.update_floor_vbo()
@@ -319,10 +317,6 @@ class Renderer:
     def draw_3d_objects(self):
         glDisable(GL_CULL_FACE)
 
-        glBindBuffer(GL_ARRAY_BUFFER, self.vbos["object"])
-        glTexCoordPointer(2, GL_FLOAT, 5 * 4, ctypes.c_void_p(0))
-        glVertexPointer(3, GL_FLOAT, 5 * 4, ctypes.c_void_p(2 * 4))
-
         # Objects must be sorted closest to player first for transparency to
         # work properly
         for o in self.sprites_to_render:
@@ -344,12 +338,20 @@ class Renderer:
 
             glPushMatrix()
 
-            glTranslatef(o.x, 0, o.y)
-
-            glTranslatef(0, o.z, 0)
+            glTranslatef(o.x, o.z, o.y)
             glRotatef(-math.degrees(self.game.player.angle) + 90, 0, 1, 0)
             glScalef(o.width, o.height, 1)
-            glDrawArrays(GL_QUADS, 0, 4)
+
+            if o.sphere:
+                glBindBuffer(GL_ARRAY_BUFFER, self.vbos["sphere"])
+                glTexCoordPointer(2, GL_FLOAT, 5 * 4, ctypes.c_void_p(0))
+                glVertexPointer(3, GL_FLOAT, 5 * 4, ctypes.c_void_p(2 * 4))
+                glDrawArrays(GL_QUADS, 0, self.sphere_vbo_verts)
+            else:
+                glBindBuffer(GL_ARRAY_BUFFER, self.vbos["object"])
+                glTexCoordPointer(2, GL_FLOAT, 5 * 4, ctypes.c_void_p(0))
+                glVertexPointer(3, GL_FLOAT, 5 * 4, ctypes.c_void_p(2 * 4))
+                glDrawArrays(GL_QUADS, 0, 4)
 
             glPopMatrix()
 
@@ -359,52 +361,9 @@ class Renderer:
 
         glColor4f(1, 1, 1, 1)
 
-    def draw_3d_spheres(self):
-        glDisable(GL_CULL_FACE)
-
-        glBindBuffer(GL_ARRAY_BUFFER, self.vbos["sphere"])
-        glTexCoordPointer(2, GL_FLOAT, 5 * 4, ctypes.c_void_p(0))
-        glVertexPointer(3, GL_FLOAT, 5 * 4, ctypes.c_void_p(2 * 4))
-
-        # Objects must be sorted closest to player first for transparency to
-        # work properly
-        for o in self.spheres_to_render:
-            o.__distance_from_player = math.hypot(o.x - self.game.player.x, o.y - self.game.player.y, o.z - self.game.player.z)
-        self.spheres_to_render = sorted(self.spheres_to_render, key=lambda t: t.__distance_from_player, reverse=True)
-
-        for o in self.spheres_to_render:
-            if o.texture == None:
-                glBindTexture(GL_TEXTURE_2D, 0)
-            else:
-                glBindTexture(GL_TEXTURE_2D, self.textures[o.texture])
-
-            glColor4f(1, 1, 1, 1)
-            if not o.color == None:
-                if len(o.color) == 3:
-                    glColor3f(o.color[0] / 255, o.color[1] / 255, o.color[2] / 255)
-                elif len(o.color) == 4:
-                    glColor4f(o.color[0] / 255, o.color[1] / 255, o.color[2] / 255, o.color[3] / 255)
-
-            glPushMatrix()
-
-            glTranslatef(o.x, 0, o.y)
-
-            glTranslatef(0, o.z, 0)
-            glRotatef(-math.degrees(self.game.player.angle) + 90, 0, 1, 0)
-            glScalef(o.width, o.height, 1)
-            glDrawArrays(GL_QUADS, 0, self.sphere_vbo_verts)
-
-            glPopMatrix()
-
-        self.spheres_to_render = []
-
-        glEnable(GL_CULL_FACE)
-
-        glColor4f(1, 1, 1, 1)
-
 
     class Renderable:
-        def __init__(self, x, y, z, width, height, texture, color):
+        def __init__(self, x, y, z, width, height, texture, color, sphere):
             self.x = x
             self.y = y
             self.z = z
@@ -412,3 +371,4 @@ class Renderer:
             self.height = height
             self.texture = texture
             self.color = color
+            self.sphere = sphere
