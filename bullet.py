@@ -53,11 +53,12 @@ class Bullet:
             # Check for collision
             res = resolve_collision(self.x, self.y, dx, dy, self.game.map, 0.01)
 
-            if not res.collided == None:
-                for i in range(5):
-                    self.game.object_handler.add_sprite(Particle(self.game, (res.x, res.y, self.z), res.collided))
+            if res.collided:
+                if self.z < 1:
+                    for i in range(5):
+                        self.game.object_handler.add_sprite(Particle(self.game, (res.x, res.y, self.z), res.collided))
 
-                self.game.sound.play_sfx("Bullet in wall")
+                    self.game.sound.play_sfx("Bullet in wall")
                 self.collided = True
 
             self.x = res.x

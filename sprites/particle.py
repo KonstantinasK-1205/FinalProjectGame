@@ -16,8 +16,8 @@ class Particle(Sprite):
         self.dy = 0
         self.dz = 0
 
-        self.dx = random.uniform(-0.01, 0.01)
-        self.dy = random.uniform(-0.01, 0.01)
+        self.dx = random.uniform(-0.02, 0.02)
+        self.dy = random.uniform(-0.02, 0.02)
         self.dz = random.uniform(-0.001, 0.001)
 
         # Try to find collided wall texture
@@ -39,6 +39,9 @@ class Particle(Sprite):
         # Gravity
         self.dz -= 0.00001 * self.game.dt
         self.z += self.dz * self.game.dt
+
+        if self.z < 0:
+            self.remove = True
 
     def draw(self):
         if self.texture_path:
