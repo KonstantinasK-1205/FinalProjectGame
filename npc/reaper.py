@@ -9,7 +9,7 @@ class Reaper(NPC):
         super().__init__(game, pos, scale)
 
         # Position and scale
-        self.z = 0.3
+        self.z = random.uniform(0.3, 0.6)
         self.width = 0.6
         self.height = 0.6
 

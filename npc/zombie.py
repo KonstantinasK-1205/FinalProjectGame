@@ -9,11 +9,11 @@ class Zombie(NPC):
         super().__init__(game, pos, scale)
 
         # Base stats
-        self.health = random.randint(60, 110)
-        self.speed = 0.0008
+        self.health = random.randint(60, 70)
+        self.speed = 0.0006
 
         # Attack stats
-        self.damage = random.randint(15, 20)
+        self.damage = random.randint(7, 13)
         self.attack_distance = 1
         self.bullet_lifetime = 45
 
@@ -49,8 +49,8 @@ class Zombie(NPC):
                                           (64, 128, 64, 64),
                                           (128, 128, 64, 64)]),
                 "Counter": 0,
-                "Animation Speed": 100,
-                "Attack Speed": 300,
+                "Animation Speed": 200,
+                "Attack Speed": 600,
                 "Animation Completed": False,
             },
             "Pain": {

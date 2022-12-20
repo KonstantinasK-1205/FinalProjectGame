@@ -9,7 +9,7 @@ class LostSoul(NPC):
     def __init__(self, game, pos, scale=0.6):
         super().__init__(game, pos, scale)
 
-        self.z = 0.7
+        self.z = random.uniform(0.5, 0.8)
         self.width = 0.6
         self.height = 0.6
 

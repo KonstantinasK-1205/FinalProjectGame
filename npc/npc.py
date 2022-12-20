@@ -13,8 +13,8 @@ class NPC(Sprite):
 
         # Base position and scale
         self.z = 0
-        self.width = 0.6
-        self.height = 0.6
+        self.width = 0.8
+        self.height = 0.8
 
         # Base primary stats
         self.alive = True

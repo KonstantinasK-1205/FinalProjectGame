@@ -1,3 +1,7 @@
+import OpenGL
+
+OpenGL.ERROR_CHECKING = False
+
 import pygame as pg
 from OpenGL.GL import *
 from OpenGL.GLU import *

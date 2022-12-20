@@ -33,10 +33,10 @@ class Weapon:
                 },
                 "Melee": {
                     "Sprites": load_images("shotgun", ["m_1", "m_2"]),
-                    "Damage": 200,
+                    "Damage": 20,
                     "Speed": 100,
                     "Accuracy": 90,
-                    "Bullet Lifetime": 70
+                    "Bullet Lifetime": 110
                 },
                 "Fire": {
                     "Sprites": load_images("shotgun", [1, 2, 3, 4, 5]),
