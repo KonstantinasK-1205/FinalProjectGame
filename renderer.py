@@ -30,7 +30,7 @@ class Renderer:
         glEnableClientState(GL_TEXTURE_COORD_ARRAY)
         glEnableClientState(GL_VERTEX_ARRAY)
 
-        self.load_texture_from_file("resources/textures/sky.jpg", True)
+        self.load_texture_from_file("resources/textures/sky.png", True)
         self.load_texture_from_file("resources/textures/floor.png", True)
         self.load_texture_from_file("resources/textures/wall1.png", True)
         self.load_texture_from_file("resources/textures/wall2.png", True)
@@ -118,7 +118,11 @@ class Renderer:
         glBufferData(GL_ARRAY_BUFFER, len(array_bytes), array_bytes, GL_STATIC_DRAW)
 
     def load_texture_from_file(self, path, repeat = False):
-        surface = pg.image.load(path)
+        try:
+            surface = pg.image.load(path)
+        except:
+            print("Texture wasn't found : " + path)
+            return
         self.load_texture_from_surface(path, surface, repeat)
 
     def load_texture_from_surface(self, path, surface, repeat = False):
@@ -173,7 +177,7 @@ class Renderer:
         glTexCoordPointer(2, GL_FLOAT, 4 * 4, ctypes.c_void_p(0))
         glVertexPointer(2, GL_FLOAT, 4 * 4, ctypes.c_void_p(2 * 4))
 
-        glBindTexture(GL_TEXTURE_2D, self.textures["resources/textures/sky.jpg"])
+        glBindTexture(GL_TEXTURE_2D, self.textures["resources/textures/sky.png"])
 
         offset_x = (self.game.player.angle % math.tau) / math.tau
         offset_y = (-self.game.player.angle_ver % math.tau) / math.tau
@@ -276,7 +280,7 @@ class Renderer:
 
     def draw_3d_objects(self):
         glDisable(GL_CULL_FACE)
- 
+
         glBindBuffer(GL_ARRAY_BUFFER, self.vbos["object"])
         glTexCoordPointer(2, GL_FLOAT, 5 * 4, ctypes.c_void_p(0))
         glVertexPointer(3, GL_FLOAT, 5 * 4, ctypes.c_void_p(2 * 4))
