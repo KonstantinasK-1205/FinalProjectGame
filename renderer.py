@@ -17,6 +17,7 @@ class Renderer:
         self.sprites_to_render = []
         self.textures = {}
         self.vbos = {}
+        self.layer_sizes = []
         self.draw_world = False
 
         glEnable(GL_TEXTURE_2D)
@@ -36,32 +37,9 @@ class Renderer:
 
         self.load_texture_from_file("resources/textures/sky.png", True)
         self.load_texture_from_file("resources/textures/floor.png", True)
-        self.load_texture_from_file("resources/textures/wall1.png", True)
-        self.load_texture_from_file("resources/textures/wall2.png", True)
-        self.load_texture_from_file("resources/textures/wall3.png", True)
-        self.load_texture_from_file("resources/textures/wall4.png", True)
-
-        self.load_vbo("wall", [
-            0, 0  , 0, 0  , 1,
-            1, 0  , 1, 0  , 1,
-            1, 1.5, 1, 1.5, 1,
-            0, 1.5, 0, 1.5, 1,
-
-            1, 0  , 0, 0  , 0,
-            1, 1.5, 0, 1.5, 0,
-            0, 1.5, 1, 1.5, 0,
-            0, 0  , 1, 0  , 0,
-
-            1, 0  , 1, 0  , 0,
-            1, 1.5, 1, 1.5, 0,
-            0, 1.5, 1, 1.5, 1,
-            0, 0  , 1, 0  , 1,
-
-            0, 0  , 0, 0  , 0,
-            1, 0  , 0, 0  , 1,
-            1, 1.5, 0, 1.5, 1,
-            0, 1.5, 0, 1.5, 0
-        ])
+        self.wall_textures = 4
+        for i in range(self.wall_textures):
+            self.load_texture_from_file("resources/textures/wall" + str(i + 1) + ".png", True)
 
         self.load_vbo("object", [
             1, 0, -0.5, 0, 0,
@@ -88,28 +66,60 @@ class Renderer:
 
         self.map_size = (0, 0)
 
-    def update_floor_vbo(self):
-        if self.game.map.size == self.map_size:
+    def update_map_vbo(self):
+        WALL_HEIGHT = 1.5
+
+        if self.game.map.vbo_generated:
             return
+        self.game.map.vbo_generated = True
 
-        self.floor_vbo_verts = 0
+        # Separate layers are used to draw surfaces with different textures
+        # Create a layer for the floor and each wall texture
+        layer_data = []
+        self.layer_sizes = []
+        for i in range(self.wall_textures + 1):
+            layer_data.append([])
+            self.layer_sizes.append(0)
 
-        data = []
         for i in range(self.game.map.height):
             for j in range(self.game.map.width):
-                if self.game.map.is_wall(j, i):
-                    continue
+                tile = self.game.map.get_tile(j, i)
+                # Add wall vertices
+                if tile > 0:
+                    layer_data[tile].extend([
+                        0, 0          , j + 0, 0          , i + 1,
+                        1, 0          , j + 1, 0          , i + 1,
+                        1, WALL_HEIGHT, j + 1, WALL_HEIGHT, i + 1,
+                        0, WALL_HEIGHT, j + 0, WALL_HEIGHT, i + 1,
 
-                data.extend([
-                    0, 0, j + 0, 0, i + 1,
-                    1, 0, j + 1, 0, i + 1,
-                    1, 1, j + 1, 0, i + 0,
-                    0, 1, j + 0, 0, i + 0
-                ])
-                self.floor_vbo_verts += 4
+                        1, 0          , j + 0, 0          , i + 0,
+                        1, WALL_HEIGHT, j + 0, WALL_HEIGHT, i + 0,
+                        0, WALL_HEIGHT, j + 1, WALL_HEIGHT, i + 0,
+                        0, 0          , j + 1, 0          , i + 0,
 
-        self.load_vbo("floor", data)
-        self.map_size = self.game.map.size
+                        1, 0          , j + 1, 0          , i + 0,
+                        1, WALL_HEIGHT, j + 1, WALL_HEIGHT, i + 0,
+                        0, WALL_HEIGHT, j + 1, WALL_HEIGHT, i + 1,
+                        0, 0          , j + 1, 0          , i + 1,
+
+                        0, 0          , j + 0, 0          , i + 0,
+                        1, 0          , j + 0, 0          , i + 1,
+                        1, WALL_HEIGHT, j + 0, WALL_HEIGHT, i + 1,
+                        0, WALL_HEIGHT, j + 0, WALL_HEIGHT, i + 0
+                    ])
+                    self.layer_sizes[tile] += 4 * 4
+                # Add floor vertices
+                else:
+                    layer_data[tile].extend([
+                        0, 0, j + 0, 0, i + 1,
+                        1, 0, j + 1, 0, i + 1,
+                        1, 1, j + 1, 0, i + 0,
+                        0, 1, j + 0, 0, i + 0
+                    ])
+                    self.layer_sizes[tile] += 4
+
+        for i in range(len(self.layer_sizes)):
+            self.load_vbo("map" + str(i), layer_data[i])
 
     def update_sphere_vbo(self):
         # More steps - less square circle, but more vertices
@@ -160,6 +170,7 @@ class Renderer:
         except pg.error:
             print("Texture wasn't found : " + path)
             surface = pg.image.load("resources/sprite/default.png").convert_alpha()
+            return
         self.load_texture_from_surface(path, surface, repeat)
 
     def load_texture_from_surface(self, path, surface, repeat = False):
@@ -182,16 +193,16 @@ class Renderer:
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surface.get_width(), surface.get_height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, bitmap)
 
     def draw_rect(self, x, y, width, height, texture=None, color=(255, 255, 255, 255)):
-        self.rects_to_render.append(self.Renderable(x, y, None, width, height, texture, color, False))
+        self.rects_to_render.append(self.Renderable(x, y, None, width, height, texture, color, False, None))
 
     def draw_fullscreen_rect(self, texture=None, color=(255, 255, 255, 255)):
         self.draw_rect(0, 0, self.game.width, self.game.height, texture, color)
 
-    def draw_sprite(self, x, y, z, width, height, texture=None, color=(255, 255, 255, 255)):
-        self.sprites_to_render.append(self.Renderable(x, y, z, width, height, texture, color, False))
+    def draw_sprite(self, x, y, z, width, height, texture=None, color=(255, 255, 255, 255), angle=None):
+        self.sprites_to_render.append(self.Renderable(x, y, z, width, height, texture, color, False, angle))
 
     def draw_sphere(self, x, y, z, width, height, texture=None, color=(255, 255, 255, 255)):
-        self.sprites_to_render.append(self.Renderable(x, y, z, width, height, texture, color, True))
+        self.sprites_to_render.append(self.Renderable(x, y, z, width, height, texture, color, True, None))
 
     def draw_queued(self):
         glViewport(0, 0, self.game.width, self.game.height)
@@ -281,42 +292,25 @@ class Renderer:
         glRotatef(math.degrees(self.game.player.angle) + 90, 0, 1, 0)
         glTranslatef(-self.game.player.x, -self.game.player.z - 0.6, -self.game.player.y)
 
-        self.draw_3d_floor()
         self.draw_3d_map()
         self.draw_3d_objects()
 
-    def draw_3d_floor(self):
-        self.update_floor_vbo()
-
-        glBindTexture(GL_TEXTURE_2D, self.textures["resources/textures/floor.png"])
-
-        glBindBuffer(GL_ARRAY_BUFFER, self.vbos["floor"])
-        glTexCoordPointer(2, GL_FLOAT, 5 * 4, ctypes.c_void_p(0))
-        glVertexPointer(3, GL_FLOAT, 5 * 4, ctypes.c_void_p(2 * 4))
-
-        glPushMatrix()
-        glDrawArrays(GL_QUADS, 0, self.floor_vbo_verts)
-        glPopMatrix()
-
     def draw_3d_map(self):
-        glBindBuffer(GL_ARRAY_BUFFER, self.vbos["wall"])
-        glTexCoordPointer(2, GL_FLOAT, 5 * 4, ctypes.c_void_p(0))
-        glVertexPointer(3, GL_FLOAT, 5 * 4, ctypes.c_void_p(2 * 4))
+        self.update_map_vbo()
 
-        for i in range(self.game.map.height):
-            for j in range(self.game.map.width):
-                if not self.game.map.is_wall(j, i):
-                    continue
+        for i in range(len(self.layer_sizes)):
+            if i == 0:
+                glBindTexture(GL_TEXTURE_2D, self.textures["resources/textures/floor.png"])
+            else:
+                glBindTexture(GL_TEXTURE_2D, self.textures["resources/textures/wall" + str(i) + ".png"])
 
-                texture_index = self.game.map.data[j + i * self.game.map.width]
-                glBindTexture(GL_TEXTURE_2D, self.textures["resources/textures/wall" + str(texture_index) + ".png"])
+            glBindBuffer(GL_ARRAY_BUFFER, self.vbos["map" + str(i)])
+            glTexCoordPointer(2, GL_FLOAT, 5 * 4, ctypes.c_void_p(0))
+            glVertexPointer(3, GL_FLOAT, 5 * 4, ctypes.c_void_p(2 * 4))
 
-                glPushMatrix()
-
-                glTranslatef(j, 0, i)
-                glDrawArrays(GL_QUADS, 0, 4 * 4)
-
-                glPopMatrix()
+            glPushMatrix()
+            glDrawArrays(GL_QUADS, 0, self.layer_sizes[i])
+            glPopMatrix()
 
     def draw_3d_objects(self):
         glDisable(GL_CULL_FACE)
@@ -343,7 +337,11 @@ class Renderer:
             glPushMatrix()
 
             glTranslatef(o.x, o.z, o.y)
-            glRotatef(-math.degrees(self.game.player.angle) + 90, 0, 1, 0)
+            if o.angle == None:
+                # TODO: Why does the player angle need an offset?
+                glRotatef(-math.degrees(self.game.player.angle) + 90, 0, 1, 0)
+            else:
+                glRotatef(math.degrees(o.angle), 0, 1, 0)
             glScalef(o.width, o.height, 1)
 
             if o.sphere:
@@ -367,7 +365,7 @@ class Renderer:
 
 
     class Renderable:
-        def __init__(self, x, y, z, width, height, texture, color, sphere):
+        def __init__(self, x, y, z, width, height, texture, color, sphere, angle):
             self.x = x
             self.y = y
             self.z = z
@@ -376,3 +374,10 @@ class Renderer:
             self.texture = texture
             self.color = color
             self.sphere = sphere
+            self.angle = angle
+
+
+    class MapLayer:
+        def __init__(self):
+            self.data = []
+            self.vert_count = 0

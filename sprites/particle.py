@@ -16,8 +16,8 @@ class Particle(Sprite):
         self.dy = 0
         self.dz = 0
 
-        self.dx = random.uniform(-0.03, 0.03)
-        self.dy = random.uniform(-0.03, 0.03)
+        self.dx = random.uniform(-0.0015, 0.0015)
+        self.dy = random.uniform(-0.0015, 0.0015)
         self.dz = random.uniform(-0.002, 0.002)
 
         self.lifetime = 1
@@ -31,7 +31,7 @@ class Particle(Sprite):
  
         # Keep collision radius same as bullet to avoid colliding at a position
         # where the bullet was not
-        res = resolve_collision(self.x, self.y, self.dx, self.dy, self.game.map, 0.01)
+        res = resolve_collision(self.x, self.y, self.dx * self.game.dt, self.dy * self.game.dt, self.game.map, 0.01)
         self.x = res.x
         self.y = res.y
         if res.collided:

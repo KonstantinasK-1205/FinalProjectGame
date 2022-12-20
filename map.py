@@ -21,6 +21,7 @@ class Map:
         self.data_visited = []
         self.enemy_amount = 0
         self.map_loaded = False
+        self.vbo_generated = False
 
     def get_map(self, path):
         self.width = 0
@@ -28,6 +29,7 @@ class Map:
         self.data = []
         self.enemy_amount = 0
         self.map_loaded = False
+        self.vbo_generated = False
 
         # In case a map was already loaded, remove old objects
         self.game.object_handler.reset()

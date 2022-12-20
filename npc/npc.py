@@ -51,6 +51,9 @@ class NPC(Sprite):
         self.check_animation_time()
         self.run_logic()
 
+    def draw(self):
+        self.game.renderer.draw_sprite(self.x, self.y, self.z, self.width, self.height, self.texture_path)
+
     def run_logic(self):
         if self.alive:
             # NPC angle is always opposing player - used for movement and sight
