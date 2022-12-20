@@ -156,7 +156,6 @@ class Renderer:
         except pg.error:
             print("Texture wasn't found : " + path)
             surface = pg.image.load("resources/sprite/default.png").convert_alpha()
-            return
         self.load_texture_from_surface(path, surface, repeat)
 
     def load_texture_from_surface(self, path, surface, repeat = False):
