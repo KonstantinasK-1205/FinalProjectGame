@@ -8,19 +8,19 @@ class Soldier(NPC):
     def __init__(self, game, pos, scale=0.6):
         super().__init__(game, pos, scale)
 
-        self.width = 0.6
-        self.height = 0.6
-
-        # NPC base stats
+        # Primary stats
         self.health = 100
         self.speed = 0.002
+
+        # Attack Stats
         self.damage = random.randint(15, 20)
-        self.attack_dist = random.randint(3, 5)
-        self.shoot_delay = 250
+        self.attack_distance = random.randint(3, 5)
         self.bullet_lifetime = 600
 
-        # NPC animation variables
-        self.spritesheet = pg.image.load("resources/sprites/npc/Soldier_Spritesheet.png").convert_alpha()
+        self.reaction_time = random.randrange(800, 1300, 100)
+
+        # Animation variables
+        self.spritesheet = self.load_image("resources/sprites/npc/Soldier_Spritesheet.png")
         self.current_animation = "Idle"
         self.animations = {
             "Idle": {

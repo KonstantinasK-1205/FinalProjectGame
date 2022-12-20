@@ -28,3 +28,5 @@ class GameState(State):
         self.game.object_handler.draw()
         self.game.weapon.draw()
         self.game.hud.draw(self.map_state)
+        if self.game.show_fps:
+            self.game.hud.draw_fps_counter()

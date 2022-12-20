@@ -18,6 +18,9 @@ class OptionsState(State):
             "Vsync": {
                 "Option": True
             },
+            "Show FPS": {
+                "Option": self.game.show_fps
+            },
             "Sounds": {
                 "Option": self.game.sound.sound_enabled
             },
@@ -92,6 +95,7 @@ class OptionsState(State):
             pg.display.set_mode((WIDTH, HEIGHT), pg.OPENGL | pg.DOUBLEBUF, self.menu_list["Vsync"]["Option"])
 
         self.game.sound.sound_enabled = self.menu_list["Sounds"]["Option"]
+        self.game.show_fps = self.menu_list["Show FPS"]["Option"]
 
     def change_setting(self, menu):
         menu_dict = self.menu_list[menu]

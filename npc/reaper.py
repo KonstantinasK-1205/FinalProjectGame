@@ -8,21 +8,28 @@ class Reaper(NPC):
     def __init__(self, game, pos, scale=0.6):
         super().__init__(game, pos, scale)
 
+        # Position and scale
         self.z = 0.3
         self.width = 0.6
         self.height = 0.6
 
-        # NPC base stats
+        # Primary stats
         self.health = 240
         self.speed = 0.002
-        self.damage = random.randint(7, 11)
-        self.attack_dist = 1
-        self.shoot_delay = 80
-        self.bullet_lifetime = 150
-        self.damage_reduction = 180
 
-        # NPC animation variables
-        self.spritesheet = pg.image.load("resources/sprites/npc/Reaper_Spritesheet.png").convert_alpha()
+        # Attack stats
+        self.damage = random.randint(7, 11)
+        self.attack_distance = 1
+        self.bullet_lifetime = 150
+
+        # Sounds
+        self.sfx_attack = "Reaper attack"
+        self.sfx_pain = "Reaper pain"
+        self.sfx_death = "Reaper death"
+        self.sfx_teleportation = "Reaper teleportation"
+
+        # Animation variables
+        self.spritesheet = self.load_image("resources/sprites/npc/Reaper_Spritesheet.png")
         self.current_animation = "Idle"
         self.animations = {
             "Idle": {
@@ -87,12 +94,6 @@ class Reaper(NPC):
                 "Animation Completed": False,
             }
         }
-
-        # NPC sound variables
-        self.sfx_attack = "Reaper attack"
-        self.sfx_pain = "Reaper pain"
-        self.sfx_death = "Reaper death"
-        self.sfx_teleportation = "Reaper teleportation"
 
         # Teleportation variables
         self.teleported = False

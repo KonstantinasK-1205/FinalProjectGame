@@ -36,7 +36,7 @@ class Weapon:
                     "Damage": 200,
                     "Speed": 100,
                     "Accuracy": 90,
-                    "Bullet Lifetime": 150
+                    "Bullet Lifetime": 70
                 },
                 "Fire": {
                     "Sprites": load_images("shotgun", [1, 2, 3, 4, 5]),
@@ -64,7 +64,7 @@ class Weapon:
                     "Currently in Cartridge": 0,
                     "Maximum in Cartridge": 50,
                     "Bullet Left": 0,
-                    "Bullet Lifetime": 3000
+                    "Bullet Lifetime": 10000
                 }
             }
         }

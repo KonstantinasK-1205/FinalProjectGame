@@ -72,7 +72,7 @@ class Sound:
                     self.sound_db[sound].set_volume(normalized)
                 self.sound_db[sound].play()
             else:
-                print("Sound: " + str(sound) + "wasn't found!")
+                print("Sound wasn't found: " + str(sound))
 
     def change_vol(self, num):
         self.master_vol += num

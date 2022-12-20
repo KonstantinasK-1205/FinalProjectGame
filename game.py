@@ -22,6 +22,11 @@ class Game:
         pg.display.set_caption("Final Project")
         pg.display.set_icon(pg.image.load("logo.png"))
 
+        self.PRINTFPSEVENT = pg.USEREVENT + 1
+        self.show_fps = PRINT_FPS
+        if self.show_fps:
+            pg.time.set_timer(self.PRINTFPSEVENT, 1000)
+
         self.running = False
 
         self.clock = pg.time.Clock()
@@ -46,10 +51,6 @@ class Game:
             "Game over": LoseState(self)
         }
         self.current_state = "Intro"
-
-        self.PRINTFPSEVENT = pg.USEREVENT + 1
-        if PRINT_FPS:
-            pg.time.set_timer(self.PRINTFPSEVENT, 1000)
 
         self.hit_flash_ms = HIT_FLASH_MS
 

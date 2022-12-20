@@ -8,19 +8,29 @@ class Battlelord(NPC):
     def __init__(self, game, pos, scale=0.6):
         super().__init__(game, pos, scale)
 
+        # Position and scale
         self.width = 0.8
         self.height = 0.9
 
-        # NPC base stats
+        # Primary stats
         self.health = 2400
-        self.speed = 0.002
+        self.speed = 0.003
+
+        # Attack stats
         self.damage = random.randint(10, 25)
-        self.attack_dist = 4
-        self.shoot_delay = 80
+        self.attack_distance = 6
         self.bullet_lifetime = 1500
 
-        # NPC animation variables
-        self.spritesheet = pg.image.load("resources/sprites/npc/Battlelord_Spritesheet.png").convert_alpha()
+        self.sensing_range = 40  # 0.5   = 1 grid block
+        self.reaction_time = 300
+
+        # Sound variables
+        self.sfx_attack = "Battlelord attack"
+        self.sfx_pain = "Battlelord pain"
+        self.sfx_death = "Battlelord death"
+
+        # Animation variables
+        self.spritesheet = self.load_image("resources/sprites/npc/Battlelord_Spritesheet.png")
         self.current_animation = "Idle"
         self.animations = {
             "Idle": {
@@ -67,8 +77,3 @@ class Battlelord(NPC):
                 "Animation Completed": False,
             }
         }
-
-        # NPC sound variables
-        self.sfx_attack = "Battlelord attack"
-        self.sfx_pain = "Battlelord pain"
-        self.sfx_death = "Battlelord death"

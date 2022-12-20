@@ -9,41 +9,42 @@ from collision import *
 class NPC(Sprite):
     def __init__(self, game, pos, scale=0.6):
         super().__init__(game, pos, scale)
+        self.current_time = 0
 
+        # Base position and scale
         self.z = 0
-        self.width = 0.3
+        self.width = 0.6
         self.height = 0.6
 
-        # NPC base stats
-        self.pain = False
+        # Base primary stats
         self.alive = True
+        self.pain = False
         self.health = 100
         self.speed = 0.002
+        self.angle = 0
+        self.dx = 0
+        self.dy = 0
+
+        # Base attack stats
         self.damage = 0
-        self.damage_reduction = 0
-        self.attack_dist = 0
-        self.bullet_lifetime = 0
-        self.reaction_time = random.randrange(600, 1200, 100)
+        self.previous_shot = 0
+        self.attack_distance = 0
+        self.bullet_lifetime = 200  # 100  ~= 1 grid block
+
+        self.sensing_range = 25  # 0.5   = 1 grid block
+        self.reaction_time = random.randrange(700, 1500, 100)
         self.reaction_time_passed = 0
+        self.approaching_player = False
+        self.seeing_player = False
 
-        # NPC animation variables
-        self.current_animation = "Idle"
-        self.animations = {}
-
-        # Sounds
+        # Base Sounds
         self.sfx_attack = "Soldier attack"
         self.sfx_pain = "Soldier pain"
         self.sfx_death = "Soldier death"
 
-        self.size = 50
-        self.approaching_player = False
-        self.angle = 0
-        self.current_time = 0
-        self.previous_shot = 0
-
-        self.dx = 0
-        self.dy = 0
-        self.seeing_player = False
+        # Base Animation variables
+        self.current_animation = "Idle"
+        self.animations = {}
 
     def update(self):
         self.current_time = pg.time.get_ticks()
@@ -64,7 +65,7 @@ class NPC(Sprite):
             elif self.seeing_player:
                 self.approaching_player = True
 
-                if self.distance_from(self.player) < self.attack_dist:
+                if self.distance_from(self.player) < self.attack_distance:
                     self.current_animation = "Attack"
                     self.animate()
                     self.attack()
@@ -104,10 +105,8 @@ class NPC(Sprite):
         self.game.object_handler.add_bullet(Bullet(self.game, self.exact_pos,
                                                    damage, angle, 0, "enemy", self.bullet_lifetime))
 
-    def apply_damage(self, damage, weapon):
+    def apply_damage(self, damage):
         self.pain = True
-        if weapon == ["Shotgun", "Melee"] and self.damage_reduction < damage:
-            damage -= self.damage_reduction
         self.health -= damage
         if self.health > 1:
             self.game.sound.play_sfx(self.sfx_pain, [self.exact_pos, self.player.exact_pos])
@@ -162,7 +161,7 @@ class NPC(Sprite):
         STEP = 0.5
         # Limiting the max number of steps makes NPC near-sighted, but prevents
         # the check from taking too long
-        MAX_STEPS = 25
+        MAX_STEPS = self.sensing_range
 
         # If it is possible to walk straight line to the player, it means that
         # NPC can see them

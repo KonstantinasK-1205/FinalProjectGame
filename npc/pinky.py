@@ -2,28 +2,29 @@ from npc.npc import NPC
 from settings import *
 import random
 import pygame as pg
+from collision import *
 
 
 class Pinky(NPC):
     def __init__(self, game, pos, scale=0.6):
         super().__init__(game, pos, scale)
 
-        self.z = 0
-        self.width = 0.6
-        self.height = 0.6
-        self.size = 5
-
-        # NPC base stats
+        # Primary stats
         self.health = 350
-        self.speed = 0.003
-        self.damage = random.randint(7, 11)
-        self.attack_dist = 1
-        self.shoot_delay = 80
-        self.bullet_lifetime = 150
-        self.damage_reduction = 180
+        self.speed = 0.0025
 
-        # NPC animation variables
-        self.spritesheet = pg.image.load("resources/sprites/npc/Pinky_Spritesheet.png").convert_alpha()
+        # Attack stats
+        self.damage = random.randint(7, 11)
+        self.attack_distance = 1
+        self.bullet_lifetime = 35
+
+        # Sounds
+        self.sfx_attack = "Soldier attack"
+        self.sfx_pain = "Soldier pain"
+        self.sfx_death = "Soldier death"
+
+        # Animation variables
+        self.spritesheet = self.load_image("resources/sprites/npc/Pinky_Spritesheet.png")
         self.current_animation = "Idle"
         self.animations = {
             "Idle": {
@@ -36,8 +37,8 @@ class Pinky(NPC):
             "Walk": {
                 "Frames": self.images_at("Pinky_Walk",
                                          [(0, 64, 64, 64),
-                                         (64, 64, 64, 64),
-                                         (128, 64, 64, 64)]),
+                                          (64, 64, 64, 64),
+                                          (128, 64, 64, 64)]),
                 "Counter": 0,
                 "Animation Speed": 120,
                 "Animation Completed": False,
@@ -45,8 +46,8 @@ class Pinky(NPC):
             "Attack": {
                 "Frames": self.images_at("Pinky_Attack",
                                          [(0, 256, 64, 64),
-                                         (64, 256, 64, 64),
-                                         (128, 256, 64, 64)]),
+                                          (64, 256, 64, 64),
+                                          (128, 256, 64, 64)]),
                 "Counter": 0,
                 "Animation Speed": 300,
                 "Attack Speed": 900,
@@ -56,7 +57,7 @@ class Pinky(NPC):
                 "Frames": self.images_at("Pinky_Pain",
                                          [(0, 320, 64, 64)]),
                 "Counter": 0,
-                "Animation Speed": 300,
+                "Animation Speed": 150,
                 "Animation Completed": False,
             },
             "Death": {
@@ -82,17 +83,31 @@ class Pinky(NPC):
             }
         }
 
-        # NPC sound variables
-        self.sfx_attack = "Soldier attack"
-        self.sfx_pain = "Soldier pain"
-        self.sfx_death = "Soldier death"
+        # Dash ability ( dash away from bullet )
+        self.dash_distance = 15
+        self.is_dashing = False
+        self.dash_start_time = 0
+
+    def movement(self):
+        if self.is_dashing:
+            res = resolve_collision(self.x, self.y, self.dx, self.dy, self.game.map, 0.15)
+            self.x = res.x
+            self.y = res.y
+        else:
+            super().movement()
 
     def update(self):
         super().update()
+        elapsed_time = pg.time.get_ticks()
+        distance_traveled = (elapsed_time - self.dash_start_time) * self.speed * self.game.dt
+        if distance_traveled >= self.dash_distance:
+            self.is_dashing = False
 
-    def animate_stomp(self):
-        animation = self.animations[self.current_animation]
-        if animation["Animation Completed"] and animation["Counter"] < len(animation["Frames"]) - 1:
-            animation["Counter"] += 1
-            animation["Frames"].rotate(-1)
-            self.texture_path = animation["Frames"][0]
+    def avoid_bullet(self):
+        if random.randint(1, 10) > 8:
+            self.dx = math.sin(self.angle) * self.speed * self.game.dt
+            self.dy = math.cos(self.angle) * self.speed * self.game.dt
+            self.is_dashing = True
+            self.dash_start_time = pg.time.get_ticks()
+            return True
+        return False

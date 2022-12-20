@@ -2,6 +2,7 @@ from npc.npc import NPC
 from settings import *
 import random
 import pygame as pg
+from collision import *
 
 
 class LostSoul(NPC):
@@ -11,19 +12,23 @@ class LostSoul(NPC):
         self.z = 0.7
         self.width = 0.6
         self.height = 0.6
-        self.size = 10
 
-        # NPC base stats
+        # Primary stats
         self.health = 20
         self.speed = 0.006
-        self.damage = random.randint(30, 40)
-        self.attack_dist = 1
-        self.shoot_delay = 80
-        self.bullet_lifetime = 150
-        self.damage_reduction = 180
 
-        # NPC animation variables
-        self.spritesheet = pg.image.load("resources/sprites/npc/LostSoul_Spritesheet.png").convert_alpha()
+        # Attack stats
+        self.damage = random.randint(30, 40)
+        self.attack_distance = 1
+        self.bullet_lifetime = 35
+
+        # Sounds variables
+        self.sfx_attack = "Soldier attack"
+        self.sfx_pain = "Soldier pain"
+        self.sfx_death = "Soldier death"
+
+        # Animation variables
+        self.spritesheet = self.load_image("resources/sprites/npc/LostSoul_Spritesheet.png")
         self.current_animation = "Idle"
         self.animations = {
             "Idle": {
@@ -77,57 +82,47 @@ class LostSoul(NPC):
             }
         }
 
-        # NPC sound variables
-        self.sfx_attack = "Soldier attack"
-        self.sfx_pain = "Soldier pain"
-        self.sfx_death = "Soldier death"
-
-        # New variables
-        self.dx = 0
-        self.dy = 0
-        # Set lost soul barrel toward player time
-        self.barrel_towards = False
-        self.barrel_cooldown = 500
-        self.last_barrel_time = 0
-        # Set how much lost soul need time to rest
-        self.is_rested = True
-        self.resting_cooldown = 2500
-        self.last_rested_time = 0
+        # Dash ability ( dash towards player )
+        self.dash_distance = 100
+        self.wait_time = 2000  # Wait for 2 seconds before dashing again
+        self.is_dashing = False
+        self.dash_start_time = 0
+        self.wait_start_time = 0
 
     def movement(self):
-        next_pos = self.game.pathfinding.get_path(self.grid_pos, self.player.grid_pos)
-        if self.barrel_towards:
-            self.barrel_towards = False
-            self.last_barrel_time = pg.time.get_ticks()
-
-            if next_pos not in self.game.object_handler.npc_positions:
-                self.dx = math.cos(self.angle) * self.speed * self.game.dt
-                self.dy = math.sin(self.angle) * self.speed * self.game.dt
-
-        if self.is_rested:
-            if not self.game.map.is_wall(int(self.x + self.dx * self.size), int(self.y)):
-                self.x += self.dx
-
-            if not self.game.map.is_wall(int(self.x), int(self.y + self.dy * self.size)):
-                self.y += self.dy
+        if self.is_dashing:
+            res = resolve_collision(self.x, self.y, self.dx, self.dy, self.game.map, 0.15)
+            self.x = res.x
+            self.y = res.y
 
     def update(self):
         super().update()
-        print("Current - Rush: " + str(self.current_time - self.last_barrel_time) + " | Bool: " + str(self.barrel_cooldown))
-        print("Current - Attk: " + str(self.current_time - self.last_rested_time) + " | Bool: " + str(self.resting_cooldown))
-        print(" ")
+        elapsed_time = pg.time.get_ticks()
+        if self.is_dashing:
+            # Calculate how far the enemy has traveled during the dash
+            distance_traveled = (elapsed_time - self.dash_start_time) * self.speed * self.game.dt
+            if distance_traveled >= self.dash_distance:
+                # Stop the dash if the enemy has traveled the maximum distance
+                self.is_dashing = False
+                self.wait_start_time = elapsed_time
+        elif elapsed_time - self.wait_start_time >= self.wait_time:
+            # Start dashing again if the wait time has elapsed
+            self.start_dash()
 
-        if self.current_time - self.last_barrel_time > self.barrel_cooldown:
-            self.barrel_towards = True
+    def start_dash(self):
+        self.is_dashing = True
+        self.dash_start_time = pg.time.get_ticks()
+        # Calculate the dash velocity based on the target position
+        self.dx = math.cos(self.angle) * self.speed * self.game.dt
+        self.dy = math.sin(self.angle) * self.speed * self.game.dt
 
-        if self.current_time - self.last_rested_time > self.resting_cooldown:
-            self.is_rested = not self.is_rested
-            self.last_rested_time = pg.time.get_ticks()
-
+        # Multiply by thirteen or more to convert it to real position
+        # and let fly behind player ( else, it will travel by few pixels )
+        self.dash_distance = self.distance_from(self.game.player) * random.randint(13, 15)
 
     def attack(self):
         if self.animations[self.current_animation]["Animation Completed"]:
             self.create_bullet()
             self.game.sound.play_sfx(self.sfx_attack, [self.exact_pos, self.player.exact_pos])
             self.previous_shot = pg.time.get_ticks()
-            self.apply_damage(50, None)
+            self.apply_damage(100)

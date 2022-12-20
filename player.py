@@ -9,15 +9,15 @@ from collision import *
 class Player:
     def __init__(self, game):
         self.game = game
+
         self.x = 0
         self.y = 0
         self.z = 0
+
         self.angle = PLAYER_ANGLE
         self.angle_ver = 0
-        self.health = PLAYER_MAX_HEALTH
-        self.health_recovery_delay = 10000
-        self.time_prev = pg.time.get_ticks()
 
+        self.health = PLAYER_MAX_HEALTH
         self.armor = 0
 
         self.moving_forw = False

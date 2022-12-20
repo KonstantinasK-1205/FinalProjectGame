@@ -8,18 +8,22 @@ class Zombie(NPC):
     def __init__(self, game, pos, scale=0.6):
         super().__init__(game, pos, scale)
 
-        self.width = 0.6
-        self.height = 0.6
-
-        # NPC base stats
+        # Base stats
         self.health = random.randint(60, 110)
         self.speed = 0.0008
-        self.damage = random.randint(15, 20)
-        self.attack_dist = 1
-        self.bullet_lifetime = 150
 
-        # NPC animation variables
-        self.spritesheet = pg.image.load("resources/sprites/npc/Zombie_Spritesheet.png").convert_alpha()
+        # Attack stats
+        self.damage = random.randint(15, 20)
+        self.attack_distance = 1
+        self.bullet_lifetime = 45
+
+        # Sounds
+        self.sfx_attack = "Zombie attack"
+        self.sfx_pain = "Zombie pain"
+        self.sfx_death = "Zombie death"
+
+        # Animations
+        self.spritesheet = self.load_image("resources/sprites/npc/Zombie_Spritesheet.png")
         self.current_animation = "Idle"
         self.animations = {
             "Idle": {
@@ -68,8 +72,3 @@ class Zombie(NPC):
                 "Animation Completed": False,
             }
         }
-
-        # Sounds
-        self.sfx_attack = "Zombie attack"
-        self.sfx_pain = "Zombie pain"
-        self.sfx_death = "Zombie death"

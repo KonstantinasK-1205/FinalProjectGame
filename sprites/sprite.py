@@ -35,6 +35,14 @@ class Sprite:
     def draw(self):
         self.game.renderer.draw_sprite(self.x, self.y, self.z, self.width, self.height, self.texture_path)
 
+    def load_image(self, path):
+        try:
+            image = pg.image.load(path).convert_alpha()
+        except pg.error:
+            print("Image wasn't found: " + path)
+            image = pg.image.load("resources/sprite/default.png").convert_alpha()
+        return image
+
     def load_texture(self, path):
         self.texture_path = path
         self.game.renderer.load_texture_from_file(self.texture_path)
