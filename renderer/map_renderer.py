@@ -9,10 +9,10 @@ class MapRenderer:
         self.layers = []
         self.vbos_initialized = False
 
-        renderer.load_texture_from_file("resources/textures/floor.png", True)
+        renderer.load_texture_from_file("resources/textures/floor.png", True, True)
         self.wall_textures = 4
         for i in range(self.wall_textures):
-            renderer.load_texture_from_file("resources/textures/wall" + str(i + 1) + ".png", True)
+            renderer.load_texture_from_file("resources/textures/wall" + str(i + 1) + ".png", True, True)
 
     def update_vbos(self):
         # Separate layers are used to draw surfaces with different textures
@@ -99,7 +99,6 @@ class MapRenderer:
             glVertexPointer(3, GL_FLOAT, 5 * 4, ctypes.c_void_p(2 * 4))
 
             glDrawArrays(GL_QUADS, 0, l.vbo_size)
-
 
     class Layer:
         def __init__(self, texture, vbo, vbo_size):
