@@ -21,7 +21,6 @@ class Map:
         self.data_visited = []
         self.enemy_amount = 0
         self.map_loaded = False
-        self.vbo_generated = False
 
     def get_map(self, path):
         self.width = 0
@@ -29,7 +28,6 @@ class Map:
         self.data = []
         self.enemy_amount = 0
         self.map_loaded = False
-        self.vbo_generated = False
 
         # In case a map was already loaded, remove old objects
         self.game.object_handler.reset()
@@ -108,6 +106,8 @@ class Map:
             y += 1
 
             self.map_loaded = True
+
+        self.game.renderer.update_map()
 
     def get_tile(self, x, y):
         if x < 0 or x >= self.width or y < 0 or y >= self.height:

@@ -10,6 +10,11 @@ class PathFinding:
         self.visited = None
 
     def get_path(self, start, goal):
+        # Fail if start or goal positions are in walls as this causes
+        # pathfinding to take a long time
+        if self.game.map.is_wall(start[0], start[1]) or self.game.map.is_wall(goal[0], goal[1]):
+            return start
+
         self.visited = self.bfs(start, goal, self.graph)
         path = [goal]
         step = self.visited.get(goal, start)

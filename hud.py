@@ -167,57 +167,8 @@ class Hud:
             minimap_x = self.game.width / 2 - minimap_width / 2
             minimap_y = self.margin
 
-        # Draw walls
-        for i in range(self.game.map.height):
-            for j in range(self.game.map.width):
-                color = (0, 0, 0, 224)
-
-                if not self.game.map.is_wall(j, i):
-                    if not self.game.map.is_visited(j, i):
-                        color = (0, 0, 0, 96)
-                    else:
-                        continue
-
-                self.game.renderer.draw_rect(
-                    minimap_x + j * tile_size,
-                    minimap_y + i * tile_size,
-                    tile_size,
-                    tile_size,
-                    color=color
-                )
-
-        # Draw enemies
-        dot_size = tile_size / 4
-        
-        for enemy in self.game.object_handler.alive_npc_list:
-            if self.game.map.is_visited(enemy.x, enemy.y):
-                self.game.renderer.draw_rect(
-                    minimap_x + enemy.x * tile_size - dot_size / 2,
-                    minimap_y + enemy.y * tile_size - dot_size / 2,
-                    dot_size,
-                    dot_size,
-                    color=(255, 0, 0)
-                )
-
-        # Draw pickups
-        for pickup in self.game.object_handler.pickup_list:
-            if self.game.map.is_visited(pickup.x, pickup.y):
-                self.game.renderer.draw_rect(
-                    minimap_x + pickup.x * tile_size - dot_size / 2,
-                    minimap_y + pickup.y * tile_size - dot_size / 2,
-                    dot_size,
-                    dot_size,
-                    color=(0, 0, 255)
-                )
-
-        # Draw player
-        self.game.renderer.draw_rect(
-            minimap_x + self.game.player.x * tile_size - dot_size / 2,
-            minimap_y + self.game.player.y * tile_size - dot_size / 2,
-            dot_size,
-            dot_size,
-            color=(0, 255, 0)
-        )
+        # Draw minimap
+        self.game.renderer.draw_minimap(minimap_x, minimap_y, tile_size)
 
     def draw_fps_counter(self):
         fps_counter = self.game.font_small.render("FPS: " + str(int(self.game.clock.get_fps())), True, (255, 255, 255))

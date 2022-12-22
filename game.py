@@ -2,7 +2,7 @@ from object_handler import *
 from hud import *
 from pathfinding import *
 from player import *
-from renderer import *
+from renderer.renderer import *
 from sound import *
 from states.game import GameState
 from states.intro import IntroState
@@ -22,10 +22,7 @@ class Game:
         pg.display.set_caption("Final Project")
         pg.display.set_icon(pg.image.load("logo.png"))
 
-        self.PRINTFPSEVENT = pg.USEREVENT + 1
         self.show_fps = PRINT_FPS
-        if self.show_fps:
-            pg.time.set_timer(self.PRINTFPSEVENT, 1000)
 
         self.running = False
 
@@ -66,8 +63,6 @@ class Game:
             elif event.type == pg.VIDEORESIZE:
                 self.font = pg.font.Font("resources/fonts/Font.ttf", int(36 / 1280 * event.w))
                 self.font_small = pg.font.Font("resources/fonts/Font.ttf", int(24 / 1280 * event.w))
-            elif event.type == self.PRINTFPSEVENT:
-                print(str(int(self.clock.get_fps())) + " FPS")
 
             self.state[self.current_state].handle_events(event)
 

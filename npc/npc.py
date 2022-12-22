@@ -76,10 +76,16 @@ class NPC(Sprite):
                     self.current_animation = "Walk"
                     self.animate()
                     self.movement()
+
             elif self.approaching_player:
                 self.current_animation = "Walk"
                 self.animate()
                 self.movement()
+
+                # Forget about the player if they are too far away - this
+                # prevents pathfinding from becoming too slow
+                if self.distance_from(self.player) > 10:
+                    self.approaching_player = False
             else:
                 self.current_animation = "Idle"
                 self.animate()

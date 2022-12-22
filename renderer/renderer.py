@@ -1,13 +1,10 @@
-import OpenGL
-
-OpenGL.ERROR_CHECKING = False
-
-import pygame as pg
-from OpenGL.GL import *
+from renderer.opengl import *
 from OpenGL.GLU import *
+import pygame as pg
 from array import array
-
 from settings import *
+from renderer.map_renderer import *
+from renderer.minimap_renderer import *
 
 
 class Renderer:
@@ -17,13 +14,17 @@ class Renderer:
         self.sprites_to_render = []
         self.textures = {}
         self.vbos = {}
-        self.layer_sizes = []
         self.draw_world = False
+        self.drawing_minimap = False
 
         glEnable(GL_TEXTURE_2D)
-        glEnable(GL_BLEND)
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_CULL_FACE)
+
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY)
+        glEnableClientState(GL_VERTEX_ARRAY)
+
+        glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
         glEnable(GL_FOG)
@@ -32,14 +33,7 @@ class Renderer:
         glFogf(GL_FOG_START, 5)
         glFogf(GL_FOG_END, 15)
 
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY)
-        glEnableClientState(GL_VERTEX_ARRAY)
-
         self.load_texture_from_file("resources/textures/sky.png", True)
-        self.load_texture_from_file("resources/textures/floor.png", True)
-        self.wall_textures = 4
-        for i in range(self.wall_textures):
-            self.load_texture_from_file("resources/textures/wall" + str(i + 1) + ".png", True)
 
         self.load_vbo("object", [
             1, 0, -0.5, 0, 0,
@@ -62,107 +56,14 @@ class Renderer:
             0, 0, 0, 1
         ])
 
-        self.update_sphere_vbo()
+        self.load_sphere_vbo()
 
-        self.map_size = (0, 0)
+        self.map_renderer = MapRenderer(game, self)
+        self.minimap_renderer = MinimapRenderer(game, self)
 
-    def update_map_vbo(self):
-        WALL_HEIGHT = 1.5
-
-        if self.game.map.vbo_generated:
-            return
-        self.game.map.vbo_generated = True
-
-        # Separate layers are used to draw surfaces with different textures
-        # Create a layer for the floor and each wall texture
-        layer_data = []
-        self.layer_sizes = []
-        for i in range(self.wall_textures + 1):
-            layer_data.append([])
-            self.layer_sizes.append(0)
-
-        for i in range(self.game.map.height):
-            for j in range(self.game.map.width):
-                tile = self.game.map.get_tile(j, i)
-                # Add wall vertices
-                if tile > 0:
-                    layer_data[tile].extend([
-                        0, 0          , j + 0, 0          , i + 1,
-                        1, 0          , j + 1, 0          , i + 1,
-                        1, WALL_HEIGHT, j + 1, WALL_HEIGHT, i + 1,
-                        0, WALL_HEIGHT, j + 0, WALL_HEIGHT, i + 1,
-
-                        1, 0          , j + 0, 0          , i + 0,
-                        1, WALL_HEIGHT, j + 0, WALL_HEIGHT, i + 0,
-                        0, WALL_HEIGHT, j + 1, WALL_HEIGHT, i + 0,
-                        0, 0          , j + 1, 0          , i + 0,
-
-                        1, 0          , j + 1, 0          , i + 0,
-                        1, WALL_HEIGHT, j + 1, WALL_HEIGHT, i + 0,
-                        0, WALL_HEIGHT, j + 1, WALL_HEIGHT, i + 1,
-                        0, 0          , j + 1, 0          , i + 1,
-
-                        0, 0          , j + 0, 0          , i + 0,
-                        1, 0          , j + 0, 0          , i + 1,
-                        1, WALL_HEIGHT, j + 0, WALL_HEIGHT, i + 1,
-                        0, WALL_HEIGHT, j + 0, WALL_HEIGHT, i + 0
-                    ])
-                    self.layer_sizes[tile] += 4 * 4
-                # Add floor vertices
-                else:
-                    layer_data[tile].extend([
-                        0, 0, j + 0, 0, i + 1,
-                        1, 0, j + 1, 0, i + 1,
-                        1, 1, j + 1, 0, i + 0,
-                        0, 1, j + 0, 0, i + 0
-                    ])
-                    self.layer_sizes[tile] += 4
-
-        for i in range(len(self.layer_sizes)):
-            self.load_vbo("map" + str(i), layer_data[i])
-
-    def update_sphere_vbo(self):
-        # More steps - less square circle, but more vertices
-        STEPS = 20
-        ANGLE_STEP = math.pi / STEPS
-
-        self.sphere_vbo_verts = 0
-
-        data = []
-        for i in range(STEPS):
-            angle = ANGLE_STEP * i
-
-            x = math.sin(angle) / 2
-            y = (math.sin(angle + math.pi * 1.5) + 1) / 2
-            y2 = (math.sin(angle + ANGLE_STEP + math.pi * 1.5) + 1) / 2
-            h = y2 - y
-
-            tx1 = -(x - 0.5)
-            ty1 = y
-            tx2 = 1 - tx1
-            ty2 = ty1 + h
-
-            data.extend([
-                tx1, ty1, -x, y + h, 0,
-                tx2, ty1,  x, y + h, 0,
-                tx2, ty2,  x, y + 0, 0,
-                tx1, ty2, -x, y + 0, 0
-            ])
-            self.sphere_vbo_verts += 4
-
-        self.load_vbo("sphere", data)
-
-    def load_vbo(self, name, data):
-        data_array = array("f", data)
-        array_bytes = data_array.tobytes()
-
-        # Is the GL VBO already created?
-        if not name in self.vbos:
-            vbo = glGenBuffers(1)
-            self.vbos[name] = vbo
-
-        glBindBuffer(GL_ARRAY_BUFFER, self.vbos[name])
-        glBufferData(GL_ARRAY_BUFFER, len(array_bytes), array_bytes, GL_STATIC_DRAW)
+    def update_map(self):
+        self.map_renderer.update_vbos()
+        self.minimap_renderer.update_vbos()
 
     def load_texture_from_file(self, path, repeat = False):
         try:
@@ -192,8 +93,8 @@ class Renderer:
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surface.get_width(), surface.get_height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, bitmap)
 
-    def draw_rect(self, x, y, width, height, texture=None, color=(255, 255, 255, 255)):
-        self.rects_to_render.append(self.Renderable(x, y, None, width, height, texture, color, False, None))
+    def draw_rect(self, x, y, width, height, texture=None, color=(255, 255, 255, 255), angle=None):
+        self.rects_to_render.append(self.Renderable(x, y, None, width, height, texture, color, False, angle))
 
     def draw_fullscreen_rect(self, texture=None, color=(255, 255, 255, 255)):
         self.draw_rect(0, 0, self.game.width, self.game.height, texture, color)
@@ -204,6 +105,12 @@ class Renderer:
     def draw_sphere(self, x, y, z, width, height, texture=None, color=(255, 255, 255, 255)):
         self.sprites_to_render.append(self.Renderable(x, y, z, width, height, texture, color, True, None))
 
+    def draw_minimap(self, x, y, tile_size):
+        self.minimap_renderer.x = x
+        self.minimap_renderer.y = y
+        self.minimap_renderer.tile_size = tile_size
+        self.drawing_minimap = True
+
     def draw_queued(self):
         glViewport(0, 0, self.game.width, self.game.height)
 
@@ -211,6 +118,49 @@ class Renderer:
             self.draw_2d_bg()
             self.draw_3d()
         self.draw_2d_fg()
+
+    def load_vbo(self, name, data):
+        data_array = array("f", data)
+        array_bytes = data_array.tobytes()
+
+        # Is the GL VBO already created?
+        if not name in self.vbos:
+            vbo = glGenBuffers(1)
+            self.vbos[name] = vbo
+
+        glBindBuffer(GL_ARRAY_BUFFER, self.vbos[name])
+        glBufferData(GL_ARRAY_BUFFER, len(array_bytes), array_bytes, GL_STATIC_DRAW)
+
+    def load_sphere_vbo(self):
+        # More steps - less square circle, but more vertices
+        STEPS = 20
+        ANGLE_STEP = math.pi / STEPS
+
+        self.sphere_vbo_verts = 0
+
+        data = []
+        for i in range(STEPS):
+            angle = ANGLE_STEP * i
+
+            x = math.sin(angle) / 2
+            y = (math.sin(angle + math.pi * 1.5) + 1) / 2
+            y2 = (math.sin(angle + ANGLE_STEP + math.pi * 1.5) + 1) / 2
+            h = y2 - y
+
+            tx1 = -(x - 0.5)
+            ty1 = y
+            tx2 = 1 - tx1
+            ty2 = ty1 + h
+
+            data.extend([
+                tx1, ty1, -x, y + h, 0,
+                tx2, ty1,  x, y + h, 0,
+                tx2, ty2,  x, y + 0, 0,
+                tx1, ty2, -x, y + 0, 0
+            ])
+            self.sphere_vbo_verts += 4
+
+        self.load_vbo("sphere", data)
 
     def draw_2d_bg(self):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -270,12 +220,22 @@ class Renderer:
 
             glLoadIdentity()
             glTranslatef(rect.x, rect.y, 0)
+            if not rect.angle == None:
+                # Don't ask. Just believe.
+                glTranslatef(rect.width / 2, rect.height / 2, 0)
+                glRotatef(math.degrees(rect.angle), 0, 0, 1)
+                glTranslatef(-rect.width / 2, -rect.height / 2, 0)
             glScalef(rect.width, rect.height, 1)
             glDrawArrays(GL_QUADS, 0, 4)
 
         self.rects_to_render = []
-        glEnable(GL_DEPTH_TEST)
 
+        if self.drawing_minimap:
+            self.minimap_renderer.draw()
+            # Do not draw the minimap next frame unless asked again
+            self.drawing_minimap = False
+
+        glEnable(GL_DEPTH_TEST)
         glColor4f(1, 1, 1, 1)
 
     def draw_3d(self):
@@ -283,7 +243,7 @@ class Renderer:
 
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        gluPerspective(FOV, self.game.width / self.game.height, 0.1, 100)
+        gluPerspective(FOV, self.game.width / self.game.height, 0.1, 50)
 
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()
@@ -292,25 +252,8 @@ class Renderer:
         glRotatef(math.degrees(self.game.player.angle) + 90, 0, 1, 0)
         glTranslatef(-self.game.player.x, -self.game.player.z - 0.6, -self.game.player.y)
 
-        self.draw_3d_map()
+        self.map_renderer.draw()
         self.draw_3d_objects()
-
-    def draw_3d_map(self):
-        self.update_map_vbo()
-
-        for i in range(len(self.layer_sizes)):
-            if i == 0:
-                glBindTexture(GL_TEXTURE_2D, self.textures["resources/textures/floor.png"])
-            else:
-                glBindTexture(GL_TEXTURE_2D, self.textures["resources/textures/wall" + str(i) + ".png"])
-
-            glBindBuffer(GL_ARRAY_BUFFER, self.vbos["map" + str(i)])
-            glTexCoordPointer(2, GL_FLOAT, 5 * 4, ctypes.c_void_p(0))
-            glVertexPointer(3, GL_FLOAT, 5 * 4, ctypes.c_void_p(2 * 4))
-
-            glPushMatrix()
-            glDrawArrays(GL_QUADS, 0, self.layer_sizes[i])
-            glPopMatrix()
 
     def draw_3d_objects(self):
         glDisable(GL_CULL_FACE)
@@ -375,9 +318,3 @@ class Renderer:
             self.color = color
             self.sphere = sphere
             self.angle = angle
-
-
-    class MapLayer:
-        def __init__(self):
-            self.data = []
-            self.vert_count = 0
