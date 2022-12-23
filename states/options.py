@@ -14,6 +14,9 @@ class OptionsState(State):
         self.menu_surfaces = []
         self.menu_height = 0
         self.menu_list = {
+            "Options": {
+                "Option": None
+            },
             "Resolution": {
                 "Option": self.current_resolution
             },
