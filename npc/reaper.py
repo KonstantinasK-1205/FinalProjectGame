@@ -116,18 +116,21 @@ class Reaper(NPC):
     def teleport(self):
         self.animate_teleportation()
         if self.ready_for_teleportation:
-            next_x = self.player.x - random.randint(-1, 1)
-            next_y = self.player.y - random.randint(-1, 1)
-            self.game.sound.play_sfx(self.sfx_teleportation, [self.exact_pos, self.player.exact_pos])
-            if not self.game.map.is_wall(next_x, next_y):
-                self.x = next_x
-                self.y = next_y
-            self.angle = math.atan2(self.player.y - self.y, self.player.x - self.x)
+            while 1:
+                next_x = self.player.x - random.randint(-1, 1)
+                next_y = self.player.y - random.randint(-1, 1)
+                if not self.game.map.is_wall(next_x, next_y):
+                    self.x = next_x
+                    self.y = next_y
+                    break
+
             self.last_teleportation_time = pg.time.get_ticks()
-            self.current_animation = "Idle"
+            self.game.sound.play_sfx(self.sfx_teleportation, [self.exact_pos, self.player.exact_pos])
+            self.angle = math.atan2(self.player.y - self.y, self.player.x - self.x)
             self.teleported = True
             self.teleportation_begin = False
             self.ready_for_teleportation = False
+            self.current_animation = "Idle"
             self.animations["Teleportation"]["Counter"] = 0
 
     def animate_teleportation(self):

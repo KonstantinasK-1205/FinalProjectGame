@@ -4,7 +4,6 @@ import math
 WIDTH = 1280
 HEIGHT = 720
 VSYNC = 0
-PRINT_FPS = 1
 
 # On mini map
 PLAYER_ANGLE = 1.5

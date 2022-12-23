@@ -21,9 +21,7 @@ class Game:
         pg.display.set_mode((WIDTH, HEIGHT), pg.RESIZABLE | pg.OPENGL | pg.DOUBLEBUF, vsync=VSYNC)
         pg.display.set_caption("Final Project")
         pg.display.set_icon(pg.image.load("logo.png"))
-
-        self.show_fps = PRINT_FPS
-
+        self.show_fps = True
         self.running = False
 
         self.clock = pg.time.Clock()
@@ -31,8 +29,7 @@ class Game:
         self.object_handler = ObjectHandler(self)
         self.hud = Hud(self)
         self.map = Map(self)
-        #self.map_lists = ["Level1", "Level2", "Level3", "Level4", "Level5", "Level6"]
-        self.map_lists = ["Level6"]
+        self.map_lists = ["Level1", "Level2", "Level3", "Level4", "Level5"]
 
         self.font = pg.font.Font("resources/fonts/Font.ttf", int(36 / 1280 * WIDTH))
         self.font_small = pg.font.Font("resources/fonts/Font.ttf", int(24 / 1280 * WIDTH))
@@ -61,9 +58,10 @@ class Game:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.running = False
-            elif event.type == pg.VIDEORESIZE:
-                self.font = pg.font.Font("resources/fonts/Font.ttf", int(36 / 1280 * event.w))
-                self.font_small = pg.font.Font("resources/fonts/Font.ttf", int(24 / 1280 * event.w))
+            elif event.type == pg.WINDOWRESIZED:
+                self.font = pg.font.Font("resources/fonts/Font.ttf", int(36 / 1280 * event.x))
+                self.font_small = pg.font.Font("resources/fonts/Font.ttf", int(24 / 1280 * event.y))
+                self.weapon.reset_weapon_pos()
 
             self.state[self.current_state].handle_events(event)
 

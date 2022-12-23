@@ -29,9 +29,6 @@ class Weapon:
         self.weapon_info.update(DoubleShotgun(game).weapon_info)
         self.weapon_info.update(AutomaticRifle(game).weapon_info)
 
-        self.WIDTH = self.game.width
-        self.HEIGHT = self.game.height
-
         self.cur_display = self.weapon_info[self.current_weapon][self.current_state]["Sprites"][0]
         self.weapon_pos = (0, 0)
 
@@ -70,8 +67,8 @@ class Weapon:
         elif event.type == pg.MOUSEWHEEL:
             self.current_index += event.y
             if self.current_index > len(self.weapon_info) - 1:
-                self.current_index = 0
-            elif self.current_index < 0:
+                self.current_index = 1
+            elif self.current_index <= 0:
                 self.current_index = len(self.weapon_info) - 1
             self.change_weapon(list(self.weapon_info)[self.current_index])
 
@@ -110,12 +107,16 @@ class Weapon:
     def draw(self):
         self.reset_weapon_pos()
         self.game.renderer.draw_rect(
-            self.weapon_pos[0] / self.WIDTH * self.game.width,
-            self.weapon_pos[1] / self.HEIGHT * self.game.height,
-            self.game.renderer.get_texture_width(self.cur_display) / self.WIDTH * self.game.width,
-            self.game.renderer.get_texture_height(self.cur_display) / self.HEIGHT * self.game.height,
+            self.weapon_pos[0],
+            self.weapon_pos[1],
+            self.game.renderer.get_texture_width(self.cur_display),
+            self.game.renderer.get_texture_height(self.cur_display),
             self.cur_display
         )
+
+    def reset_weapon_pos(self):
+        self.weapon_pos = (self.game.width / 2 - self.game.renderer.get_texture_width(self.cur_display) // 2,
+                           self.game.height - self.game.renderer.get_texture_height(self.cur_display))
 
     def reload(self):
         if not self.currently_playing:
@@ -157,11 +158,11 @@ class Weapon:
     def add_bullets(self, weapon, number):
         self.weapon_info[weapon]["Fire"]["Bullet Left"] += number
 
-    def create_bullet(self, dispersity=None):
+    def create_bullet(self, spread=None):
         weapon = self.weapon_info[self.current_weapon]["Fire"]
-        if dispersity:
-            angle = self.game.player.angle + dispersity
-            angle_ver = -self.game.player.angle_ver + dispersity
+        if spread:
+            angle = self.game.player.angle + spread
+            angle_ver = -self.game.player.angle_ver + spread
         else:
             angle = self.game.player.angle
             angle_ver = -self.game.player.angle_ver
@@ -183,10 +184,6 @@ class Weapon:
     def unlock(self, weapon):
         self.weapon_info[weapon]["Unlocked"] = True
         self.current_weapon = weapon
-
-    def reset_weapon_pos(self):
-        self.weapon_pos = (self.WIDTH / 2 - self.game.renderer.get_texture_width(self.cur_display) // 2,
-                           self.HEIGHT - self.game.renderer.get_texture_height(self.cur_display))
 
     def change_animation(self, state):
         self.current_state = state

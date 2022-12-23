@@ -14,7 +14,7 @@ class Pinky(NPC):
         self.speed = 0.0025
 
         # Attack stats
-        self.damage = random.randint(7, 11)
+        self.damage = random.randint(10, 14)
         self.attack_distance = 1
         self.bullet_lifetime = 35
 
@@ -84,9 +84,9 @@ class Pinky(NPC):
         }
 
         # Dash ability ( dash away from bullet )
-        self.dodge_chance = 7
-        self.dash_distance = 15
         self.is_dashing = False
+        self.dodge_chance = 6
+        self.dash_distance = 18
         self.dash_start_time = 0
 
     def movement(self):

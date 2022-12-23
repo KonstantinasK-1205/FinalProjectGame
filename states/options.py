@@ -1,16 +1,21 @@
 from states.state import *
 from settings import *
+import pygame as pg
 
 
 class OptionsState(State):
     def __init__(self, game):
         super().__init__(game)
 
+        self.current_resolution = (WIDTH, HEIGHT)
+        self.available_resolutions = pg.display.list_modes()
+        self.index_of_resolution = self.available_resolutions.index(self.current_resolution)
+
         self.menu_surfaces = []
         self.menu_height = 0
         self.menu_list = {
             "Resolution": {
-                "Option": None
+                "Option": self.current_resolution
             },
             "Full screen": {
                 "Option": False
@@ -30,7 +35,6 @@ class OptionsState(State):
             "Back": {
                 "Option": None
             }}
-        self.current_resolution = (WIDTH, HEIGHT)
 
         self.initialized = False
 
@@ -88,11 +92,12 @@ class OptionsState(State):
         self.initialized = True
 
     def apply_settings(self):
+        resolution = self.menu_list["Resolution"]["Option"]
         if self.menu_list["Full screen"]["Option"]:
-            pg.display.set_mode((WIDTH, HEIGHT), pg.FULLSCREEN | pg.OPENGL | pg.DOUBLEBUF,
+            pg.display.set_mode(resolution, pg.FULLSCREEN | pg.OPENGL | pg.DOUBLEBUF,
                                 self.menu_list["Vsync"]["Option"])
         else:
-            pg.display.set_mode((WIDTH, HEIGHT), pg.OPENGL | pg.DOUBLEBUF, self.menu_list["Vsync"]["Option"])
+            pg.display.set_mode(resolution, pg.OPENGL | pg.DOUBLEBUF, self.menu_list["Vsync"]["Option"])
 
         self.game.sound.sound_enabled = self.menu_list["Sounds"]["Option"]
         self.game.show_fps = self.menu_list["Show FPS"]["Option"]
@@ -100,7 +105,19 @@ class OptionsState(State):
     def change_setting(self, menu):
         menu_dict = self.menu_list[menu]
         # Change settings only those who have Option
-        if menu_dict["Option"] is not None:
+        if type(menu_dict["Option"]) == tuple:
+            self.index_of_resolution -= 1
+            if self.index_of_resolution < 0:
+                self.index_of_resolution = len(self.available_resolutions) - 1
+            menu_dict["Option"] = self.available_resolutions[self.index_of_resolution]
+            option_text = menu_dict["Option"]
+            # Set button text and update it for renderer
+            menu_dict["Original Title"] = menu + ": " + str(option_text)
+            menu_dict["Surface"] = self.game.font_small.render("< " + menu_dict["Original Title"] + " >",
+                                                               True, (255, 255, 255))
+            self.game.renderer.load_texture_from_surface("menu_text_" + str(menu), menu_dict["Surface"])
+
+        if type(menu_dict["Option"]) == bool:
             # Reverse boolean and set correct (ON/OFF) option text
             menu_dict["Option"] = not menu_dict["Option"]
             option_text = 'Off' if menu_dict["Option"] is False else 'On'
@@ -126,10 +143,13 @@ class OptionsState(State):
 
         for menu in self.menu_list:
             menu_dict = self.menu_list[menu]
-            if menu_dict["Option"] is not None:
+            if type(menu_dict["Option"]) == bool:
                 menu_dict["Original Title"] = menu + ": " + self.get_boolean_state(menu_dict["Option"])
+            elif type(menu_dict["Option"]) == tuple:
+                menu_dict["Original Title"] = menu + ": " + str(menu_dict["Option"])
             else:
                 menu_dict["Original Title"] = menu
+
             menu_dict["Surface"] = self.game.font_small.render(menu_dict["Original Title"], True, (255, 255, 255))
             menu_dict["Menu Height"] = self.menu_height
             self.menu_height += menu_dict["Surface"].get_height()
