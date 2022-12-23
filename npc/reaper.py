@@ -5,7 +5,7 @@ import pygame as pg
 
 
 class Reaper(NPC):
-    def __init__(self, game, pos, scale=0.6):
+    def __init__(self, game, pos, scale=[0.6]):
         super().__init__(game, pos, scale)
 
         # Position and scale
@@ -14,7 +14,7 @@ class Reaper(NPC):
         self.height = 0.6
 
         # Primary stats
-        self.health = 240
+        self.health = 150
         self.speed = 0.002
 
         # Attack stats

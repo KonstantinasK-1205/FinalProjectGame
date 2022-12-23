@@ -6,7 +6,7 @@ from collision import *
 
 class Particle(Sprite):
     def __init__(self, game, pos, collided_tile):
-        super().__init__(game, pos, 0.05)
+        super().__init__(game, pos, [0.05])
 
         # Right now the player shoots bullets out of their legs, so account for
         # player arm height

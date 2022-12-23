@@ -116,11 +116,7 @@ class Hud:
             "left_text"
         )
 
-    def draw_in_game_gui(self):
-        self.draw_armor_bar()
-        self.draw_health_bar()
-
-        # Draw Bullet amount
+    def draw_bullet_stats(self):
         total_bullet = self.game.font_small.render("Ammo: " + str(self.game.weapon.get_cartridge_bullet_left()) +
                                         " / " + str(self.game.weapon.get_total_bullet_left()), True, (255, 255, 255))
         self.game.renderer.load_texture_from_surface("total_bullet", total_bullet)
@@ -191,4 +187,7 @@ class Hud:
         elif map_state == 2:
             self.draw_minimap(False)
             self.draw_enemy_stats()
-        self.draw_in_game_gui()
+        self.draw_armor_bar()
+        self.draw_health_bar()
+        if not self.game.weapon.get_current_weapon_type() == "Melee":
+            self.draw_bullet_stats()

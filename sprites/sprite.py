@@ -5,19 +5,28 @@ import pygame as pg
 
 
 class Sprite:
-    def __init__(self, game, pos, scale):
+    def __init__(self, game, pos=None, scale=None):
         self.game = game
         self.player = game.player
 
         # Init position and dimension
-        self.x = pos[0]
-        self.y = pos[1]
-        if len(pos) == 3:
-            self.z = pos[2]
+        if pos is None:
+            self.x = self.y = self.z = 0
         else:
-            self.z = 0
-        self.width = scale
-        self.height = scale
+            self.x = pos[0]
+            self.y = pos[1]
+            if len(pos) == 3:
+                self.z = pos[2]
+            else:
+                self.z = 0
+
+        if scale is None:
+            self.width = self.height = 0
+        elif len(scale) > 1:
+            self.width = scale[0]
+            self.height = scale[1]
+        else:
+            self.width = self.height = scale[0]
 
         # Init texture and animation variables
         self.spritesheet = None
@@ -34,6 +43,20 @@ class Sprite:
 
     def draw(self):
         self.game.renderer.draw_sprite(self.x, self.y, self.z, self.width, self.height, self.texture_path)
+
+    def load_weapon_images(self, weapon, images, scale=2.5):
+        loaded_images = deque()
+        for image in images:
+            full_path = "resources/sprites/weapon/" + weapon + "/" + str(image) + ".png"
+            if os.path.exists(full_path):
+                img = pg.image.load(full_path).convert_alpha()
+            else:
+                break
+            img = pg.transform.smoothscale(img, (img.get_width() * scale, img.get_height() * scale))
+
+            self.game.renderer.load_texture_from_surface(full_path, img)
+            loaded_images.append(full_path)
+        return loaded_images
 
     def load_image(self, path):
         try:

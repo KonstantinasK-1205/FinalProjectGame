@@ -19,13 +19,13 @@ class LoseState(State):
             if event.type == pg.KEYUP:
                 if event.key == pg.K_RETURN or event.key == pg.K_SPACE:
                     self.game.current_state = "Loading"
-                    self.game.new_game("resources/levels/" + self.game.map_lists[0] + ".txt")
+                    self.game.restart_level("resources/levels/" + self.game.map_lists[0] + ".txt")
                 if event.key == pg.K_ESCAPE:
                     self.game.running = False
 
             if event.type == pg.MOUSEBUTTONUP and event.button == 1:
                 self.game.current_state = "Loading"
-                self.game.new_game("resources/levels/" + self.game.map_lists[0] + ".txt")
+                self.game.restart_level("resources/levels/" + self.game.map_lists[0] + ".txt")
 
     def update(self):
         self.elapsed_ms = pg.time.get_ticks() - self.on_set_ms

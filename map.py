@@ -1,15 +1,19 @@
-from bullet import Bullet
-from npc.reaper import Reaper
-from npc.soldier import Soldier
-from npc.lostsoul import LostSoul
-from npc.pinky import Pinky
-from npc.battlelord import Battlelord
-from npc.zombie import Zombie
+import npc.zombie
+from npc.battlelord import *
+from npc.lostsoul import *
+from npc.pinky import *
+from npc.reaper import *
+from npc.soldier import *
+from npc.zombie import *
+
 from sprites.sprite import Sprite
-from sprites.pickup_ammo_machinegun import MachinegunPickupAmmo
-from sprites.pickup_ammo_shotgun import ShotgunPickupAmmo
+from sprites.pickup_ammo import *
+from sprites.environment_assets import *
+from sprites.pickup_misc import *
 from sprites.pickup_armor import PickupArmor
 from sprites.pickup_health import PickupHealth
+from sprites.pickup_weapons import *
+from sprites.enemies_spawns import *
 
 
 class Map:
@@ -54,6 +58,7 @@ class Map:
 
         self.data = [0] * self.width * self.height
         self.data_visited = [False] * self.width * self.height
+        handler = self.game.object_handler
 
         # Read map data
         map_file.seek(0)
@@ -72,36 +77,71 @@ class Map:
 
                 # world_map should only contain ints which refer to wall texture
                 # index
+                pos = (x + 0.5, y + 0.5)
                 if char.isdigit():
                     self.data[x + y * self.width] = int(char)
-                elif char == "p":
-                    self.game.player.set_spawn(x + 0.5, y + 0.5)
-                elif char == "e":
-                    self.game.object_handler.add_npc(Soldier(self.game, pos=(x + 0.5, y + 0.5)))
+
+                # Player and Enemies
+                elif char == "O":
+                    self.game.player.set_spawn(pos[0], pos[1])
+                elif char == "Z":
+                    handler.add_npc(Zombie(self.game, pos))
                     self.enemy_amount += 1
-                elif char == "l":
-                    self.game.object_handler.add_npc(LostSoul(self.game, pos=(x + 0.5, y + 0.5)))
+                elif char == "X":
+                    handler.add_npc(Soldier(self.game, pos))
                     self.enemy_amount += 1
-                elif char == "r":
-                    self.game.object_handler.add_npc(Reaper(self.game, pos=(x + 0.5, y + 0.5)))
+                elif char == "C":
+                    handler.add_npc(Pinky(self.game, pos))
+                    self.enemy_amount += 1
+                elif char == "V":
+                    handler.add_npc(LostSoul(self.game, pos))
                     self.enemy_amount += 1
                 elif char == "B":
-                    self.game.object_handler.add_npc(Battlelord(self.game, pos=(x + 0.5, y + 0.5)))
+                    handler.add_npc(Reaper(self.game, pos))
                     self.enemy_amount += 1
-                elif char == "z":
-                    self.game.object_handler.add_npc(Zombie(self.game, pos=(x + 0.5, y + 0.5)))
+                elif char == "N":
+                    handler.add_npc(Battlelord(self.game, pos))
                     self.enemy_amount += 1
-                elif char == "P":
-                    self.game.object_handler.add_npc(Pinky(self.game, pos=(x + 0.5, y + 0.5)))
-                    self.enemy_amount += 1
-                elif char == "h":
-                    self.game.object_handler.add_pickup(PickupHealth(self.game, pos=(x + 0.5, y + 0.5)))
-                elif char == "b":
-                    self.game.object_handler.add_pickup(ShotgunPickupAmmo(self.game, pos=(x + 0.5, y + 0.5)))
-                elif char == "m":
-                    self.game.object_handler.add_pickup(MachinegunPickupAmmo(self.game, pos=(x + 0.5, y + 0.5)))
+
+                # Pickups stats
+                elif char == "q":
+                    handler.add_pickup(PickupHealth(self.game, pos))
+                elif char == "w":
+                    handler.add_pickup(PickupArmor(self.game, pos))
+
+                # Pickups weapons
                 elif char == "a":
-                    self.game.object_handler.add_pickup(PickupArmor(self.game, pos=(x + 0.5, y + 0.5)))
+                    handler.add_pickup(PitchforkPickup(self.game, pos))
+                elif char == "s":
+                    handler.add_pickup(RevolverPickup(self.game, pos))
+                elif char == "d":
+                    handler.add_pickup(DoubleShotgunPickup(self.game, pos))
+                elif char == "f":
+                    handler.add_pickup(AutomaticRiflePickup(self.game, pos))
+
+                # Pickups ammo
+                elif char == "S":
+                    handler.add_pickup(PistolAmmo(self.game, pos))
+                elif char == "D":
+                    handler.add_pickup(ShotgunAmmo(self.game, pos))
+                elif char == "F":
+                    handler.add_pickup(RifleAmmo(self.game, pos))
+
+                # Sprites / Decoration
+                elif char == "!":
+                    handler.add_sprite(Tree(self.game, pos))
+                elif char == "@":
+                    handler.add_sprite(BigTorch(self.game, pos))
+                elif char == "#":
+                    handler.add_sprite(SmallTorch(self.game, pos))
+                elif char == "*":
+                    handler.add_sprite(Corpse(self.game, pos))
+                elif char == "-":
+                    handler.add_sprite(BonusLevel(self.game, pos))
+
+                # Spawns
+                elif char == ",":
+                    handler.add_sprite(ZombieSpawn(self.game, pos))
                 x += 1
             y += 1
 

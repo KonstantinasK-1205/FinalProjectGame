@@ -1,9 +1,10 @@
 import pygame as pg
 
 from settings import *
-import math
 from collections import deque
 from collision import *
+import copy
+import math
 
 
 class Player:
@@ -17,8 +18,10 @@ class Player:
         self.angle = PLAYER_ANGLE
         self.angle_ver = 0
 
-        self.health = PLAYER_MAX_HEALTH
         self.armor = 0
+        self.health = PLAYER_MAX_HEALTH
+        self.saved_armor = 0
+        self.saved_health = 0
 
         self.moving_forw = False
         self.moving_back = False
@@ -88,6 +91,16 @@ class Player:
         res = resolve_collision(self.x, self.y, dx, dy, self.game.map, 0.2)
         self.x = res.x
         self.y = res.y
+
+    def on_level_change(self):
+        self.save_player_stats()
+        self.angle = PLAYER_ANGLE
+        self.angle_ver = 0
+
+        self.moving_forw = False
+        self.moving_back = False
+        self.moving_left = False
+        self.moving_right = False
 
     def fill_map_visited(self):
         RADIUS = 25
@@ -165,3 +178,16 @@ class Player:
 
     def distance_from(self, other):
         return math.hypot(other.x - self.x, other.y - self.y, other.z - self.z)
+
+    def save_player_stats(self):
+        self.saved_health = copy.deepcopy(self.health)
+        self.saved_armor = copy.deepcopy(self.armor)
+
+    def load_player_stats(self):
+        self.moving_forw = False
+        self.moving_back = False
+        self.moving_left = False
+        self.moving_right = False
+
+        self.health = self.saved_health
+        self.armor = self.saved_armor

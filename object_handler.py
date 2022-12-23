@@ -57,7 +57,7 @@ class ObjectHandler:
                 if len(self.game.map_lists) > 1:
                     self.game.map_lists.pop(0)
                     self.game.current_state = "Loading"
-                    self.game.new_game("resources/levels/" + str(self.game.map_lists[0]) + ".txt")
+                    self.game.next_level("resources/levels/" + str(self.game.map_lists[0]) + ".txt")
                 else:
                     self.game.current_state = "Win"
 

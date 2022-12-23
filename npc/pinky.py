@@ -6,11 +6,11 @@ from collision import *
 
 
 class Pinky(NPC):
-    def __init__(self, game, pos, scale=0.6):
+    def __init__(self, game, pos, scale=[0.6]):
         super().__init__(game, pos, scale)
 
         # Primary stats
-        self.health = 350
+        self.health = 250
         self.speed = 0.0025
 
         # Attack stats
@@ -84,6 +84,7 @@ class Pinky(NPC):
         }
 
         # Dash ability ( dash away from bullet )
+        self.dodge_chance = 7
         self.dash_distance = 15
         self.is_dashing = False
         self.dash_start_time = 0
@@ -104,7 +105,7 @@ class Pinky(NPC):
             self.is_dashing = False
 
     def avoid_bullet(self):
-        if random.randint(1, 10) > 8:
+        if random.randint(1, 10) > self.dodge_chance:
             self.dx = math.sin(self.angle) * self.speed * self.game.dt
             self.dy = math.cos(self.angle) * self.speed * self.game.dt
             self.is_dashing = True

@@ -5,7 +5,7 @@ from collision import *
 
 
 class Bullet:
-    def __init__(self, game, pos, damage, angle, angle_ver, owner, lifetime=50000):
+    def __init__(self, game, pos, damage, angle, angle_ver, owner, lifetime=50000, velocity=0.012):
         self.game = game
         self.player = game.player
 
@@ -16,7 +16,7 @@ class Bullet:
         self.height = 0.3
         self.angle = angle
         self.angle_ver = angle_ver
-        self.speed = 0.012
+        self.speed = velocity
         self.scale = 0.005
         self.owner = owner
         self.damage = damage

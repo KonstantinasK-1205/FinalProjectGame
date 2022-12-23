@@ -7,14 +7,14 @@ from collision import *
 
 
 class NPC(Sprite):
-    def __init__(self, game, pos, scale=0.6):
+    def __init__(self, game, pos, scale=[0.6]):
         super().__init__(game, pos, scale)
         self.current_time = 0
 
         # Base position and scale
         self.z = 0
-        self.width = 0.8
-        self.height = 0.8
+        self.width = 0.7
+        self.height = 0.7
 
         # Base primary stats
         self.alive = True

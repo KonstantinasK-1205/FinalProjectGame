@@ -5,7 +5,7 @@ import pygame as pg
 
 
 class Battlelord(NPC):
-    def __init__(self, game, pos, scale=0.6):
+    def __init__(self, game, pos, scale=[0.6]):
         super().__init__(game, pos, scale)
 
         # Position and scale
@@ -13,16 +13,16 @@ class Battlelord(NPC):
         self.height = 0.9
 
         # Primary stats
-        self.health = 2400
+        self.health = 1800
         self.speed = 0.003
 
         # Attack stats
         self.damage = random.randint(10, 25)
-        self.attack_distance = 6
+        self.attack_distance = 8
         self.bullet_lifetime = 1500
 
-        self.sensing_range = 40  # 0.5   = 1 grid block
-        self.reaction_time = 300
+        self.sensing_range = 60  # 0.5   = 1 grid block
+        self.reaction_time = 250
 
         # Sound variables
         self.sfx_attack = "Battlelord attack"

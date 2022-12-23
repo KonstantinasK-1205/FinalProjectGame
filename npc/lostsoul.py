@@ -6,7 +6,7 @@ from collision import *
 
 
 class LostSoul(NPC):
-    def __init__(self, game, pos, scale=0.6):
+    def __init__(self, game, pos, scale=[0.6]):
         super().__init__(game, pos, scale)
 
         self.z = random.uniform(0.5, 0.8)

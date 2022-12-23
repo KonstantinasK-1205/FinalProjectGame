@@ -13,7 +13,7 @@ class MenuState(State):
 
     def on_set(self):
         if self.game.map.map_loaded:
-            self.menu_list = {"Final Project!": {}, "New Game": {}, "Resume Game": {}, "Options": {}, "Exit": {}}
+            self.menu_list = {"Final Project!": {}, "Resume Game": {}, "New Game": {}, "Options": {}, "Exit": {}}
         else:
             self.menu_list = {"Final Project!": {}, "New Game": {}, "Options": {}, "Exit": {}}
 

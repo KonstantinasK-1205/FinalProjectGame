@@ -5,15 +5,15 @@ import pygame as pg
 
 
 class Soldier(NPC):
-    def __init__(self, game, pos, scale=0.6):
+    def __init__(self, game, pos, scale=[0.6]):
         super().__init__(game, pos, scale)
 
         # Primary stats
-        self.health = 100
+        self.health = 50
         self.speed = 0.002
 
         # Attack Stats
-        self.damage = random.randint(15, 20)
+        self.damage = random.randint(12, 16)
         self.attack_distance = random.randint(3, 5)
         self.bullet_lifetime = 600
 

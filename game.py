@@ -12,7 +12,7 @@ from states.loading import LoadingState
 from states.lose import LoseState
 from states.pause import PauseState
 from states.win import WinState
-from weapon import *
+from weapons.weapon import Weapon
 
 
 class Game:
@@ -31,7 +31,8 @@ class Game:
         self.object_handler = ObjectHandler(self)
         self.hud = Hud(self)
         self.map = Map(self)
-        self.map_lists = ["Level1", "Level2", "Level3", "Level4"]
+        #self.map_lists = ["Level1", "Level2", "Level3", "Level4", "Level5", "Level6"]
+        self.map_lists = ["Level6"]
 
         self.font = pg.font.Font("resources/fonts/Font.ttf", int(36 / 1280 * WIDTH))
         self.font_small = pg.font.Font("resources/fonts/Font.ttf", int(24 / 1280 * WIDTH))
@@ -94,6 +95,26 @@ class Game:
         self.pathfinding = PathFinding(self)
 
         self.renderer.draw_world = True
+
+    def next_level(self, level):
+        self.player.on_level_change()
+        self.weapon.save_weapon_info()
+        self.object_handler = ObjectHandler(self)
+        self.map = Map(self)
+
+        self.map.get_map(level)
+        self.pathfinding = PathFinding(self)
+
+    def restart_level(self, level):
+        self.player.load_player_stats()
+        self.weapon.load_weapon_info()
+
+        self.object_handler = ObjectHandler(self)
+        self.map = Map(self)
+
+        self.map.get_map(level)
+        self.pathfinding = PathFinding(self)
+
 
     def run(self):
         self.running = True

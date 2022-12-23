@@ -5,11 +5,11 @@ import pygame as pg
 
 
 class Zombie(NPC):
-    def __init__(self, game, pos, scale=0.6):
+    def __init__(self, game, pos, scale=[0.6]):
         super().__init__(game, pos, scale)
 
         # Base stats
-        self.health = random.randint(60, 70)
+        self.health = 20
         self.speed = 0.0006
 
         # Attack stats

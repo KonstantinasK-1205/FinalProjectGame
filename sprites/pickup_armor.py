@@ -2,9 +2,9 @@ from sprites.sprite import Sprite
 
 
 class PickupArmor(Sprite):
-    def __init__(self, game, pos, scale=0.3):
+    def __init__(self, game, pos, scale=[0.3]):
         super().__init__(game, pos, scale)
-        self.load_texture("resources/sprites/static_sprites/pickups/armor.png")
+        self.load_texture("resources/sprites/pickups/armor.png")
 
     def update(self):
         super().update()
