@@ -25,8 +25,9 @@ class Map:
         self.data_visited = []
         self.enemy_amount = 0
         self.map_loaded = False
+        self.next_level = None
 
-    def get_map(self, path):
+    def get_map(self, level):
         self.width = 0
         self.height = 0
         self.data = []
@@ -35,7 +36,9 @@ class Map:
 
         # In case a map was already loaded, remove old objects
         self.game.object_handler.reset()
+        self.next_level = None
 
+        path = "resources/levels/" + level + ".txt"
         map_file = open(path, "r")
 
         # Find map size
@@ -66,6 +69,29 @@ class Map:
         while line := map_file.readline():
             x = 0
             skip = False
+            if "Player HP:" in line:
+                self.game.player.health = int(line.split(': ')[1])
+                continue
+            if "Player Armor:" in line:
+                self.game.player.armor = int(line.split(': ')[1])
+                continue
+            if "Weapon" in line:
+                parameter = line.split(': ')[1].lstrip()
+                parameter = parameter.split(",")
+                if parameter[0] in self.game.weapon.weapon_info:
+                    weapon = self.game.weapon.weapon_info[parameter[0]]
+                    weapon["Unlocked"] = parameter[1].replace("\n", "")
+                    weapon["Fire"]["Bullet Left"] = int(parameter[2])
+                else:
+                    print("Error while loading " + path)
+                    print("-> Couldn't find weapon " + parameter[0])
+                continue
+            if "Next Level" in line:
+                if "None" in line:
+                    self.next_level = None
+                else:
+                    self.next_level = line.split(': ')[1].replace("\n", "")
+                continue
             for char in line:
                 # Magic fix for tab separated files
                 if "\t" in line:

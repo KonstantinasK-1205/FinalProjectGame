@@ -28,10 +28,7 @@ class Game:
         self.object_handler = ObjectHandler(self)
         self.hud = Hud(self)
         self.map = Map(self)
-        self.map_lists = ["Level1", "Level2", "Level3", "Level4", "Level5"]
-
-        #self.map_lists = ["T_Level1"]
-        #self.current_map = self.map_lists[0] # In use only wth test map!
+        self.current_map = "Level1"
 
         self.font = pg.font.Font("resources/fonts/Font.ttf", int(36 / 1280 * WIDTH))
         self.font_small = pg.font.Font("resources/fonts/Font.ttf", int(24 / 1280 * WIDTH))
@@ -86,39 +83,40 @@ class Game:
 
     def new_game(self, level):
         self.player = Player(self)
-        self.player.on_level_change()
-        self.object_handler = ObjectHandler(self)
-        self.hud = Hud(self)
-        self.map = Map(self)
-
         self.weapon = Weapon(self)
-        self.weapon.save_weapon_info()
+        self.object_handler = ObjectHandler(self)
+
+        self.map = Map(self)
         self.map.get_map(level)
+        self.player.on_level_change()
+        self.weapon.save_weapon_info()
+        self.hud = Hud(self)
+
         self.pathfinding = PathFinding(self)
 
         self.renderer.draw_world = True
 
     def next_level(self, level):
         self.map_started_to_change = pg.time.get_ticks()
-        self.current_map = level
-        self.player.on_level_change()
-        self.weapon.save_weapon_info()
         self.object_handler = ObjectHandler(self)
 
         self.map = Map(self)
         self.map.get_map(level)
+        self.current_map = level
+        self.player.on_level_change()
+        self.weapon.save_weapon_info()
 
         self.pathfinding = PathFinding(self)
         print(pg.time.get_ticks() - self.map_started_to_change)
 
     def restart_level(self, level):
+        self.object_handler = ObjectHandler(self)
+
+        self.map = Map(self)
+        self.map.get_map(level)
         self.player.load_player_stats()
         self.weapon.load_weapon_info()
 
-        self.object_handler = ObjectHandler(self)
-        self.map = Map(self)
-
-        self.map.get_map(level)
         self.pathfinding = PathFinding(self)
 
     def run(self):

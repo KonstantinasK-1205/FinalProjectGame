@@ -19,7 +19,7 @@ class Player:
         self.angle_ver = 0
 
         self.armor = 0
-        self.health = PLAYER_MAX_HEALTH
+        self.health = 100
         self.saved_armor = 0
         self.saved_health = 0
 

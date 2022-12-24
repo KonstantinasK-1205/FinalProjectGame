@@ -20,8 +20,8 @@ class GameState(State):
                 self.map_state = (self.map_state + 1) % 3
 
     def update(self):
-        self.game.object_handler.update()
         self.game.player.update()
+        self.game.object_handler.update()
         self.game.sound.update()
 
     def draw(self):

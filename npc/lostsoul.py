@@ -83,7 +83,7 @@ class LostSoul(NPC):
         }
 
         # Dash ability ( dash towards player )
-        self.dash_distance = 100
+        self.dash_distance = 60
         self.wait_time = 2000  # Wait for 2 seconds before dashing again
         self.is_dashing = False
         self.dash_start_time = 0

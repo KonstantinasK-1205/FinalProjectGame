@@ -57,10 +57,9 @@ class ObjectHandler:
             self.map_change_wait_ms = self.map_change_wait_ms + self.game.dt
             if self.map_change_wait_ms >= MAP_CHANGE_WAIT_MS:
                 self.map_change = False
-                if len(self.game.map_lists) > 1:
-                    self.game.map_lists.pop(0)
+                if self.game.map.next_level:
                     self.game.current_state = "Loading"
-                    self.game.next_level("resources/levels/" + str(self.game.map_lists[0]) + ".txt")
+                    self.game.next_level(self.game.map.next_level)
                 else:
                     self.game.current_state = "Win"
 

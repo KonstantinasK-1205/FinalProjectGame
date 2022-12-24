@@ -13,7 +13,8 @@ class MenuState(State):
 
     def on_set(self):
         if self.game.map.map_loaded:
-            self.menu_list = {"Final Project!": {}, "Resume Game": {}, "New Game": {}, "Options": {}, "Exit": {}}
+            self.menu_list = {"Final Project!": {}, "Resume Game": {}, "Restart Level": {},
+                              "New Game": {}, "Options": {}, "Exit": {}}
         else:
             self.menu_list = {"Final Project!": {}, "New Game": {}, "Options": {}, "Exit": {}}
 
@@ -61,7 +62,10 @@ class MenuState(State):
                     if pos_y < mouse_pos[1] < pos_y + height:
                         if menu == "New Game":
                             self.game.current_state = "Loading"
-                            self.game.new_game("resources/levels/" + self.game.map_lists[0] + ".txt")
+                            self.game.new_game("Level1")
+                        elif menu == "Restart Level":
+                            self.game.current_state = "Loading"
+                            self.game.restart_level(self.game.current_map)
                         elif menu == "Resume Game":
                             self.game.current_state = "Game"
                         elif menu == "Options":
