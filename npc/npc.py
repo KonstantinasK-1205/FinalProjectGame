@@ -115,14 +115,15 @@ class NPC(Sprite):
                                                    damage, angle, 0, "enemy", self.bullet_lifetime))
 
     def apply_damage(self, damage):
-        self.pain = True
-        self.health -= damage
-        if self.health > 1:
-            self.game.sound.play_sfx(self.sfx_pain, [self.exact_pos, self.player.exact_pos])
-        else:
-            self.alive = False
-            self.current_animation = "Death"
-            self.game.sound.play_sfx(self.sfx_death, [self.exact_pos, self.player.exact_pos])
+        if damage > 0:
+            self.pain = True
+            self.health -= damage
+            if self.health > 1:
+                self.game.sound.play_sfx(self.sfx_pain, [self.exact_pos, self.player.exact_pos])
+            else:
+                self.alive = False
+                self.current_animation = "Death"
+                self.game.sound.play_sfx(self.sfx_death, [self.exact_pos, self.player.exact_pos])
 
     # Movement
     def movement(self):

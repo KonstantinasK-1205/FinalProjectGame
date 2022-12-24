@@ -138,6 +138,8 @@ class Map:
                     handler.add_sprite(Corpse(self.game, pos))
                 elif char == "-":
                     handler.add_sprite(BonusLevel(self.game, pos))
+                elif char == "]":
+                    handler.add_sprite(LevelChangeChunk(self.game, pos))
 
                 # Spawns
                 elif char == ",":

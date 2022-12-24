@@ -10,7 +10,6 @@ from states.menu import MenuState
 from states.options import OptionsState
 from states.loading import LoadingState
 from states.lose import LoseState
-from states.pause import PauseState
 from states.win import WinState
 from weapons.weapon import Weapon
 
@@ -31,6 +30,9 @@ class Game:
         self.map = Map(self)
         self.map_lists = ["Level1", "Level2", "Level3", "Level4", "Level5"]
 
+        #self.map_lists = ["T_Level1"]
+        #self.current_map = self.map_lists[0] # In use only wth test map!
+
         self.font = pg.font.Font("resources/fonts/Font.ttf", int(36 / 1280 * WIDTH))
         self.font_small = pg.font.Font("resources/fonts/Font.ttf", int(24 / 1280 * WIDTH))
         self.sound = Sound()
@@ -41,13 +43,13 @@ class Game:
             "Options": OptionsState(self),
             "Loading": LoadingState(self),
             "Game": GameState(self),
-            "Pause": PauseState(self),
             "Win": WinState(self),
             "Game over": LoseState(self)
         }
         self.current_state = "Intro"
 
         self.hit_flash_ms = HIT_FLASH_MS
+        self.map_started_to_change = 0
 
         self.dt = 0
 
@@ -84,24 +86,30 @@ class Game:
 
     def new_game(self, level):
         self.player = Player(self)
+        self.player.on_level_change()
         self.object_handler = ObjectHandler(self)
         self.hud = Hud(self)
         self.map = Map(self)
 
         self.weapon = Weapon(self)
+        self.weapon.save_weapon_info()
         self.map.get_map(level)
         self.pathfinding = PathFinding(self)
 
         self.renderer.draw_world = True
 
     def next_level(self, level):
+        self.map_started_to_change = pg.time.get_ticks()
+        self.current_map = level
         self.player.on_level_change()
         self.weapon.save_weapon_info()
         self.object_handler = ObjectHandler(self)
-        self.map = Map(self)
 
+        self.map = Map(self)
         self.map.get_map(level)
+
         self.pathfinding = PathFinding(self)
+        print(pg.time.get_ticks() - self.map_started_to_change)
 
     def restart_level(self, level):
         self.player.load_player_stats()
@@ -112,7 +120,6 @@ class Game:
 
         self.map.get_map(level)
         self.pathfinding = PathFinding(self)
-
 
     def run(self):
         self.running = True

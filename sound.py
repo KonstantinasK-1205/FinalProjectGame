@@ -13,6 +13,7 @@ class Sound:
         self.master_vol = 1.0
         self.sound_enabled = True
         self.path = 'resources/sound/'
+        self.play_music("soundtrack")
         self.sound_in_queue = []
         self.sound_db = {
             # Weapon sounds
@@ -49,7 +50,7 @@ class Sound:
             "Bullet in wall": ["Extra", pg.mixer.Sound(self.path + 'bullet_to_wall.wav')],
             # State sounds
             "Lose": ["Extra", pg.mixer.Sound(self.path + 'lose.wav')],
-            "Win": ["Extra", pg.mixer.Sound(self.path + 'win.wav') ]
+            "Win": ["Extra", pg.mixer.Sound(self.path + 'win.wav')],
         }
 
     def update(self):
@@ -93,6 +94,10 @@ class Sound:
                     self.sound_db[sound][1].play()
             else:
                 print("Sound wasn't found: " + str(sound))
+
+    def play_music(self, music):
+        pg.mixer.music.load(self.path + "soundtrack.wav")
+        pg.mixer_music.play(-1)
 
     def change_vol(self, num):
         self.master_vol += num

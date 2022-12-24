@@ -85,8 +85,8 @@ class Pinky(NPC):
 
         # Dash ability ( dash away from bullet )
         self.is_dashing = False
-        self.dodge_chance = 6
-        self.dash_distance = 18
+        self.dodge_chance = 5
+        self.dash_distance = 2
         self.dash_start_time = 0
 
     def movement(self):

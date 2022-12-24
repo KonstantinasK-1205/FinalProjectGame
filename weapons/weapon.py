@@ -21,7 +21,12 @@ class Weapon:
         self.current_state = "Standby"
         self.current_index = 0
 
+        # Saved Variables for reloading if player starts new game or dies
+        self.saved_current_weapon = ""
+        self.saved_current_state = ""
+        self.saved_cur_display = ""
         self.saved_weapons = {}
+
         self.weapon_info = {}
         self.weapon_info.update(Empty(game).weapon_info)
         self.weapon_info.update(Pitchfork(game).weapon_info)
@@ -224,6 +229,13 @@ class Weapon:
 
     def save_weapon_info(self):
         self.saved_weapons = copy.deepcopy(self.weapon_info)
+        self.saved_current_weapon = self.current_weapon
+        self.saved_current_state = self.current_state
+        self.saved_cur_display = self.cur_display
 
     def load_weapon_info(self):
-        self.weapon_info.update(self.saved_weapons)
+        self.weapon_info.clear()
+        self.weapon_info = copy.deepcopy(self.saved_weapons)
+        self.current_weapon = self.saved_current_weapon
+        self.current_state = self.saved_current_state
+        self.cur_display = self.saved_cur_display

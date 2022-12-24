@@ -50,6 +50,9 @@ class ObjectHandler:
 
         self.kill_reward()
 
+        if self.game.player.health <= 0:
+            self.game.current_state = "Game over"
+
         if self.map_change:
             self.map_change_wait_ms = self.map_change_wait_ms + self.game.dt
             if self.map_change_wait_ms >= MAP_CHANGE_WAIT_MS:

@@ -35,10 +35,11 @@ class Bullet:
             if self.owner == 'player':
                 for enemy in self.game.object_handler.alive_npc_list:
                     if self.distance_from(enemy) < 0.3:
-                        if 'Pinky' in str(type(enemy)) and enemy.avoid_bullet():
-                            break
-                        self.delete = True
+                        if ('Pinky' in str(type(enemy)) or 'Battlelord' in str(type(enemy))) and enemy.avoid_bullet():
+                            self.damage = 0
+
                         enemy.apply_damage(self.damage)
+                        self.delete = True
 
             # If fired by enemy, check collision with player
             if self.owner == 'enemy':

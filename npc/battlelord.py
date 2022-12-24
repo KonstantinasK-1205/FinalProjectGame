@@ -2,6 +2,7 @@ from npc.npc import NPC
 from settings import *
 import random
 import pygame as pg
+from collision import *
 
 
 class Battlelord(NPC):
@@ -13,11 +14,11 @@ class Battlelord(NPC):
         self.height = 0.9
 
         # Primary stats
-        self.health = 1800
+        self.health = 2200
         self.speed = 0.003
 
         # Attack stats
-        self.damage = random.randint(10, 25)
+        self.damage = random.randint(7, 12)
         self.attack_distance = 8
         self.bullet_lifetime = 1500
 
@@ -53,15 +54,15 @@ class Battlelord(NPC):
                                          [(0, 256, 128, 128),
                                          (128, 256, 128, 128)]),
                 "Counter": 0,
-                "Animation Speed": 200,
-                "Attack Speed": 400,
+                "Animation Speed": 100,
+                "Attack Speed": 200,
                 "Animation Completed": False,
             },
             "Pain": {
                 "Frames": self.images_at("Battlelord_Pain",
                                          [(0, 384, 128, 128)]),
                 "Counter": 0,
-                "Animation Speed": 300,
+                "Animation Speed": 20,
                 "Animation Completed": False,
             },
             "Death": {
@@ -77,3 +78,33 @@ class Battlelord(NPC):
                 "Animation Completed": False,
             }
         }
+
+        # Dash ability ( dash away from bullet )
+        self.is_dashing = False
+        self.dodge_chance = 8
+        self.dash_distance = 2
+        self.dash_start_time = 0
+
+    def movement(self):
+        if self.is_dashing:
+            res = resolve_collision(self.x, self.y, self.dx, self.dy, self.game.map, 0.15)
+            self.x = res.x
+            self.y = res.y
+        else:
+            super().movement()
+
+    def update(self):
+        super().update()
+        elapsed_time = pg.time.get_ticks()
+        distance_traveled = (elapsed_time - self.dash_start_time) * self.speed * self.game.dt
+        if distance_traveled >= self.dash_distance:
+            self.is_dashing = False
+
+    def avoid_bullet(self):
+        if random.randint(1, 10) > self.dodge_chance:
+            self.dx = math.sin(self.angle) * self.speed * self.game.dt
+            self.dy = math.cos(self.angle) * self.speed * self.game.dt
+            self.is_dashing = True
+            self.dash_start_time = pg.time.get_ticks()
+            return True
+        return False

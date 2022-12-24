@@ -94,9 +94,6 @@ class Player:
 
     def on_level_change(self):
         self.save_player_stats()
-        self.angle = PLAYER_ANGLE
-        self.angle_ver = 0
-
         self.moving_forw = False
         self.moving_back = False
         self.moving_left = False
@@ -173,8 +170,6 @@ class Player:
         if self.health > 1:
             self.game.hit_flash_ms = 0
             self.game.sound.play_sfx("Player pain")
-        else:
-            self.game.current_state = "Game over"
 
     def distance_from(self, other):
         return math.hypot(other.x - self.x, other.y - self.y, other.z - self.z)
@@ -189,5 +184,5 @@ class Player:
         self.moving_left = False
         self.moving_right = False
 
-        self.health = self.saved_health
-        self.armor = self.saved_armor
+        self.health = copy.deepcopy(self.saved_health)
+        self.armor = copy.deepcopy(self.saved_armor)
