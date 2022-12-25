@@ -63,7 +63,7 @@ class Sprite:
             image = pg.image.load(path).convert_alpha()
         except pg.error:
             print("Image wasn't found: " + path)
-            image = pg.image.load("resources/sprite/default.png").convert_alpha()
+            image = pg.image.load("resources/sprites/default.png").convert_alpha()
         return image
 
     def load_texture(self, path):

@@ -28,6 +28,12 @@ class Game:
         self.object_handler = ObjectHandler(self)
         self.hud = Hud(self)
         self.map = Map(self)
+        # Needs to be initialized, otherwise will crash on resize before new game
+        self.player = None
+        self.pathfinding = None
+        self.weapon = None
+
+        self.starting_map = "Level4"
         self.current_map = "Level1"
 
         self.font = pg.font.Font("resources/fonts/Font.ttf", int(36 / 1280 * WIDTH))
@@ -60,7 +66,8 @@ class Game:
             elif event.type == pg.WINDOWRESIZED:
                 self.font = pg.font.Font("resources/fonts/Font.ttf", int(36 / 1280 * event.x))
                 self.font_small = pg.font.Font("resources/fonts/Font.ttf", int(24 / 1280 * event.y))
-                self.weapon.reset_weapon_pos()
+                if hasattr(self.weapon, "reset_weapon_pos"):
+                    self.weapon.reset_weapon_pos()
 
             self.state[self.current_state].handle_events(event)
 

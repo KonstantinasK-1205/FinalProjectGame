@@ -1,8 +1,8 @@
+from bullet import *
 from npc.npc import NPC
 from settings import *
-import random
 import pygame as pg
-from collision import *
+import random
 
 
 class Battlelord(NPC):
@@ -18,12 +18,12 @@ class Battlelord(NPC):
         self.speed = 0.003
 
         # Attack stats
-        self.damage = random.randint(7, 12)
+        self.damage = 10
         self.attack_distance = 8
-        self.bullet_lifetime = 1500
+        self.bullet_lifetime = 850
 
         self.sensing_range = 60  # 0.5   = 1 grid block
-        self.reaction_time = 250
+        self.reaction_time = 200
 
         # Sound variables
         self.sfx_attack = "Battlelord attack"
@@ -44,7 +44,7 @@ class Battlelord(NPC):
             "Walk": {
                 "Frames": self.images_at("Battlelord_Walk",
                                          [(0, 128, 128, 128),
-                                         (128, 128, 128, 128)]),
+                                          (128, 128, 128, 128)]),
                 "Counter": 0,
                 "Animation Speed": 180,
                 "Animation Completed": False,
@@ -52,7 +52,7 @@ class Battlelord(NPC):
             "Attack": {
                 "Frames": self.images_at("Battlelord_Attack",
                                          [(0, 256, 128, 128),
-                                         (128, 256, 128, 128)]),
+                                          (128, 256, 128, 128)]),
                 "Counter": 0,
                 "Animation Speed": 100,
                 "Attack Speed": 200,
@@ -62,7 +62,7 @@ class Battlelord(NPC):
                 "Frames": self.images_at("Battlelord_Pain",
                                          [(0, 384, 128, 128)]),
                 "Counter": 0,
-                "Animation Speed": 20,
+                "Animation Speed": 450,
                 "Animation Completed": False,
             },
             "Death": {
@@ -79,32 +79,49 @@ class Battlelord(NPC):
             }
         }
 
-        # Dash ability ( dash away from bullet )
-        self.is_dashing = False
-        self.dodge_chance = 8
-        self.dash_distance = 2
-        self.dash_start_time = 0
-
-    def movement(self):
-        if self.is_dashing:
-            res = resolve_collision(self.x, self.y, self.dx, self.dy, self.game.map, 0.15)
-            self.x = res.x
-            self.y = res.y
-        else:
-            super().movement()
+        # Reload functionality, so enemy wouldn't non-stop fire at player
+        self.is_reloading = False
+        self.bullet_amount = 120
+        self.reload_time = 2500
+        self.reload_starts = 0
 
     def update(self):
         super().update()
-        elapsed_time = pg.time.get_ticks()
-        distance_traveled = (elapsed_time - self.dash_start_time) * self.speed * self.game.dt
-        if distance_traveled >= self.dash_distance:
-            self.is_dashing = False
 
-    def avoid_bullet(self):
-        if random.randint(1, 10) > self.dodge_chance:
-            self.dx = math.sin(self.angle) * self.speed * self.game.dt
-            self.dy = math.cos(self.angle) * self.speed * self.game.dt
-            self.is_dashing = True
-            self.dash_start_time = pg.time.get_ticks()
-            return True
-        return False
+        if self.bullet_amount < 0 and not self.is_reloading:
+            self.is_reloading = True
+            self.reload_starts = pg.time.get_ticks()
+
+        if self.current_time - self.reload_starts > self.reload_time and self.is_reloading:
+            self.is_reloading = False
+            self.bullet_amount = 120
+
+    def attack(self):
+        if not self.is_reloading:
+            if self.animations[self.current_animation]["Animation Completed"]:
+                if self.current_time - self.reaction_time_passed > self.reaction_time:
+                    if self.current_time - self.previous_shot > self.animations["Attack"]["Attack Speed"]:
+                        for i in range(5):
+                            self.create_bullet()
+                            self.bullet_amount -= 1
+                        self.game.sound.play_sfx(self.sfx_attack, [self.exact_pos, self.player.exact_pos])
+                        self.previous_shot = pg.time.get_ticks()
+                        self.reaction_time_passed = pg.time.get_ticks()
+
+        else:
+            self.current_animation = 'Idle'
+            self.animate()
+
+    def create_bullet(self):
+        # Add damage reduction based on how far Player from npc
+        distance = self.distance_from(self.player)
+        if self.damage > distance:
+            damage = int(self.damage - distance)
+        else:
+            damage = 1
+
+        # Calculate enemy angle, so bullet flies where NPC is looking
+        angle = math.atan2((self.player.y - random.uniform(-1, 1)) - self.y,
+                           (self.player.x - random.uniform(-1, 1)) - self.x)
+        self.game.object_handler.add_bullet(Bullet(self.game, self.exact_pos,
+                                                   damage, angle, 0, "enemy", self.bullet_lifetime))

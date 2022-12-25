@@ -17,7 +17,7 @@ class Pitchfork:
                 },
                 "Fire": {
                     "Sprites": Sprite(game).load_weapon_images("pitchfork", ["a1"]),
-                    "Damage": 10,
+                    "Damage": 9,
                     "Speed": 500,
                     "Cartridge Contains": 9999,
                     "Cartridge Holds": 9999,

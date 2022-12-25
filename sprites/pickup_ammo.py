@@ -2,9 +2,10 @@ from sprites.sprite import Sprite
 
 
 class PistolAmmo(Sprite):
-    def __init__(self, game, pos, scale=[0.3]):
-        super().__init__(game, pos, scale)
+    def __init__(self, game, pos):
+        super().__init__(game, pos, [0.3])
         self.load_texture("resources/sprites/pickups/ammo/pistol.png")
+        self.type = "Ammo"
 
     def update(self):
         super().update()
@@ -16,9 +17,10 @@ class PistolAmmo(Sprite):
 
 
 class ShotgunAmmo(Sprite):
-    def __init__(self, game, pos, scale=[0.3]):
-        super().__init__(game, pos, scale)
+    def __init__(self, game, pos):
+        super().__init__(game, pos, [0.3])
         self.load_texture("resources/sprites/pickups/ammo/shotgun.png")
+        self.type = "Ammo"
 
     def update(self):
         super().update()
@@ -30,9 +32,10 @@ class ShotgunAmmo(Sprite):
 
 
 class RifleAmmo(Sprite):
-    def __init__(self, game, pos, scale=[0.3]):
-        super().__init__(game, pos, scale)
+    def __init__(self, game, pos):
+        super().__init__(game, pos, [0.3])
         self.load_texture("resources/sprites/pickups/ammo/rifle.png")
+        self.type = "Ammo"
 
     def update(self):
         super().update()

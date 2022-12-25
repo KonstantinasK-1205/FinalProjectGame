@@ -38,8 +38,6 @@ class MenuState(State):
                 # Menu Size
                 width = self.menu_list[menu]["Surface"].get_width()
                 height = self.menu_list[menu]["Surface"].get_height()
-                # Menu Size
-                clickable = self.menu_list[menu]["Clickable"]
 
                 if pos_y < mouse_pos[1] < pos_y + height:
                     if pos_x < mouse_pos[0] < pos_x + width:
@@ -62,7 +60,7 @@ class MenuState(State):
                     if pos_y < mouse_pos[1] < pos_y + height:
                         if menu == "New Game":
                             self.game.current_state = "Loading"
-                            self.game.new_game("Level1")
+                            self.game.new_game(self.game.starting_map)
                         elif menu == "Restart Level":
                             self.game.current_state = "Loading"
                             self.game.restart_level(self.game.current_map)
@@ -73,8 +71,7 @@ class MenuState(State):
                         elif menu == "Exit":
                             self.game.running = False
         elif event.type == pg.VIDEORESIZE:
-            for menu in self.menu_list:
-                self.create_menu_text()
+            self.create_menu_text()
 
     def update(self):
         pass

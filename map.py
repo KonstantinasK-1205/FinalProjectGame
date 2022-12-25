@@ -1,4 +1,5 @@
-import npc.zombie
+from entity.custom_wall import *
+
 from npc.battlelord import *
 from npc.lostsoul import *
 from npc.pinky import *
@@ -80,8 +81,12 @@ class Map:
                 parameter = parameter.split(",")
                 if parameter[0] in self.game.weapon.weapon_info:
                     weapon = self.game.weapon.weapon_info[parameter[0]]
-                    weapon["Unlocked"] = parameter[1].replace("\n", "")
-                    weapon["Fire"]["Bullet Left"] = int(parameter[2])
+                    if len(parameter) >= 2:
+                        weapon["Unlocked"] = parameter[1].replace("\n", "")
+                    if len(parameter) >= 3:
+                        weapon["Fire"]["Bullet Left"] = int(parameter[2])
+                    if len(parameter) >= 4:
+                        weapon["Fire"]["Cartridge Contains"] = int(parameter[3])
                 else:
                     print("Error while loading " + path)
                     print("-> Couldn't find weapon " + parameter[0])
@@ -166,6 +171,8 @@ class Map:
                     handler.add_sprite(BonusLevel(self.game, pos))
                 elif char == "]":
                     handler.add_sprite(LevelChangeChunk(self.game, pos))
+                elif char == "[":
+                    handler.add_sprite(BreakableWall(self.game, (x, y)))
 
                 # Spawns
                 elif char == ",":

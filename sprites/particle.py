@@ -1,7 +1,6 @@
+from collision import *
 from sprites.sprite import Sprite
 import random
-import math
-from collision import *
 
 
 class Particle(Sprite):
@@ -56,9 +55,10 @@ class Particle(Sprite):
             self.delete = True
 
     def draw(self):
-        # Once lifetime reaches 0..-1, it will fade out
+        # Once lifetime reaches 0.-1, it will fade out
         a = min(255, 255 + self.lifetime * 255)
         if self.texture_path:
-            self.game.renderer.draw_sphere(self.x, self.y, self.z, self.width, self.height, self.texture_path, (255, 255, 255, a))
+            self.game.renderer.draw_sphere(self.x, self.y, self.z, self.width,
+                                           self.height, self.texture_path, (255, 255, 255, a))
         else:
             self.game.renderer.draw_sphere(self.x, self.y, self.z, self.width, self.height, None, (32, 32, 32, a))

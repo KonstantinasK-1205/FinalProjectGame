@@ -1,3 +1,6 @@
+Weapon: Automatic Rifle,Unlocked,360
+Weapon: Double Shotgun,Unlocked,60
+Weapon: Revolver,Unlocked,48
 Next Level: Level5
 1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
 1																													1						1
@@ -13,6 +16,6 @@ Next Level: Level5
 1							,						,										,						1	@		F		@	1
 1																		,											1	w		F		w	1
 1																				Z									1	@				@	1
-1					Z						,																		1						1
+1					Z																								1						1
 1																																			1
 1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1

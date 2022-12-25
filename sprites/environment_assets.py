@@ -3,19 +3,15 @@ import random
 
 
 class Tree(Sprite):
-    def __init__(self, game, pos, scale=None):
-        if not scale:
-            variety = random.randint(0, 5) / 10
-            scale = [0.7 + variety, 1.3 + variety]
-        super().__init__(game, pos, scale)
+    def __init__(self, game, pos):
+        variety = random.randint(0, 8) / 10
+        super().__init__(game, pos, [0.7 + variety, 1.3 + variety])
         self.load_texture("resources/sprites/environment/tree0.png")
 
 
 class BigTorch(Sprite):
-    def __init__(self, game, pos, scale=None):
-        if not scale:
-            scale = [0.3, 0.8]
-        super().__init__(game, pos, scale)
+    def __init__(self, game, pos):
+        super().__init__(game, pos, [0.3, 0.8])
         self.spritesheet = self.load_image("resources/sprites/environment/torch_big.png")
         self.current_animation = "Idle"
         self.animations = {
@@ -33,10 +29,8 @@ class BigTorch(Sprite):
 
 
 class SmallTorch(Sprite):
-    def __init__(self, game, pos, scale=None):
-        if not scale:
-            scale = [0.5, 0.6]
-        super().__init__(game, pos, scale)
+    def __init__(self, game, pos):
+        super().__init__(game, pos, [0.5, 0.6])
         self.spritesheet = self.load_image("resources/sprites/environment/torch_small.png")
         self.current_animation = "Idle"
         self.animations = {
@@ -54,9 +48,7 @@ class SmallTorch(Sprite):
 
 
 class Corpse(Sprite):
-    def __init__(self, game, pos, scale=None):
-        if not scale:
-            scale = [0.35, 0.25]
-        super().__init__(game, pos, scale)
+    def __init__(self, game, pos):
+        super().__init__(game, pos, [0.35, 0.25])
         corpse_sprite = random.randint(0, 2)
         self.load_texture("resources/sprites/environment/corpse" + str(corpse_sprite) + ".png")

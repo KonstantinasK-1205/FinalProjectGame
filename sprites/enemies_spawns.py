@@ -1,4 +1,3 @@
-from npc.soldier import *
 from npc.zombie import *
 from sprites.sprite import Sprite
 import pygame as pg
@@ -6,8 +5,8 @@ import random
 
 
 class ZombieSpawn(Sprite):
-    def __init__(self, game, pos, scale=[0.0001]):
-        super().__init__(game, pos, scale)
+    def __init__(self, game, pos):
+        super().__init__(game, pos, [0.0001])
         self.load_texture("resources/sprites/pickups/ammo/pistol.png")
         self.pos = pos
         self.last_spawned = 0

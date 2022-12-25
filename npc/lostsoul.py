@@ -21,6 +21,7 @@ class LostSoul(NPC):
         self.damage = random.randint(30, 40)
         self.attack_distance = 1
         self.bullet_lifetime = 35
+        self.reaction_time = 1500
 
         # Sounds variables
         self.sfx_attack = "Soldier attack"
@@ -83,10 +84,10 @@ class LostSoul(NPC):
         }
 
         # Dash ability ( dash towards player )
-        self.dash_distance = 60
-        self.wait_time = 2000  # Wait for 2 seconds before dashing again
         self.is_dashing = False
+        self.dash_distance = 4
         self.dash_start_time = 0
+        self.wait_time = 1500  # Wait for 2 seconds before dashing again
         self.wait_start_time = 0
 
     def movement(self):
@@ -109,6 +110,13 @@ class LostSoul(NPC):
             # Start dashing again if the wait time has elapsed
             self.start_dash()
 
+    def attack(self):
+        if self.animations[self.current_animation]["Animation Completed"]:
+            self.create_bullet()
+            self.game.sound.play_sfx(self.sfx_attack, [self.exact_pos, self.player.exact_pos])
+            self.previous_shot = pg.time.get_ticks()
+            self.apply_damage(100)
+
     def start_dash(self):
         self.is_dashing = True
         self.dash_start_time = pg.time.get_ticks()
@@ -118,11 +126,4 @@ class LostSoul(NPC):
 
         # Multiply by thirteen or more to convert it to real position
         # and let fly behind player ( else, it will travel by few pixels )
-        self.dash_distance = self.distance_from(self.game.player) * random.randint(13, 15)
-
-    def attack(self):
-        if self.animations[self.current_animation]["Animation Completed"]:
-            self.create_bullet()
-            self.game.sound.play_sfx(self.sfx_attack, [self.exact_pos, self.player.exact_pos])
-            self.previous_shot = pg.time.get_ticks()
-            self.apply_damage(100)
+        self.dash_distance = self.distance_from(self.game.player) * random.randint(2, 4)

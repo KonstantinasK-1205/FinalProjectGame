@@ -83,8 +83,7 @@ class OptionsState(State):
                         if "Back" in menu:
                             self.game.current_state = "Menu"
         elif event.type == pg.VIDEORESIZE:
-            for menu in self.menu_list:
-                self.create_menu_text()
+            self.create_menu_text()
 
     def update(self):
         pass

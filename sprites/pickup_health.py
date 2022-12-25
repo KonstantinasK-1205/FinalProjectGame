@@ -2,9 +2,10 @@ from sprites.sprite import Sprite
 
 
 class PickupHealth(Sprite):
-    def __init__(self, game, pos, scale=[0.3]):
-        super().__init__(game, pos, scale)
+    def __init__(self, game, pos):
+        super().__init__(game, pos, [0.3])
         self.load_texture("resources/sprites/pickups/health.png")
+        self.type = "Player"
 
     def update(self):
         super().update()

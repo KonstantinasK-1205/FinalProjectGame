@@ -35,7 +35,7 @@ class Bullet:
             if self.owner == 'player':
                 for enemy in self.game.object_handler.alive_npc_list:
                     if self.distance_from(enemy) < 0.3:
-                        if ('Pinky' in str(type(enemy)) or 'Battlelord' in str(type(enemy))) and enemy.avoid_bullet():
+                        if 'Pinky' in str(type(enemy)) and enemy.avoid_bullet():
                             self.damage = 0
 
                         enemy.apply_damage(self.damage)
@@ -46,6 +46,13 @@ class Bullet:
                 if self.distance_from(self.player) < 0.9:
                     self.delete = True
                     self.player.apply_damage(self.damage)
+
+            # Check collision with sprite which have health
+            for sprite in self.game.object_handler.sprite_list:
+                if hasattr(sprite, 'health'):
+                    if self.distance_from(sprite) < 0.5:
+                        sprite.health -= self.damage
+                        self.delete = True
 
             # Calculate relative velocity for next frame
             dx = self.speed * math.cos(self.angle) * math.cos(self.angle_ver) * self.game.dt

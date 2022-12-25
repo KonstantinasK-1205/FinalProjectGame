@@ -153,10 +153,15 @@ class MinimapRenderer:
     def draw_pickups(self):
         size = self.tile_size / 3
 
-        glColor3f(0, 0, 1)
         for pickup in self.game.object_handler.pickup_list:
             if not self.game.map.is_visited(pickup.x, pickup.y):
                 continue
+            if pickup.type == "Ammo":
+                glColor3f(1, 1, 0.8)
+            elif pickup.type == "Weapon":
+                glColor3f(0, 0.8, 0.8)
+            else:
+                glColor3f(0, 0, 1)
 
             glLoadIdentity()
             glTranslatef(

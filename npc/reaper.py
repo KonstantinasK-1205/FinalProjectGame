@@ -14,7 +14,7 @@ class Reaper(NPC):
         self.height = 0.6
 
         # Primary stats
-        self.health = 150
+        self.health = 200
         self.speed = 0.002
 
         # Attack stats
@@ -101,6 +101,7 @@ class Reaper(NPC):
         self.ready_for_teleportation = False
         self.last_teleportation_time = 0
         self.teleportation_cooldown = 2000
+        self.last_attack = 0
 
     def movement(self):
         # If teleported or player is further than 3 blocks
@@ -112,6 +113,13 @@ class Reaper(NPC):
         super().update()
         if self.current_time - self.last_teleportation_time > self.teleportation_cooldown:
             self.teleported = False
+        if self.current_time - self.last_attack > 6000 and 1 < self.distance_from(self.player) < 3:
+            self.teleport()
+            self.last_attack = pg.time.get_ticks()
+
+    def attack(self):
+        super().attack()
+        self.last_attack = pg.time.get_ticks()
 
     def teleport(self):
         self.animate_teleportation()

@@ -1,13 +1,11 @@
 from sprites.sprite import Sprite
-import random
 
 
 class BonusLevel(Sprite):
-    def __init__(self, game, pos, scale=None):
-        if not scale:
-            scale = [0.5, 0.5]
-        super().__init__(game, pos, scale)
+    def __init__(self, game, pos):
+        super().__init__(game, pos, [0.5, 0.5])
         self.load_texture("resources/sprites/pickups/misc/silver_card.png")
+        self.type = "Other"
 
     def update(self):
         super().update()
@@ -19,12 +17,11 @@ class BonusLevel(Sprite):
 
 
 class LevelChangeChunk(Sprite):
-    def __init__(self, game, pos, scale=None):
-        if not scale:
-            scale = [0.5, 0.5]
-        super().__init__(game, pos, scale)
+    def __init__(self, game, pos):
+        super().__init__(game, pos, [0.5, 0.5])
         self.load_texture("resources/sprites/pickups/empty.png")
         self.change_to = None
+        self.type = "Other"
 
     def update(self):
         super().update()

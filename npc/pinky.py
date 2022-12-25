@@ -10,7 +10,7 @@ class Pinky(NPC):
         super().__init__(game, pos, scale)
 
         # Primary stats
-        self.health = 250
+        self.health = 350
         self.speed = 0.0025
 
         # Attack stats
@@ -83,11 +83,16 @@ class Pinky(NPC):
             }
         }
 
+        # Rush ability (increase speed)
+        self.is_rushing = False
+        self.rush_timer = 0
+
         # Dash ability ( dash away from bullet )
         self.is_dashing = False
         self.dodge_chance = 5
         self.dash_distance = 2
         self.dash_start_time = 0
+        self.last_attack = 0
 
     def movement(self):
         if self.is_dashing:
@@ -100,15 +105,41 @@ class Pinky(NPC):
     def update(self):
         super().update()
         elapsed_time = pg.time.get_ticks()
-        distance_traveled = (elapsed_time - self.dash_start_time) * self.speed * self.game.dt
-        if distance_traveled >= self.dash_distance:
-            self.is_dashing = False
+        if self.is_dashing:
+            distance_traveled = (elapsed_time - self.dash_start_time) * self.speed * self.game.dt
+            if distance_traveled >= self.dash_distance:
+                self.speed = 0.0025
+                self.is_dashing = False
+
+        if self.current_time - self.last_attack > 7000 and self.distance_from(self.player) <= 3 and not self.is_rushing:
+            self.start_rush()
+            self.last_attack = pg.time.get_ticks()
+
+        if self.current_time - self.rush_timer > 2000 and self.is_rushing:
+            self.speed = 0.0025
+            self.last_attack = pg.time.get_ticks()
+            self.attack_distance = 1
+            self.bullet_lifetime = 35
+            self.is_rushing = False
+
+    def attack(self):
+        super().attack()
+        self.last_attack = pg.time.get_ticks()
 
     def avoid_bullet(self):
         if random.randint(1, 10) > self.dodge_chance:
+            self.dash_distance = 2
             self.dx = math.sin(self.angle) * self.speed * self.game.dt
             self.dy = math.cos(self.angle) * self.speed * self.game.dt
             self.is_dashing = True
             self.dash_start_time = pg.time.get_ticks()
             return True
         return False
+
+    def start_rush(self):
+        if not self.is_rushing:
+            self.speed = 0.008
+            self.is_rushing = True
+            self.attack_distance = 2
+            self.bullet_lifetime = 75
+            self.rush_timer = pg.time.get_ticks()

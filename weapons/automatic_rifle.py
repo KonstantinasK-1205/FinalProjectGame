@@ -19,7 +19,7 @@ class AutomaticRifle:
                 },
                 "Fire": {
                     "Sprites": Sprite(game).load_weapon_images("automatic_rifle", ["a0", "a1"]),
-                    "Damage": 25,
+                    "Damage": 20,
                     "Speed": 80,
                     "Cartridge Contains": 0,
                     "Cartridge Holds": 30,

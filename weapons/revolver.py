@@ -19,7 +19,7 @@ class Revolver:
                 },
                 "Fire": {
                     "Sprites": Sprite(game).load_weapon_images("revolver", ["a0", "a1", "a2"]),
-                    "Damage": 32,
+                    "Damage": 24,
                     "Speed": 150,
                     "Cartridge Contains": 0,
                     "Cartridge Holds": 8,
