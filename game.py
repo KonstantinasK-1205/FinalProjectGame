@@ -33,7 +33,7 @@ class Game:
         self.pathfinding = None
         self.weapon = None
 
-        self.starting_map = "Level4"
+        self.starting_map = "Level1"
         self.current_map = "Level1"
 
         self.font = pg.font.Font("resources/fonts/Font.ttf", int(36 / 1280 * WIDTH))
