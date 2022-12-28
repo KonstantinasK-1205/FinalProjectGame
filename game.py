@@ -51,10 +51,7 @@ class Game:
             "Game over": LoseState(self)
         }
         self.current_state = "Intro"
-
-        self.hit_flash_ms = HIT_FLASH_MS
         self.map_started_to_change = 0
-
         self.dt = 0
 
     def __del__(self):
@@ -74,18 +71,10 @@ class Game:
 
     def update(self):
         self.dt = self.clock.tick()
-
         self.state[self.current_state].update()
-
-        if self.hit_flash_ms < HIT_FLASH_MS:
-            self.hit_flash_ms = self.hit_flash_ms + self.dt
 
     def draw(self):
         self.state[self.current_state].draw()
-
-        if self.hit_flash_ms < HIT_FLASH_MS:
-            self.renderer.draw_fullscreen_rect(color=HIT_FLASH_COLOR)
-
         self.renderer.draw_queued()
         pg.display.flip()
 
@@ -134,6 +123,10 @@ class Game:
             self.handle_events()
             self.update()
             self.draw()
+
+    @property
+    def current_state_obj(self):
+        return self.state[self.current_state]
 
     @property
     def current_state(self):

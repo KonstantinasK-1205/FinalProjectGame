@@ -170,7 +170,7 @@ class Player:
 
         # Give audible & visual feedback to player, if he is still alive
         if self.health > 1:
-            self.game.hit_flash_ms = 0
+            self.game.current_state_obj.hit_flash_ms = 0
             self.game.sound.play_sfx("Player pain")
 
     def distance_from(self, other):
