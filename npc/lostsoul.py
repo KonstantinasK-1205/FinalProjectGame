@@ -1,13 +1,12 @@
 from npc.npc import NPC
-from settings import *
 import random
 import pygame as pg
 from collision import *
 
 
 class LostSoul(NPC):
-    def __init__(self, game, pos, scale=[0.6]):
-        super().__init__(game, pos, scale)
+    def __init__(self, game, pos):
+        super().__init__(game, pos, [0.6])
 
         self.z = random.uniform(0.5, 0.8)
         self.width = 0.6
@@ -18,9 +17,7 @@ class LostSoul(NPC):
         self.speed = 0.006
 
         # Attack stats
-        self.damage = random.randint(30, 40)
-        self.attack_distance = 1
-        self.bullet_lifetime = 35
+        self.damage = 35
         self.reaction_time = 1500
 
         # Sounds variables
@@ -42,9 +39,9 @@ class LostSoul(NPC):
             "Walk": {
                 "Frames": self.images_at("LostSoul_Walk",
                                          [(0, 64, 64, 64),
-                                         (64, 64, 64, 64),
-                                         (128, 64, 64, 64),
-                                         (192, 64, 64, 64)]),
+                                          (64, 64, 64, 64),
+                                          (128, 64, 64, 64),
+                                          (192, 64, 64, 64)]),
                 "Counter": 0,
                 "Animation Speed": 180,
                 "Animation Completed": False,
@@ -52,9 +49,9 @@ class LostSoul(NPC):
             "Attack": {
                 "Frames": self.images_at("LostSoul_Attack",
                                          [(0, 64, 64, 64),
-                                         (64, 64, 64, 64),
-                                         (128, 64, 64, 64),
-                                         (192, 64, 64, 64)]),
+                                          (64, 64, 64, 64),
+                                          (128, 64, 64, 64),
+                                          (192, 64, 64, 64)]),
                 "Counter": 0,
                 "Animation Speed": 20,
                 "Attack Speed": 100,

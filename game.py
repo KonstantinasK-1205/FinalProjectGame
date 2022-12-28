@@ -1,5 +1,6 @@
 from object_handler import *
 from hud import *
+from map import *
 from pathfinding import *
 from player import *
 from renderer.renderer import *

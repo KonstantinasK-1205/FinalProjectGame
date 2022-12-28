@@ -1,11 +1,10 @@
-from renderer.opengl import *
-from OpenGL.GLU import *
-import pygame as pg
 from array import array
-from settings import *
+from OpenGL.GLU import *
 from renderer.map_renderer import *
 from renderer.minimap_renderer import *
 from renderer.skybox_renderer import *
+from settings import *
+import pygame as pg
 
 
 class Renderer:
@@ -18,6 +17,7 @@ class Renderer:
         self.vbos = {}
         self.draw_world = False
         self.drawing_minimap = False
+        self.sphere_vbo_verts = 0
 
         glEnable(GL_TEXTURE_2D)
         glEnable(GL_DEPTH_TEST)
@@ -59,7 +59,7 @@ class Renderer:
         self.map_renderer.update_vbos()
         self.minimap_renderer.update_vbos()
 
-    def load_texture_from_file(self, path, repeat = False, mipmapped = False):
+    def load_texture_from_file(self, path, repeat=False, mipmapped=False):
         try:
             surface = pg.image.load(path)
         except FileNotFoundError:
@@ -72,7 +72,7 @@ class Renderer:
 
         self.load_texture_from_surface(path, surface, repeat, mipmapped)
 
-    def load_texture_from_surface(self, path, surface, repeat = False, mipmapped = False):
+    def load_texture_from_surface(self, path, surface, repeat=False, mipmapped=False):
         self.texture_sizes[path] = (surface.get_width(), surface.get_height())
 
         # Pygame text can produce a 0 width surface, so in such cases replace
@@ -84,7 +84,7 @@ class Renderer:
             surface = surface.convert_alpha()
 
         # Is the GL texture already created?
-        if not path in self.textures:
+        if path not in self.textures:
             gl_texture = glGenTextures(1)
             self.textures[path] = gl_texture
 
@@ -97,8 +97,7 @@ class Renderer:
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
 
         if mipmapped:
-            # Define mipmap levels
-            # Levels must be same width and height, and powers of two
+            # Define mipmap levels must be same width and height, and powers of two
             levels = [math.pow(2, math.ceil(math.log2(max(surface.get_width(), surface.get_height()))))]
             while levels[-1] != 1:
                 levels.append(levels[-1] / 2)
@@ -113,16 +112,17 @@ class Renderer:
 
             for i in range(len(levels)):
                 mipmap_surface = pg.transform.smoothscale(surface, (levels[i], levels[i])).convert_alpha()
-                bitmap = pg.image.tostring(mipmap_surface, "RGBA", 1)
+                bitmap = pg.image.tostring(mipmap_surface, "RGBA", True)
 
                 glTexImage2D(GL_TEXTURE_2D, i, GL_RGBA, levels[i], levels[i], 0, GL_RGBA, GL_UNSIGNED_BYTE, bitmap)
         else:
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
 
-            bitmap = pg.image.tostring(surface, "RGBA", 1)
+            bitmap = pg.image.tostring(surface, "RGBA", True)
 
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surface.get_width(), surface.get_height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, bitmap)
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surface.get_width(), surface.get_height(),
+                         0, GL_RGBA, GL_UNSIGNED_BYTE, bitmap)
 
     def delete_texture(self, texture):
         glDeleteTextures(1, self.textures[texture])
@@ -168,7 +168,7 @@ class Renderer:
         array_bytes = data_array.tobytes()
 
         # Is the GL VBO already created?
-        if not name in self.vbos:
+        if name not in self.vbos:
             vbo = glGenBuffers(1)
             self.vbos[name] = vbo
 
@@ -177,18 +177,18 @@ class Renderer:
 
     def load_sphere_vbo(self):
         # More steps - less square circle, but more vertices
-        STEPS = 20
-        ANGLE_STEP = math.pi / STEPS
+        steps = 20
+        angle_step = math.pi / steps
 
         self.sphere_vbo_verts = 0
 
         data = []
-        for i in range(STEPS):
-            angle = ANGLE_STEP * i
+        for i in range(steps):
+            angle = angle_step * i
 
             x = math.sin(angle) / 2
             y = (math.sin(angle + math.pi * 1.5) + 1) / 2
-            y2 = (math.sin(angle + ANGLE_STEP + math.pi * 1.5) + 1) / 2
+            y2 = (math.sin(angle + angle_step + math.pi * 1.5) + 1) / 2
             h = y2 - y
 
             tx1 = -(x - 0.5)
@@ -226,13 +226,13 @@ class Renderer:
             rect.width = round(rect.width)
             rect.height = round(rect.height)
 
-            if rect.texture == None:
-                glBindTexture(GL_TEXTURE_2D, 0)
-            else:
+            if rect.texture:
                 glBindTexture(GL_TEXTURE_2D, self.textures[rect.texture])
+            else:
+                glBindTexture(GL_TEXTURE_2D, 0)
 
             glColor4f(1, 1, 1, 1)
-            if not rect.color == None:
+            if rect.color:
                 if len(rect.color) == 3:
                     glColor3f(rect.color[0] / 255, rect.color[1] / 255, rect.color[2] / 255)
                 elif len(rect.color) == 4:
@@ -240,7 +240,7 @@ class Renderer:
 
             glLoadIdentity()
             glTranslatef(rect.x, rect.y, 0)
-            if not rect.angle == None:
+            if rect.angle:
                 # Don't ask. Just believe.
                 glTranslatef(rect.width / 2, rect.height / 2, 0)
                 glRotatef(math.degrees(rect.angle), 0, 0, 1)
@@ -273,7 +273,7 @@ class Renderer:
 
         self.skybox_renderer.draw()
 
-        glTranslatef(-self.game.player.x, -self.game.player.z - 0.6, -self.game.player.y)
+        glTranslatef(-self.game.player.x, -self.game.player.z - self.game.player.height, -self.game.player.y)
 
         self.map_renderer.draw()
         self.draw_3d_objects()
@@ -284,14 +284,16 @@ class Renderer:
         # Objects must be sorted closest to player first for transparency to
         # work properly
         for o in self.sprites_to_render:
-            o.__distance_from_player = math.hypot(o.x - self.game.player.x, o.y - self.game.player.y, o.z - self.game.player.z)
+            o.__distance_from_player = math.hypot(o.x - self.game.player.x,
+                                                  o.y - self.game.player.y,
+                                                  o.z - self.game.player.z)
         self.sprites_to_render = sorted(self.sprites_to_render, key=lambda t: t.__distance_from_player, reverse=True)
 
         for o in self.sprites_to_render:
-            if o.texture == None:
-                glBindTexture(GL_TEXTURE_2D, 0)
-            else:
+            if o.texture:
                 glBindTexture(GL_TEXTURE_2D, self.textures[o.texture])
+            else:
+                glBindTexture(GL_TEXTURE_2D, 0)
 
             if len(o.color) == 3:
                 glColor3f(o.color[0] / 255, o.color[1] / 255, o.color[2] / 255)
@@ -326,7 +328,6 @@ class Renderer:
         glEnable(GL_CULL_FACE)
 
         glColor4f(1, 1, 1, 1)
-
 
     class Renderable:
         def __init__(self, x, y, z, width, height, texture, color, sphere, angle):

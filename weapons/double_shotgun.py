@@ -1,8 +1,3 @@
-from collections import deque
-import os
-import pygame as pg
-
-
 from sprites.sprite import *
 
 
@@ -30,9 +25,11 @@ class DoubleShotgun:
                     "Cartridge Holds": 2,
                     "Bullet Per Shot": 2,
                     "Bullet Left": 12,
-                    "Bullet Lifetime": 550,
+                    "Bullet Lifetime": 500,
                     "Bullet Velocity": 0.03,
-                    "Bullet Offset": 0.1
+                    "Bullet Offset": 0.1,
+                    "Texture": "resources/sprites/projectile/empty.png",
+                    "Texture Size": [1, 1]
                 }
             }
         }

@@ -1,5 +1,5 @@
 from collections import deque
-from settings import *
+import math
 import os
 import pygame as pg
 

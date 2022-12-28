@@ -1,5 +1,3 @@
-import math
-
 # Game Settings
 WIDTH = 1280
 HEIGHT = 720

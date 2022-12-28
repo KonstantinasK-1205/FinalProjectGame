@@ -1,7 +1,6 @@
 import math
-
+import pygame as pg
 from sprites.sprite import Sprite
-import random
 
 
 class BreakableWall(Sprite):
@@ -31,9 +30,13 @@ class BreakableWall(Sprite):
                 self.y = self.y
                 self.angle = 0
                 texture = str(self.game.map.get_tile(self.x + 1, self.y))
-            self.load_texture("resources/textures/cracked_wall" + texture + ".png")
+            # Load wall and crack texture and blend them
+            wall = pg.image.load("resources/textures/wall" + texture + ".png")
+            wall.blit(pg.image.load("resources/textures/crack.png"), (0, 0), special_flags=pg.BLEND_SUB)
+            # Save texture and render it
+            self.game.renderer.load_texture_from_surface("Crack_" + texture, wall)
+            self.texture_path = "Crack_" + texture
             self.angle_updated = True
 
         if self.health <= 0:
             self.delete = True
-

@@ -3,7 +3,6 @@ from sprites.sprite import *
 
 class Revolver:
     def __init__(self, game):
-
         self.weapon_info = {
             "Revolver": {
                 "Type": "Semi",
@@ -25,9 +24,11 @@ class Revolver:
                     "Cartridge Holds": 8,
                     "Bullet Per Shot": 1,
                     "Bullet Left": 8,
-                    "Bullet Lifetime": 600,
-                    "Bullet Velocity": 0.04,
-                    "Bullet Offset": 0
+                    "Bullet Lifetime": 300,
+                    "Bullet Velocity": 0.05,
+                    "Bullet Offset": 0,
+                    "Texture": "resources/sprites/projectile/empty.png",
+                    "Texture Size": [1, 1]
                 }
             }
         }

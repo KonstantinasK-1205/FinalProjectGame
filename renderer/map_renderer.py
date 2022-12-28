@@ -1,5 +1,4 @@
 from renderer.opengl import *
-import math
 
 
 class MapRenderer:
@@ -91,14 +90,14 @@ class MapRenderer:
         self.layers[tile].vbo_size += 4
 
     def draw(self):
-        for l in self.layers:
-            glBindTexture(GL_TEXTURE_2D, self.renderer.textures[l.texture])
+        for layer in self.layers:
+            glBindTexture(GL_TEXTURE_2D, self.renderer.textures[layer.texture])
 
-            glBindBuffer(GL_ARRAY_BUFFER, self.renderer.vbos[l.vbo])
+            glBindBuffer(GL_ARRAY_BUFFER, self.renderer.vbos[layer.vbo])
             glTexCoordPointer(2, GL_FLOAT, 5 * 4, ctypes.c_void_p(0))
             glVertexPointer(3, GL_FLOAT, 5 * 4, ctypes.c_void_p(2 * 4))
 
-            glDrawArrays(GL_QUADS, 0, l.vbo_size)
+            glDrawArrays(GL_QUADS, 0, layer.vbo_size)
 
     class Layer:
         def __init__(self, texture, vbo, vbo_size):

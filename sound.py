@@ -1,3 +1,4 @@
+import random
 import pygame as pg
 
 
@@ -5,15 +6,15 @@ class Sound:
     def __init__(self):
         pg.mixer.init()
         # Init sound channels
-        self.weapon_chnl = pg.mixer.Channel(0)
-        self.npc_chnl = pg.mixer.Channel(1)
-        self.pickup_chnl = pg.mixer.Channel(2)
-        self.extra_chnl = pg.mixer.Channel(3)
+        self.weapon_channel = pg.mixer.Channel(0)
+        self.npc_channel = pg.mixer.Channel(1)
+        self.pickup_channel = pg.mixer.Channel(2)
+        self.extra_channel = pg.mixer.Channel(3)
 
         self.master_vol = 1.0
         self.sound_enabled = True
         self.path = 'resources/sound/'
-        self.play_music("soundtrack")
+        self.play_music()
         self.sound_in_queue = []
         self.sound_db = {
             # Weapon sounds
@@ -27,7 +28,9 @@ class Sound:
             "Weapon Empty": ["Weapon", pg.mixer.Sound(self.path + 'weapon_empty.wav')],
             # NPC sounds
             "Zombie pain": ["Entity", pg.mixer.Sound(self.path + 'npc_zombie_pain.wav')],
-            "Zombie death": ["Entity", pg.mixer.Sound(self.path + 'npc_zombie_death.wav')],
+            "Zombie death": ["Entity",
+                             [pg.mixer.Sound(self.path + 'npc_zombie_death.wav'),
+                              pg.mixer.Sound(self.path + 'npc_soldier_death.wav')]],
             "Zombie attack": ["Entity", pg.mixer.Sound(self.path + 'npc_zombie_attack.wav')],
             "Soldier pain": ["Entity", pg.mixer.Sound(self.path + 'npc_soldier_pain.wav')],
             "Soldier death": ["Entity", pg.mixer.Sound(self.path + 'npc_soldier_death.wav')],
@@ -72,7 +75,11 @@ class Sound:
     def play_sfx(self, sound, distance=None):
         if self.sound_enabled:
             if sound in self.sound_db:
-                self.sound_db[sound][1].set_volume(self.master_vol)
+                category = self.sound_db[sound][0]
+                sound = self.sound_db[sound][1]
+                if type(sound) == list:
+                    sound = sound[random.randint(0, len(sound) - 1)]
+                sound.set_volume(self.master_vol)
                 if distance is not None:
                     x_diff = abs(distance[0][0] - distance[1][0])
                     y_diff = abs(distance[0][1] - distance[1][1])
@@ -80,22 +87,22 @@ class Sound:
                         normalized = self.master_vol
                     else:
                         normalized = (self.master_vol - 0.1) - ((x_diff + y_diff) / 10)
-                    self.sound_db[sound][1].set_volume(normalized)
+                    sound.set_volume(normalized)
                 # Play each sound in their channel to prevent overloading SFX in channel
-                if self.sound_db[sound][0] == "Weapon":
-                    self.weapon_chnl.play(self.sound_db[sound][1])
-                elif self.sound_db[sound][0] == "Entity":
-                    self.npc_chnl.play(self.sound_db[sound][1])
-                elif self.sound_db[sound][0] == "Pickup":
-                    self.pickup_chnl.play(self.sound_db[sound][1])
-                elif self.sound_db[sound][0] == "Extra":
-                    self.extra_chnl.play(self.sound_db[sound][1])
+                if category == "Weapon":
+                    self.weapon_channel.play(sound)
+                elif category == "Entity":
+                    self.npc_channel.play(sound)
+                elif category == "Pickup":
+                    self.pickup_channel.play(sound)
+                elif category == "Extra":
+                    self.extra_channel.play(sound)
                 else:
-                    self.sound_db[sound][1].play()
+                    sound.play()
             else:
-                print("Sound wasn't found: " + str(sound))
+                print("Sound wasn't found: " + sound)
 
-    def play_music(self, music):
+    def play_music(self):
         pg.mixer.music.load(self.path + "soundtrack.wav")
         pg.mixer_music.play(-1)
 

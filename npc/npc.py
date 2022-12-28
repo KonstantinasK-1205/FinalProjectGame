@@ -1,5 +1,4 @@
-from bullet import Bullet
-from settings import *
+from projectile import Projectile
 from sprites.sprite import Sprite
 import pygame as pg
 import random
@@ -7,7 +6,7 @@ from collision import *
 
 
 class NPC(Sprite):
-    def __init__(self, game, pos, scale=[0.6]):
+    def __init__(self, game, pos, scale):
         super().__init__(game, pos, scale)
         self.current_time = 0
 
@@ -26,10 +25,15 @@ class NPC(Sprite):
         self.dy = 0
 
         # Base attack stats
+        self.bullet_sprite = "resources/sprites/projectile/empty.png"
+        self.bullet_width = 0.1
+        self.bullet_height = 0.1
+        self.bullet_speed = 0.025
+        self.bullet_lifetime = 80
+
         self.damage = 0
         self.previous_shot = 0
-        self.attack_distance = 0
-        self.bullet_lifetime = 200  # 100  ~= 1 grid block
+        self.attack_distance = 1
 
         self.sensing_range = 25  # 0.5   = 1 grid block
         self.reaction_time = random.randrange(700, 1500, 100)
@@ -110,9 +114,10 @@ class NPC(Sprite):
         else:
             damage = 0
         # Calculate enemy angle, so bullet flies exactly where NPC is looking
-        angle = math.atan2(self.player.y - random.random() - self.y, self.player.x - random.random() - self.x)
-        self.game.object_handler.add_bullet(Bullet(self.game, self.exact_pos,
-                                                   damage, angle, 0, "enemy", self.bullet_lifetime))
+        angle = [math.atan2(self.player.y - self.y, self.player.x - self.x), math.atan(self.player.z - self.z)]
+        position = [self.x, self.y, self.z + (self.height / 2)]
+        bullet_data = [damage, self.bullet_speed, self.bullet_lifetime, "Enemy", self.bullet_width, self.bullet_height]
+        self.game.object_handler.add_bullet(Projectile(self.game, position, angle, bullet_data, self.bullet_sprite))
 
     def apply_damage(self, damage):
         if damage > 0:
@@ -137,14 +142,12 @@ class NPC(Sprite):
             next_y = next_pos[1] + 0.5
 
             # Update velocity only if pathfinding gave correct result
-            if (math.hypot(next_x - self.x, next_y - self.y) < 2):
+            if math.hypot(next_x - self.x, next_y - self.y) < 2:
                 self.angle = math.atan2(next_y - self.y, next_x - self.x)
 
                 self.dx = math.cos(self.angle) * self.speed * self.game.dt
                 self.dy = math.sin(self.angle) * self.speed * self.game.dt
 
-        new_grid_pos = int(self.x + self.dx), int(self.y + self.dy)
-        #if new_grid_pos not in self.game.object_handler.npc_positions:
         if True:
             res = resolve_collision(self.x, self.y, self.dx, self.dy, self.game.map, 0.15)
             self.x = res.x
@@ -168,17 +171,17 @@ class NPC(Sprite):
     def can_see_player(self):
         # Larger step sizes are more efficient, but may cause NPC to see through
         # the player
-        STEP = 0.5
+        step = 0.5
         # Limiting the max number of steps makes NPC near-sighted, but prevents
         # the check from taking too long
-        MAX_STEPS = self.sensing_range
+        max_steps = self.sensing_range
 
         # If it is possible to walk straight line to the player, it means that
         # NPC can see them
         x, y, z = self.exact_pos
-        for i in range(MAX_STEPS):
-            x += math.cos(self.angle) * STEP
-            y += math.sin(self.angle) * STEP
+        for i in range(max_steps):
+            x += math.cos(self.angle) * step
+            y += math.sin(self.angle) * step
             if self.game.map.is_wall(x, y):
                 break
             elif self.player.grid_pos == (int(x), int(y)):

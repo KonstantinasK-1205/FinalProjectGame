@@ -1,13 +1,12 @@
-from bullet import *
+from projectile import *
 from npc.npc import NPC
-from settings import *
 import pygame as pg
 import random
 
 
 class Battlelord(NPC):
-    def __init__(self, game, pos, scale=[0.6]):
-        super().__init__(game, pos, scale)
+    def __init__(self, game, pos):
+        super().__init__(game, pos, [0.6])
 
         # Position and scale
         self.width = 0.8
@@ -19,8 +18,12 @@ class Battlelord(NPC):
 
         # Attack stats
         self.damage = 10
-        self.attack_distance = 8
-        self.bullet_lifetime = 850
+        self.bullet_speed = 0.007
+        self.bullet_lifetime = 2000
+        self.bullet_width = 0.01
+        self.bullet_height = 0.01
+        self.bullet_sprite = "resources/sprites/projectile/bullet.png"
+        self.attack_distance = 10
 
         self.sensing_range = 60  # 0.5   = 1 grid block
         self.reaction_time = 200
@@ -123,5 +126,9 @@ class Battlelord(NPC):
         # Calculate enemy angle, so bullet flies where NPC is looking
         angle = math.atan2((self.player.y - random.uniform(-1, 1)) - self.y,
                            (self.player.x - random.uniform(-1, 1)) - self.x)
-        self.game.object_handler.add_bullet(Bullet(self.game, self.exact_pos,
-                                                   damage, angle, 0, "enemy", self.bullet_lifetime))
+        angle = [angle, 0]
+
+        handler = self.game.object_handler
+        position = [self.x, self.y, self.z + (self.height / 2)]
+        bullet_data = [damage, self.bullet_speed, self.bullet_lifetime, "Enemy", self.bullet_width, self.bullet_height]
+        handler.add_bullet(Projectile(self.game, position, angle, bullet_data, self.bullet_sprite))

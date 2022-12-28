@@ -1,4 +1,3 @@
-from map import *
 from settings import *
 
 
@@ -66,6 +65,8 @@ class ObjectHandler:
     def draw(self):
         for npc in self.npc_list:
             npc.draw()
+        for bullet in self.bullet_list:
+            bullet.draw()
         for pickup in self.pickup_list:
             pickup.draw()
         for sprite in self.sprite_list:

@@ -1,3 +1,2 @@
-import OpenGL
-OpenGL.ERROR_CHECKING = False
 from OpenGL.GL import *
+OpenGL.ERROR_CHECKING = False

@@ -1,11 +1,7 @@
-import pygame as pg
-
-from settings import *
-
-
 class Hud:
     def __init__(self, game):
         self.game = game
+        self.margin = 0
 
         self.game.renderer.load_texture_from_file("resources/icons/gui_armor.png")
         self.game.renderer.load_texture_from_file("resources/icons/gui_health.png")
@@ -93,8 +89,14 @@ class Hud:
         )
 
     def draw_enemy_stats(self):
-        killed_text = self.game.font_small.render("Enemies killed: " + str(self.game.object_handler.killed), True, (255, 255, 255))
-        left_text = self.game.font_small.render("Enemies left: " + str(self.game.map.enemy_amount - self.game.object_handler.killed), True, (255, 255, 255))
+        killed_text = self.game.font_small.render("Enemies killed: " +
+                                                  str(self.game.object_handler.killed),
+                                                  True,
+                                                  (255, 255, 255))
+        left_text = self.game.font_small.render("Enemies left: " +
+                                                str(self.game.map.enemy_amount - self.game.object_handler.killed),
+                                                True,
+                                                (255, 255, 255))
         
         text_width = max(killed_text.get_size()[0], left_text.get_size()[0])
         text_height = killed_text.get_size()[1] + left_text.get_size()[1]
@@ -118,7 +120,8 @@ class Hud:
 
     def draw_bullet_stats(self):
         total_bullet = self.game.font_small.render("Ammo: " + str(self.game.weapon.get_cartridge_bullet_left()) +
-                                        " / " + str(self.game.weapon.get_total_bullet_left()), True, (255, 255, 255))
+                                                   " / " + str(self.game.weapon.get_total_bullet_left()),
+                                                   True, (255, 255, 255))
         self.game.renderer.load_texture_from_surface("total_bullet", total_bullet)
         self.game.renderer.draw_rect(
             self.margin,
@@ -138,10 +141,6 @@ class Hud:
             # Maximum tile size
             tile_size = min(int(minimap_width / self.game.map.width), int(minimap_height / self.game.map.height))
 
-            # Reduce minimap size to fit tiles
-            minimap_width = tile_size * self.game.map.width
-            minimap_height = tile_size * self.game.map.height
-
             # Offset minimap from top right
             minimap_x = self.game.width - minimap_width - self.margin
             minimap_y = self.margin
@@ -154,10 +153,6 @@ class Hud:
 
             # Maximum tile size
             tile_size = min(int(minimap_width / self.game.map.width), int(minimap_height / self.game.map.height))
-
-            # Reduce minimap size to fit tiles
-            minimap_width = tile_size * self.game.map.width
-            minimap_height = tile_size * self.game.map.height
 
             # Center minimap and offset from top
             minimap_x = self.game.width / 2 - minimap_width / 2

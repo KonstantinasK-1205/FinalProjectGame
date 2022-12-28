@@ -1,22 +1,19 @@
 from npc.npc import NPC
-from settings import *
 import random
 import pygame as pg
 from collision import *
 
 
 class Pinky(NPC):
-    def __init__(self, game, pos, scale=[0.6]):
-        super().__init__(game, pos, scale)
+    def __init__(self, game, pos):
+        super().__init__(game, pos, [0.6])
 
         # Primary stats
         self.health = 350
         self.speed = 0.0025
 
         # Attack stats
-        self.damage = random.randint(10, 14)
-        self.attack_distance = 1
-        self.bullet_lifetime = 35
+        self.damage = 14
 
         # Sounds
         self.sfx_attack = "Soldier attack"

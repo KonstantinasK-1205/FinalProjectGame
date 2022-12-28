@@ -1,12 +1,12 @@
 from npc.npc import NPC
-from settings import *
+import math
 import random
 import pygame as pg
 
 
 class Reaper(NPC):
-    def __init__(self, game, pos, scale=[0.6]):
-        super().__init__(game, pos, scale)
+    def __init__(self, game, pos):
+        super().__init__(game, pos, [0.6])
 
         # Position and scale
         self.z = random.uniform(0.3, 0.6)
@@ -18,9 +18,8 @@ class Reaper(NPC):
         self.speed = 0.002
 
         # Attack stats
-        self.damage = random.randint(7, 11)
-        self.attack_distance = 1
-        self.bullet_lifetime = 150
+        self.damage = 10
+        self.bullet_lifetime = 110
 
         # Sounds
         self.sfx_attack = "Reaper attack"
@@ -42,8 +41,8 @@ class Reaper(NPC):
             "Walk": {
                 "Frames": self.images_at("Reaper_Walk",
                                          [(0, 128, 128, 128),
-                                         (128, 128, 128, 128),
-                                         (256, 128, 128, 128)]),
+                                          (128, 128, 128, 128),
+                                          (256, 128, 128, 128)]),
                 "Counter": 0,
                 "Animation Speed": 180,
                 "Animation Completed": False,
@@ -51,9 +50,9 @@ class Reaper(NPC):
             "Attack": {
                 "Frames": self.images_at("Reaper_Attack",
                                          [(0, 256, 128, 128),
-                                         (128, 256, 128, 128),
-                                         (256, 256, 128, 128),
-                                         (384, 256, 128, 128)]),
+                                          (128, 256, 128, 128),
+                                          (256, 256, 128, 128),
+                                          (384, 256, 128, 128)]),
                 "Counter": 0,
                 "Animation Speed": 200,
                 "Attack Speed": 800,

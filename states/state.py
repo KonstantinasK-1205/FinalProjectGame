@@ -1,5 +1,5 @@
-import pygame as pg
 from settings import *
+import pygame as pg
 
 
 class State:

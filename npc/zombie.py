@@ -1,21 +1,16 @@
 from npc.npc import NPC
-from settings import *
-import random
-import pygame as pg
 
 
 class Zombie(NPC):
-    def __init__(self, game, pos, scale=[0.6]):
-        super().__init__(game, pos, scale)
+    def __init__(self, game, pos):
+        super().__init__(game, pos, [0.6])
 
         # Base stats
         self.health = 20
         self.speed = 0.0006
 
         # Attack stats
-        self.damage = random.randint(7, 13)
-        self.attack_distance = 1
-        self.bullet_lifetime = 45
+        self.damage = 8
 
         # Sounds
         self.sfx_attack = "Zombie attack"

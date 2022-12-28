@@ -14,6 +14,8 @@ class Player:
         self.x = 0
         self.y = 0
         self.z = 0
+        self.width = 0.6
+        self.height = 0.6
 
         self.angle = PLAYER_ANGLE
         self.angle_ver = 0
@@ -115,16 +117,16 @@ class Player:
             done.add(pos)
 
             new_pos = (pos[0] - 1, pos[1])
-            if not new_pos in done and not self.game.map.is_wall(new_pos[0], new_pos[1]):
+            if new_pos not in done and not self.game.map.is_wall(new_pos[0], new_pos[1]):
                 visit.append(new_pos)
             new_pos = (pos[0] + 1, pos[1])
-            if not new_pos in done and not self.game.map.is_wall(new_pos[0], new_pos[1]):
+            if new_pos not in done and not self.game.map.is_wall(new_pos[0], new_pos[1]):
                 visit.append(new_pos)
             new_pos = (pos[0], pos[1] - 1)
-            if not new_pos in done and not self.game.map.is_wall(new_pos[0], new_pos[1]):
+            if new_pos not in done and not self.game.map.is_wall(new_pos[0], new_pos[1]):
                 visit.append(new_pos)
             new_pos = (pos[0], pos[1] + 1)
-            if not new_pos in done and not self.game.map.is_wall(new_pos[0], new_pos[1]):
+            if new_pos not in done and not self.game.map.is_wall(new_pos[0], new_pos[1]):
                 visit.append(new_pos)
 
     # Getters

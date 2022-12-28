@@ -1,6 +1,4 @@
 from states.state import *
-from settings import *
-import pygame as pg
 
 
 class OptionsState(State):

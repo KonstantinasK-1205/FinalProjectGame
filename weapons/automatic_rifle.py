@@ -25,9 +25,11 @@ class AutomaticRifle:
                     "Cartridge Holds": 30,
                     "Bullet Per Shot": 1,
                     "Bullet Left": 30,
-                    "Bullet Lifetime": 800,
-                    "Bullet Velocity": 0.05,
-                    "Bullet Offset": 0.02
+                    "Bullet Lifetime": 700,
+                    "Bullet Velocity": 0.06,
+                    "Bullet Offset": 0.02,
+                    "Texture": "resources/sprites/projectile/empty.png",
+                    "Texture Size": [1, 1]
                 }
             }
         }

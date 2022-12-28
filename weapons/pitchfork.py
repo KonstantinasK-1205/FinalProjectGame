@@ -23,8 +23,10 @@ class Pitchfork:
                     "Cartridge Holds": 9999,
                     "Bullet Per Shot": 1,
                     "Bullet Left": 9999,
-                    "Bullet Lifetime": 250,
-                    "Bullet Velocity": 0.005,
+                    "Bullet Lifetime": 50,
+                    "Bullet Velocity": 0.025,
+                    "Texture": "resources/sprites/projectile/empty.png",
+                    "Texture Size": [1, 1]
                 }
             }
         }

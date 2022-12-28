@@ -1,23 +1,24 @@
 from npc.npc import NPC
-from settings import *
-import random
-import pygame as pg
 
 
 class Soldier(NPC):
-    def __init__(self, game, pos, scale=[0.6]):
-        super().__init__(game, pos, scale)
+    def __init__(self, game, pos):
+        super().__init__(game, pos, [0.6])
 
         # Primary stats
         self.health = 50
         self.speed = 0.002
 
         # Attack Stats
-        self.damage = random.randint(12, 16)
-        self.attack_distance = random.randint(3, 5)
-        self.bullet_lifetime = 600
+        self.damage = 12
+        self.attack_distance = 6
+        self.bullet_width = 0.5
+        self.bullet_height = 0.5
+        self.bullet_sprite = "resources/sprites/projectile/projectile0.png"
+        self.bullet_speed = 0.005
+        self.bullet_lifetime = 2000
 
-        self.reaction_time = random.randrange(800, 1300, 100)
+        self.reaction_time = 1000
 
         # Animation variables
         self.spritesheet = self.load_image("resources/sprites/npc/Soldier_Spritesheet.png")

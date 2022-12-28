@@ -1,17 +1,12 @@
-import copy
-import random
-
+from projectile import Projectile
+from sprites.sprite import *
 from weapons.empty_hands import Empty
 from weapons.pitchfork import Pitchfork
 from weapons.revolver import Revolver
 from weapons.double_shotgun import DoubleShotgun
 from weapons.automatic_rifle import AutomaticRifle
-
-from bullet import Bullet
-from sprites.sprite import *
-from collections import deque
-import os
-from copy import deepcopy
+import copy
+import random
 
 
 class Weapon:
@@ -165,20 +160,19 @@ class Weapon:
 
     def create_bullet(self, spread=None):
         weapon = self.weapon_info[self.current_weapon]["Fire"]
+        player = self.game.player
+        handler = self.game.object_handler
+
         if spread:
-            angle = self.game.player.angle + spread
-            angle_ver = -self.game.player.angle_ver + spread
+            angle_hor = player.angle + spread
+            angle_ver = -player.angle_ver + spread
         else:
-            angle = self.game.player.angle
-            angle_ver = -self.game.player.angle_ver
-        self.game.object_handler.add_bullet(Bullet(self.game,
-                                                   self.game.player.exact_pos,
-                                                   weapon["Damage"],
-                                                   angle,
-                                                   angle_ver,
-                                                   'player',
-                                                   weapon["Bullet Lifetime"],
-                                                   weapon["Bullet Velocity"]))
+            angle_hor = player.angle
+            angle_ver = -player.angle_ver
+        angle = [angle_hor, angle_ver]
+        position = [player.x, player.y, player.z + (player.height / 2)]
+        bullet_data = [weapon["Damage"], weapon["Bullet Velocity"], weapon["Bullet Lifetime"], "Player", 0.05, 0.05]
+        handler.add_bullet(Projectile(self.game, position, angle, bullet_data))
 
     def change_weapon(self, weapon):
         if not self.currently_playing:

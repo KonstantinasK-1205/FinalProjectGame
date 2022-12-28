@@ -189,7 +189,6 @@ class MinimapRenderer:
         glScalef(size, size, 1)
         glDrawArrays(GL_QUADS, 0, 4)
 
-
     class Chunk:
         WIDTH = 8
         HEIGHT = 8
