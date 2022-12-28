@@ -5,6 +5,7 @@ from array import array
 from settings import *
 from renderer.map_renderer import *
 from renderer.minimap_renderer import *
+from renderer.skybox_renderer import *
 
 
 class Renderer:
@@ -34,20 +35,11 @@ class Renderer:
         glFogf(GL_FOG_START, 5)
         glFogf(GL_FOG_END, 15)
 
-        self.load_texture_from_file("resources/textures/sky.png", True)
-
         self.load_vbo("object", [
             1, 0, -0.5, 0, 0,
             0, 0,  0.5, 0, 0,
             0, 1,  0.5, 1, 0,
             1, 1, -0.5, 1, 0
-        ])
-
-        self.load_vbo("sky", [
-            3, 0,  2, -1,
-            3, 3,  2,  2,
-            0, 3, -1,  2,
-            0, 0, -1, -1
         ])
 
         self.load_vbo("hud", [
@@ -61,6 +53,7 @@ class Renderer:
 
         self.map_renderer = MapRenderer(game, self)
         self.minimap_renderer = MinimapRenderer(game, self)
+        self.skybox_renderer = SkyboxRenderer(game, self)
 
     def update_map(self):
         self.map_renderer.update_vbos()
@@ -131,6 +124,11 @@ class Renderer:
 
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surface.get_width(), surface.get_height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, bitmap)
 
+    def delete_texture(self, texture):
+        glDeleteTextures(1, self.textures[texture])
+        del self.textures[texture]
+        del self.texture_sizes[texture]
+
     def get_texture_width(self, texture):
         return self.texture_sizes[texture][0]
 
@@ -140,16 +138,16 @@ class Renderer:
     def get_texture_size(self, texture):
         return self.texture_sizes[texture]
 
-    def draw_rect(self, x, y, width, height, texture=None, color=(255, 255, 255, 255), angle=None):
+    def draw_rect(self, x, y, width, height, texture=None, color=(255, 255, 255), angle=None):
         self.rects_to_render.append(self.Renderable(x, y, None, width, height, texture, color, False, angle))
 
-    def draw_fullscreen_rect(self, texture=None, color=(255, 255, 255, 255)):
+    def draw_fullscreen_rect(self, texture=None, color=(255, 255, 255)):
         self.draw_rect(0, 0, self.game.width, self.game.height, texture, color)
 
-    def draw_sprite(self, x, y, z, width, height, texture=None, color=(255, 255, 255, 255), angle=None):
+    def draw_sprite(self, x, y, z, width, height, texture=None, color=(255, 255, 255), angle=None):
         self.sprites_to_render.append(self.Renderable(x, y, z, width, height, texture, color, False, angle))
 
-    def draw_sphere(self, x, y, z, width, height, texture=None, color=(255, 255, 255, 255)):
+    def draw_sphere(self, x, y, z, width, height, texture=None, color=(255, 255, 255)):
         self.sprites_to_render.append(self.Renderable(x, y, z, width, height, texture, color, True, None))
 
     def draw_minimap(self, x, y, tile_size):
@@ -162,7 +160,6 @@ class Renderer:
         glViewport(0, 0, self.game.width, self.game.height)
 
         if self.draw_world:
-            self.draw_2d_bg()
             self.draw_3d()
         self.draw_2d_fg()
 
@@ -208,30 +205,6 @@ class Renderer:
             self.sphere_vbo_verts += 4
 
         self.load_vbo("sphere", data)
-
-    def draw_2d_bg(self):
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-
-        glMatrixMode(GL_PROJECTION)
-        glLoadIdentity()
-
-        glMatrixMode(GL_MODELVIEW)
-        glLoadIdentity()
-
-        self.draw_2d_bg_sky()
-
-    def draw_2d_bg_sky(self):
-        glBindBuffer(GL_ARRAY_BUFFER, self.vbos["sky"])
-        glTexCoordPointer(2, GL_FLOAT, 4 * 4, ctypes.c_void_p(0))
-        glVertexPointer(2, GL_FLOAT, 4 * 4, ctypes.c_void_p(2 * 4))
-
-        glBindTexture(GL_TEXTURE_2D, self.textures["resources/textures/sky.png"])
-
-        offset_x = (self.game.player.angle % math.tau) / math.tau
-        offset_y = (-self.game.player.angle_ver % math.tau) / math.tau
-
-        glTranslatef(-offset_x, -offset_y, 0)
-        glDrawArrays(GL_QUADS, 0, 4)
 
     def draw_2d_fg(self):
         glDisable(GL_DEPTH_TEST)
@@ -297,6 +270,9 @@ class Renderer:
 
         glRotatef(math.degrees(self.game.player.angle_ver), 1, 0, 0)
         glRotatef(math.degrees(self.game.player.angle) + 90, 0, 1, 0)
+
+        self.skybox_renderer.draw()
+
         glTranslatef(-self.game.player.x, -self.game.player.z - 0.6, -self.game.player.y)
 
         self.map_renderer.draw()
@@ -317,12 +293,10 @@ class Renderer:
             else:
                 glBindTexture(GL_TEXTURE_2D, self.textures[o.texture])
 
-            glColor4f(1, 1, 1, 1)
-            if not o.color == None:
-                if len(o.color) == 3:
-                    glColor3f(o.color[0] / 255, o.color[1] / 255, o.color[2] / 255)
-                elif len(o.color) == 4:
-                    glColor4f(o.color[0] / 255, o.color[1] / 255, o.color[2] / 255, o.color[3] / 255)
+            if len(o.color) == 3:
+                glColor3f(o.color[0] / 255, o.color[1] / 255, o.color[2] / 255)
+            elif len(o.color) == 4:
+                glColor4f(o.color[0] / 255, o.color[1] / 255, o.color[2] / 255, o.color[3] / 255)
 
             glPushMatrix()
 
