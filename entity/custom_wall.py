@@ -1,6 +1,8 @@
 import math
 import pygame as pg
+import random
 from sprites.sprite import Sprite
+from sprites.particle import Particle
 
 
 class BreakableWall(Sprite):
@@ -39,4 +41,10 @@ class BreakableWall(Sprite):
             self.angle_updated = True
 
         if self.health <= 0:
+            for n in range(25):
+                width = random.uniform(0.05, 0.3)
+                height = random.uniform(0.05, 0.3)
+                self.game.object_handler.add_sprite(Particle(self.game,
+                                                             (self.x, self.y, self.z),
+                                                             [width, height]))
             self.delete = True

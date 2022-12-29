@@ -4,7 +4,7 @@ import random
 
 
 class Particle(Sprite):
-    def __init__(self, game, pos, collided_tile):
+    def __init__(self, game, pos, size, collided_tile=1):
         super().__init__(game, pos, [0.05])
 
         # Right now the player shoots bullets out of their legs, so account for
@@ -19,6 +19,9 @@ class Particle(Sprite):
         self.dy = random.uniform(-0.0015, 0.0015)
         self.dz = random.uniform(-0.002, 0.002)
 
+        self.width = size[0]
+        self.height = size[1]
+
         self.lifetime = 1
 
         # Try to find collided wall texture
@@ -27,7 +30,7 @@ class Particle(Sprite):
 
     def update(self):
         super().update()
- 
+
         # Keep collision radius same as bullet to avoid colliding at a position
         # where the bullet was not
         res = resolve_collision(self.x, self.y, self.dx * self.game.dt, self.dy * self.game.dt, self.game.map, 0.01)

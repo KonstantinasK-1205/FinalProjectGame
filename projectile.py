@@ -61,6 +61,7 @@ class Projectile:
             # Check collision with sprite which have health
             for sprite in self.handler.sprite_list:
                 if hasattr(sprite, 'health') and self.collided_with(sprite):
+                    self.handler.add_sprite(Particle(self.game, (self.x, self.y, self.z), [0.05, 0.05], 1))
                     sprite.health -= self.damage
                     self.delete = True
 
@@ -75,7 +76,8 @@ class Projectile:
             res = resolve_collision(self.x, self.y, dx, dy, self.game.map, 0.01)
             if res.collided and self.z < 1:
                 for i in range(5):
-                    self.handler.add_sprite(Particle(self.game, (res.x, res.y, self.z - dz), res.collided))
+                    self.handler.add_sprite(
+                        Particle(self.game, (res.x, res.y, self.z - dz), [0.05, 0.05], res.collided))
                 self.game.sound.play_sfx("Bullet in wall")
                 self.delete = True
 
