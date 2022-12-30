@@ -38,7 +38,6 @@ class NPC(Sprite):
         self.sensing_range = 25  # 0.5   = 1 grid block
         self.reaction_time = random.randrange(700, 1500, 100)
         self.reaction_time_passed = 0
-        self.approaching_player = False
         self.seeing_player = False
 
         # Base Sounds
@@ -59,42 +58,37 @@ class NPC(Sprite):
         self.game.renderer.draw_sprite(self.x, self.y, self.z, self.width, self.height, self.texture_path)
 
     def run_logic(self):
-        if self.alive:
-            # NPC angle is always opposing player - used for movement and sight
-            # calculation
-            self.angle = math.atan2(self.player.y - self.y, self.player.x - self.x)
+        if not self.alive:
+            self.animate_death()
+            return
 
-            # May be computationally intensive, so calculate only once per tick
-            self.seeing_player = self.can_see_player()
+        # If player too far from NPC, quit logic
+        if self.distance_from(self.player) > 20:
+            return
 
-            if self.pain:
-                self.animate_pain()
-            elif self.seeing_player:
-                self.approaching_player = True
+        # If NPC hurt, he can't do anything else
+        if self.pain:
+            self.animate_pain()
+            return
 
-                if self.distance_from(self.player) < self.attack_distance:
-                    self.current_animation = "Attack"
-                    self.animate()
-                    self.attack()
-                else:
-                    self.current_animation = "Walk"
-                    self.animate()
-                    self.movement()
+        # Calculate NPC angle which is always opposing player - used for movement and sight
+        self.angle = math.atan2(self.player.y - self.y, self.player.x - self.x)
 
-            elif self.approaching_player:
+        # May be computationally intensive, so calculate only once per tick
+        self.seeing_player = self.can_see_player()
+
+        if self.seeing_player:
+            if self.distance_from(self.player) < self.attack_distance:
+                self.current_animation = "Attack"
+                self.animate()
+                self.attack()
+            else:
                 self.current_animation = "Walk"
                 self.animate()
                 self.movement()
-
-                # Forget about the player if they are too far away - this
-                # prevents pathfinding from becoming too slow
-                if self.distance_from(self.player) > 10:
-                    self.approaching_player = False
-            else:
-                self.current_animation = "Idle"
-                self.animate()
         else:
-            self.animate_death()
+            self.current_animation = "Idle"
+            self.animate()
 
     # Attack
     def attack(self):
@@ -133,7 +127,6 @@ class NPC(Sprite):
     # Movement
     def movement(self):
         if self.seeing_player:
-            self.angle = math.atan2(self.game.player.y - self.y, self.game.player.x - self.x)
             self.dx = math.cos(self.angle) * self.speed * self.game.dt
             self.dy = math.sin(self.angle) * self.speed * self.game.dt
         else:
@@ -176,12 +169,15 @@ class NPC(Sprite):
         # the check from taking too long
         max_steps = self.sensing_range
 
+        # Calculate NPC sin and cos of angle once
+        cos_angle = math.cos(self.angle)
+        sin_angle = math.sin(self.angle)
+        x, y, z = self.exact_pos
         # If it is possible to walk straight line to the player, it means that
         # NPC can see them
-        x, y, z = self.exact_pos
         for i in range(max_steps):
-            x += math.cos(self.angle) * step
-            y += math.sin(self.angle) * step
+            x += cos_angle * step
+            y += sin_angle * step
             if self.game.map.is_wall(x, y):
                 break
             elif self.player.grid_pos == (int(x), int(y)):
