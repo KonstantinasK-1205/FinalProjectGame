@@ -32,7 +32,6 @@ class Animation:
             frames["Sprites"].rotate(-1)
             self.sprite = frames["Sprites"][0]
             self.play_next_frame = False
-        return self.current_state
 
     def check_animation_time(self, frames):
         current_time = pg.time.get_ticks()
@@ -45,3 +44,12 @@ class Animation:
         if current_time - self.animation_started_time > len(frames["Sprites"]) * frames["Speed"] \
                 and not self.animation_finished:
             self.animation_finished = True
+
+    def get_state(self):
+        return self.current_state
+
+    def get_sprite(self):
+        return self.sprite
+
+    def is_playing(self):
+        return self.currently_playing

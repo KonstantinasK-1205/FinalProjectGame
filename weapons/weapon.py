@@ -46,13 +46,11 @@ class Weapon:
             if event.key == pg.K_r:
                 self.reload()
 
-        if event.type == pg.MOUSEBUTTONUP:
-            if event.button == 1:
-                self.mouse_down = False
+        elif event.type == pg.MOUSEBUTTONUP and event.button == 1:
+            self.mouse_down = False
 
-        elif event.type == pg.MOUSEBUTTONDOWN:
-            if event.button == 1:
-                self.mouse_down = True
+        elif event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
+            self.mouse_down = True
 
         elif event.type == pg.MOUSEWHEEL:
             self.current_index += event.y
@@ -65,15 +63,17 @@ class Weapon:
     def update(self):
         self.current_time = pg.time.get_ticks()
 
-        self.current_state = self.animation.animate(self.selected_weapon_info())
+        self.animation.animate(self.selected_weapon_info())
         self.animation.check_animation_time(self.selected_weapon_info())
+
+        self.current_state = self.animation.get_state()
+        self.sprite = self.animation.get_sprite()
 
         if self.mouse_down and not self.animation.currently_playing:
             weapon = self.weapon_info[self.current_weapon]["Fire"]
-            weapon_type = self.weapon_info[self.current_weapon]["Type"]
 
             # If weapon type semi, fire single time and make user press mouse again
-            if not weapon_type == "Auto" or weapon["Cartridge Contains"] < 1:
+            if not self.current_weapon_type() == "Auto" or weapon["Cartridge Contains"] < 1:
                 self.mouse_down = False
 
             if self.current_time - self.last_shot > weapon["Speed"]:
@@ -83,7 +83,8 @@ class Weapon:
                     weapon["Cartridge Contains"] -= weapon["Bullet Per Shot"]
                     if weapon["Bullet Per Shot"] > 1:
                         for bullet in range(weapon["Bullet Per Shot"]):
-                            accuracy = random.uniform(-weapon["Bullet Offset"], weapon["Bullet Offset"])
+                            accuracy = random.uniform(-weapon["Bullet Offset"],
+                                                      weapon["Bullet Offset"])
                             self.create_bullet(accuracy)
                     else:
                         self.create_bullet()
@@ -93,22 +94,21 @@ class Weapon:
                     # Automatically reload weapon if current cartridge empty
                     self.reload()
                 else:
-                    if not weapon_type == "Melee":
+                    if not self.current_weapon_type() == "Melee":
                         self.game.sound.play_sfx("Weapon Empty")
 
     def draw(self):
-        self.reset_weapon_pos()
         self.game.renderer.draw_rect(
             self.weapon_pos[0],
             self.weapon_pos[1],
-            self.game.renderer.get_texture_width(self.animation.sprite),
-            self.game.renderer.get_texture_height(self.animation.sprite),
-            self.animation.sprite
+            self.game.renderer.get_texture_width(self.sprite),
+            self.game.renderer.get_texture_height(self.sprite),
+            self.sprite
         )
 
     def reset_weapon_pos(self):
-        self.weapon_pos = (self.game.width / 2 - self.game.renderer.get_texture_width(self.animation.sprite) // 2,
-                           self.game.height - self.game.renderer.get_texture_height(self.animation.sprite))
+        self.weapon_pos = (self.game.width / 2 - self.game.renderer.get_texture_width(self.sprite) // 2,
+                           self.game.height - self.game.renderer.get_texture_height(self.sprite))
 
     def change_state(self, state):
         self.current_state = state
@@ -127,31 +127,6 @@ class Weapon:
                     else:
                         weapon["Cartridge Contains"] = weapon["Bullet Left"]
                         weapon["Bullet Left"] = 0
-
-    # Getters
-    def get_accuracy(self):
-        return self.selected_weapon_info()["Accuracy"]
-
-    def get_damage(self):
-        return self.selected_weapon_info()["Damage"]
-
-    def get_cartridge_bullet_left(self):
-        return self.weapon_info[self.current_weapon]["Fire"]["Cartridge Contains"]
-
-    def get_total_bullet_left(self):
-        return self.weapon_info[self.current_weapon]["Fire"]["Bullet Left"]
-
-    def get_current_weapon_type(self):
-        return self.weapon_info[self.current_weapon]["Type"]
-
-    def selected_weapon_info(self):
-        return self.weapon_info[self.current_weapon][self.current_state]
-
-    # Setters
-    def set_damage_buff(self, buff_val):
-        for weapon in self.weapon_info:
-            if not self.weapon_info[weapon]["Unlocked"]:
-                self.weapon_info[weapon]["Fire"]["Damage"] = self.weapon_info[weapon]["Fire"]["Damage"] * buff_val
 
     # Other Functions
     def add_bullets(self, weapon, number):
@@ -177,21 +152,47 @@ class Weapon:
         if not self.animation.currently_playing:
             if self.weapon_info[weapon]["Unlocked"]:
                 self.current_weapon = weapon
-                self.animation.sprite = self.selected_weapon_info()["Sprites"][0]
+                self.sprite = self.selected_weapon_info()["Sprites"][0]
+                self.reset_weapon_pos()
 
     def unlock(self, weapon):
         self.weapon_info[weapon]["Unlocked"] = True
-        self.current_weapon = weapon
+        self.change_weapon(weapon)
 
     def save_weapon_info(self):
         self.saved_weapons = copy.deepcopy(self.weapon_info)
         self.saved_current_weapon = self.current_weapon
         self.saved_current_state = self.current_state
-        self.saved_cur_display = self.animation.sprite
+        self.saved_sprite = self.sprite
 
     def load_weapon_info(self):
         self.weapon_info.clear()
         self.weapon_info = copy.deepcopy(self.saved_weapons)
         self.current_weapon = self.saved_current_weapon
         self.current_state = self.saved_current_state
-        self.animation.sprite = self.saved_cur_display
+        self.sprite = self.saved_sprite
+
+    # Getters
+    def selected_weapon_info(self):
+        return self.weapon_info[self.current_weapon][self.current_state]
+
+    def current_weapon_accuracy(self):
+        return self.selected_weapon_info()["Accuracy"]
+
+    def current_weapon_damage(self):
+        return self.selected_weapon_info()["Damage"]
+
+    def current_weapon_type(self):
+        return self.weapon_info[self.current_weapon]["Type"]
+
+    def bullet_left_in_weapon(self):
+        return self.weapon_info[self.current_weapon]["Fire"]["Cartridge Contains"]
+
+    def total_bullet_left(self):
+        return self.weapon_info[self.current_weapon]["Fire"]["Bullet Left"]
+
+    # Setters
+    def set_damage_buff(self, buff_val):
+        for weapon in self.weapon_info:
+            if not self.weapon_info[weapon]["Unlocked"]:
+                self.weapon_info[weapon]["Fire"]["Damage"] = self.weapon_info[weapon]["Fire"]["Damage"] * buff_val
