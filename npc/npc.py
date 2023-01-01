@@ -1,13 +1,15 @@
+from collision import *
 from projectile import Projectile
+from sprites.animation_manager import *
 from sprites.sprite import Sprite
 import pygame as pg
 import random
-from collision import *
 
 
 class NPC(Sprite):
     def __init__(self, game, pos, scale):
         super().__init__(game, pos, scale)
+        self.animation = Animation()
         self.current_time = 0
 
         # Base position and scale
@@ -35,9 +37,7 @@ class NPC(Sprite):
         self.previous_shot = 0
         self.attack_distance = 1
 
-        self.sensing_range = 25  # 0.5   = 1 grid block
-        self.reaction_time = random.randrange(700, 1500, 100)
-        self.reaction_time_passed = 0
+        self.sensing_range = 35  # 0.5   = 1 grid block
         self.seeing_player = False
 
         # Base Sounds
@@ -46,20 +46,26 @@ class NPC(Sprite):
         self.sfx_death = "Soldier death"
 
         # Base Animation variables
-        self.current_animation = "Idle"
+        self.sprite = self.texture_path
+        self.current_state = "Idle"
         self.animations = {}
 
     def update(self):
         self.current_time = pg.time.get_ticks()
-        self.check_animation_time()
+
+        self.animation.animate(self.game.dt)
+
+        self.current_state = self.animation.get_state()
+        self.sprite = self.animation.get_sprite()
+
         self.run_logic()
 
     def draw(self):
-        self.game.renderer.draw_sprite(self.x, self.y, self.z, self.width, self.height, self.texture_path)
+        self.game.renderer.draw_sprite(self.x, self.y, self.z, self.width, self.height, self.sprite)
 
     def run_logic(self):
         if not self.alive:
-            self.animate_death()
+            self.change_state("Death")
             return
 
         # If player too far from NPC, quit logic
@@ -68,7 +74,9 @@ class NPC(Sprite):
 
         # If NPC hurt, he can't do anything else
         if self.pain:
-            self.animate_pain()
+            if not self.animation.is_playing():
+                self.pain = False
+            self.change_state("Pain")
             return
 
         # Calculate NPC angle which is always opposing player - used for movement and sight
@@ -79,38 +87,32 @@ class NPC(Sprite):
 
         if self.seeing_player:
             if self.distance_from(self.player) < self.attack_distance:
-                self.current_animation = "Attack"
-                self.animate()
+
+                self.change_state("Attack")
                 self.attack()
             else:
-                self.current_animation = "Walk"
-                self.animate()
+                self.change_state("Walk")
                 self.movement()
         else:
-            self.current_animation = "Idle"
-            self.animate()
+            self.change_state("Idle")
 
     # Attack
     def attack(self):
-        if self.animations[self.current_animation]["Animation Completed"]:
-            if self.current_time - self.reaction_time_passed > self.reaction_time:
-                if self.current_time - self.previous_shot > self.animations["Attack"]["Attack Speed"]:
-                    self.create_bullet()
-                    self.game.sound.play_sfx(self.sfx_attack, [self.exact_pos, self.player.exact_pos])
-                    self.previous_shot = pg.time.get_ticks()
-                    self.reaction_time_passed = pg.time.get_ticks()
+        if self.animation.completed:
+            self.create_bullet()
+            self.game.sound.play_sfx(self.sfx_attack, [self.exact_pos, self.player.exact_pos])
+            self.previous_shot = pg.time.get_ticks()
 
     def create_bullet(self):
-        # Add damage reduction based on how far Player from npc
-        distance = self.distance_from(self.player)
-        if self.damage > distance:
-            damage = int(self.damage - distance)
-        else:
-            damage = 0
-        # Calculate enemy angle, so bullet flies exactly where NPC is looking
-        angle = [math.atan2(self.player.y - self.y, self.player.x - self.x), math.atan(self.player.z - self.z)]
         position = [self.x, self.y, self.z + (self.height / 2)]
-        bullet_data = [damage, self.bullet_speed, self.bullet_lifetime, "Enemy", self.bullet_width, self.bullet_height]
+        angle = [math.atan2(self.player.y - self.y, self.player.x - self.x),
+                 math.atan(self.player.z - self.z)]
+        bullet_data = [self.damage,
+                       self.bullet_speed,
+                       self.bullet_lifetime,
+                       "Enemy",
+                       self.bullet_width,
+                       self.bullet_height]
         self.game.object_handler.add_bullet(Projectile(self.game, position, angle, bullet_data, self.bullet_sprite))
 
     def apply_damage(self, damage):
@@ -121,7 +123,6 @@ class NPC(Sprite):
                 self.game.sound.play_sfx(self.sfx_pain, [self.exact_pos, self.player.exact_pos])
             else:
                 self.alive = False
-                self.current_animation = "Death"
                 self.game.sound.play_sfx(self.sfx_death, [self.exact_pos, self.player.exact_pos])
 
     # Movement
@@ -146,21 +147,6 @@ class NPC(Sprite):
             self.x = res.x
             self.y = res.y
 
-    # Animations
-    def animate_pain(self):
-        self.current_animation = "Pain"
-        self.animate()
-        if self.animations[self.current_animation]["Animation Completed"]:
-            self.pain = False
-
-    def animate_death(self):
-        animation = self.animations[self.current_animation]
-        if self.dead:
-            if animation["Animation Completed"] and animation["Counter"] < len(animation["Frames"]) - 1:
-                animation["Counter"] += 1
-                animation["Frames"].rotate(-1)
-                self.texture_path = animation["Frames"][0]
-
     def can_see_player(self):
         # Larger step sizes are more efficient, but may cause NPC to see through
         # the player
@@ -182,8 +168,13 @@ class NPC(Sprite):
                 break
             elif self.player.grid_pos == (int(x), int(y)):
                 return True
-
         return False
+
+    def change_state(self, state):
+        if self.animation.completed or state == "Death":
+            if not self.current_state == state:
+                self.current_state = state
+                self.animation.change_animation(state)
 
     # Getters
     @property
@@ -197,3 +188,7 @@ class NPC(Sprite):
     @property
     def dead(self):
         return not self.alive
+
+    def get_frames(self):
+        return self.animations[self.current_state]
+    

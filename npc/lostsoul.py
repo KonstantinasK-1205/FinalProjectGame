@@ -18,7 +18,6 @@ class LostSoul(NPC):
 
         # Attack stats
         self.damage = 35
-        self.reaction_time = 1500
 
         # Sounds variables
         self.sfx_attack = "Soldier attack"
@@ -32,9 +31,7 @@ class LostSoul(NPC):
             "Idle": {
                 "Frames": self.images_at("LostSoul_Idle",
                                          [(0, 0, 64, 64)]),
-                "Counter": 0,
-                "Animation Speed": 180,
-                "Animation Completed": False,
+                "Speed": 180,
             },
             "Walk": {
                 "Frames": self.images_at("LostSoul_Walk",
@@ -42,9 +39,7 @@ class LostSoul(NPC):
                                           (64, 64, 64, 64),
                                           (128, 64, 64, 64),
                                           (192, 64, 64, 64)]),
-                "Counter": 0,
-                "Animation Speed": 180,
-                "Animation Completed": False,
+                "Speed": 180,
             },
             "Attack": {
                 "Frames": self.images_at("LostSoul_Attack",
@@ -52,17 +47,13 @@ class LostSoul(NPC):
                                           (64, 64, 64, 64),
                                           (128, 64, 64, 64),
                                           (192, 64, 64, 64)]),
-                "Counter": 0,
-                "Animation Speed": 20,
+                "Speed": 20,
                 "Attack Speed": 100,
-                "Animation Completed": False,
             },
             "Pain": {
                 "Frames": self.images_at("LostSoul_Pain",
                                          [(0, 128, 64, 64)]),
-                "Counter": 0,
-                "Animation Speed": 300,
-                "Animation Completed": False,
+                "Speed": 300,
             },
             "Death": {
                 "Frames": self.images_at("LostSoul_Death",
@@ -74,11 +65,11 @@ class LostSoul(NPC):
                                           (320, 192, 64, 64),
                                           (384, 192, 64, 64),
                                           (448, 192, 64, 64)]),
-                "Counter": 0,
-                "Animation Speed": 120,
-                "Animation Completed": False,
+                "Speed": 120,
             }
         }
+        self.animation.load_sprite_animations(self.animations)
+        self.animation.change_animation("Idle")
 
         # Dash ability ( dash towards player )
         self.is_dashing = False
@@ -108,7 +99,7 @@ class LostSoul(NPC):
             self.start_dash()
 
     def attack(self):
-        if self.animations[self.current_animation]["Animation Completed"]:
+        if self.animation.completed:
             self.create_bullet()
             self.game.sound.play_sfx(self.sfx_attack, [self.exact_pos, self.player.exact_pos])
             self.previous_shot = pg.time.get_ticks()

@@ -7,19 +7,19 @@ class Revolver:
             "Revolver": {
                 "Type": "Semi",
                 "Unlocked": False,
-                "Standby": {
-                    "Sprites": Sprite(game).load_weapon_images("revolver", [0]),
-                    "Speed": 100,
+                "Idle": {
+                    "Frames": Sprite(game).load_weapon_images("revolver", [0]),
+                    "Speed": 0,
                 },
                 "Reload": {
-                    "Sprites": Sprite(game).load_weapon_images("revolver", ["r0", "r1", "r2", "r3", "r4",
-                                                                            "r5", "r6", "r7", "r8"]),
-                    "Speed": 200,
+                    "Frames": Sprite(game).load_weapon_images("revolver", ["r0", "r1", "r2", "r3", "r4",
+                                                                           "r5", "r6", "r7", "r8"]),
+                    "Speed": 230,
                 },
                 "Fire": {
-                    "Sprites": Sprite(game).load_weapon_images("revolver", ["a0", "a1", "a2"]),
+                    "Frames": Sprite(game).load_weapon_images("revolver", ["a0", "a1", "a2"]),
                     "Damage": 24,
-                    "Speed": 150,
+                    "Speed": 170,
                     "Cartridge Contains": 0,
                     "Cartridge Holds": 8,
                     "Bullet Per Shot": 1,

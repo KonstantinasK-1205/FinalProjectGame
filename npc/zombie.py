@@ -1,4 +1,5 @@
 from npc.npc import NPC
+from sprites.animation_manager import *
 
 
 class Zombie(NPC):
@@ -19,14 +20,11 @@ class Zombie(NPC):
 
         # Animations
         self.spritesheet = self.load_image("resources/sprites/npc/Zombie_Spritesheet.png")
-        self.current_animation = "Idle"
         self.animations = {
             "Idle": {
                 "Frames": self.images_at("Zombie_Idle",
                                          [(0, 0, 64, 64)]),
-                "Counter": 0,
-                "Animation Speed": 180,
-                "Animation Completed": False,
+                "Speed": 0,
             },
             "Walk": {
                 "Frames": self.images_at("Zombie_Walk",
@@ -34,26 +32,20 @@ class Zombie(NPC):
                                           (64, 64, 64, 64),
                                           (128, 64, 64, 64),
                                           (192, 64, 64, 64)]),
-                "Counter": 0,
-                "Animation Speed": 180,
-                "Animation Completed": False,
+                "Speed": 200,
             },
             "Attack": {
                 "Frames": self.images_at("Zombie_Attack",
                                          [(0, 128, 64, 64),
                                           (64, 128, 64, 64),
                                           (128, 128, 64, 64)]),
-                "Counter": 0,
-                "Animation Speed": 200,
+                "Speed": 200,
                 "Attack Speed": 600,
-                "Animation Completed": False,
             },
             "Pain": {
                 "Frames": self.images_at("Zombie_Pain",
                                          [(0, 192, 64, 64)]),
-                "Counter": 0,
-                "Animation Speed": 300,
-                "Animation Completed": False,
+                "Speed": 300,
             },
             "Death": {
                 "Frames": self.images_at("Zombie_Death",
@@ -62,8 +54,8 @@ class Zombie(NPC):
                                           (128, 256, 64, 64),
                                           (192, 256, 64, 64),
                                           (256, 256, 64, 64)]),
-                "Counter": 0,
-                "Animation Speed": 120,
-                "Animation Completed": False,
+                "Speed": 120,
             }
         }
+        self.animation.load_sprite_animations(self.animations)
+        self.animation.change_animation("Idle")

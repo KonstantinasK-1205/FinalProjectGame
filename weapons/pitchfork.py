@@ -7,17 +7,17 @@ class Pitchfork:
             "Pitchfork": {
                 "Type": "Melee",
                 "Unlocked": False,
-                "Standby": {
-                    "Sprites": Sprite(game).load_weapon_images("pitchfork", [0]),
+                "Idle": {
+                    "Frames": Sprite(game).load_weapon_images("pitchfork", [0]),
                     "Speed": 100,
                 },
                 "Reload": {
-                    "Sprites": Sprite(game).load_weapon_images("pitchfork", [0]),
+                    "Frames": Sprite(game).load_weapon_images("pitchfork", [0]),
                     "Speed": 100,
                 },
                 "Fire": {
-                    "Sprites": Sprite(game).load_weapon_images("pitchfork", ["a1"]),
-                    "Damage": 9,
+                    "Frames": Sprite(game).load_weapon_images("pitchfork", ["a1"]),
+                    "Damage": 10,
                     "Speed": 500,
                     "Cartridge Contains": 9999,
                     "Cartridge Holds": 9999,

@@ -3,53 +3,57 @@ import pygame as pg
 
 class Animation:
     def __init__(self):
-        self.currently_playing = None
-        self.animation_finished = True
-        self.current_state = "Standby"
-        self.sprite = None
+        self.sprite_info = None
+        self.frames = {}
+        self.frame_duration = 0
+        self.current_frame = 0
+        self.elapsed_time = 0
+        self.state = "Idle"
+        self.completed = False
 
-        self.play_next_frame = None
-        self.prev_frame_time = 0
-        self.animation_started_time = 0
+    def load_sprite_animations(self, info):
+        self.sprite_info = info
 
-    def change_animation(self, state, frames):
-        self.current_state = state
+    def change_animation(self, state):
+        self.state = state
+        self.current_frame = 0
+        self.elapsed_time = 0
+        self.frames = self.sprite_info[self.state]["Frames"]
+        self.frame_duration = self.sprite_info[self.state]["Speed"]
+        self.completed = False
 
-        # Reset animation variables
-        self.animation_started_time = pg.time.get_ticks()
-        self.animation_finished = False
-        self.currently_playing = True
+    def animate(self, dt):
+        # Increment the elapsed time
+        self.elapsed_time += dt
 
-        self.animate(frames)
+        # If the elapsed time is greater than the frame duration, move to the next frame
+        if self.elapsed_time > self.frame_duration:
+            self.current_frame += 1
+            self.elapsed_time = 0
 
-    def animate(self, frames):
-        if self.animation_finished:
-            self.currently_playing = False
-            self.current_state = "Standby"
-            self.sprite = frames["Sprites"][0]
+        # If the current frame is the last frame, set the completed flag to True
+        if self.current_frame > len(self.frames) - 1:
+            self.current_frame -= 1
+            self.completed = True
+            return
 
-        if self.play_next_frame:
-            frames["Sprites"].rotate(-1)
-            self.sprite = frames["Sprites"][0]
-            self.play_next_frame = False
-
-    def check_animation_time(self, frames):
-        current_time = pg.time.get_ticks()
-
-        if current_time - self.prev_frame_time > frames["Speed"] \
-                and not self.animation_finished:
-            self.prev_frame_time = current_time
-            self.play_next_frame = True
-
-        if current_time - self.animation_started_time > len(frames["Sprites"]) * frames["Speed"] \
-                and not self.animation_finished:
-            self.animation_finished = True
+        # If the animation has completed, reset it to the first frame
+        if self.completed:
+            self.current_frame = 0
+            self.elapsed_time = 0
+            # If the state is "Death", keep the animation at the last frame
+            if self.state == "Death":
+                self.current_frame = len(self.frames) - 1
+            else:
+                self.state = "Idle"
+                self.frames = self.sprite_info[self.state]["Frames"]
+            return
 
     def get_state(self):
-        return self.current_state
+        return self.state
 
     def get_sprite(self):
-        return self.sprite
+        return self.frames[self.current_frame]
 
     def is_playing(self):
-        return self.currently_playing
+        return not self.completed

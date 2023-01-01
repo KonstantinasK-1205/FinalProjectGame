@@ -34,18 +34,14 @@ class Reaper(NPC):
             "Idle": {
                 "Frames": self.images_at("Reaper_Idle",
                                          [(0, 0, 128, 128)]),
-                "Counter": 0,
-                "Animation Speed": 180,
-                "Animation Completed": False,
+                "Speed": 180,
             },
             "Walk": {
                 "Frames": self.images_at("Reaper_Walk",
                                          [(0, 128, 128, 128),
                                           (128, 128, 128, 128),
                                           (256, 128, 128, 128)]),
-                "Counter": 0,
-                "Animation Speed": 180,
-                "Animation Completed": False,
+                "Speed": 180,
             },
             "Attack": {
                 "Frames": self.images_at("Reaper_Attack",
@@ -53,17 +49,13 @@ class Reaper(NPC):
                                           (128, 256, 128, 128),
                                           (256, 256, 128, 128),
                                           (384, 256, 128, 128)]),
-                "Counter": 0,
-                "Animation Speed": 200,
+                "Speed": 200,
                 "Attack Speed": 800,
-                "Animation Completed": False,
             },
             "Pain": {
                 "Frames": self.images_at("Reaper_Pain",
                                          [(0, 384, 128, 128)]),
-                "Counter": 0,
-                "Animation Speed": 300,
-                "Animation Completed": False,
+                "Speed": 300,
             },
             "Death": {
                 "Frames": self.images_at("Reaper_Death",
@@ -75,9 +67,7 @@ class Reaper(NPC):
                                           (640, 512, 128, 128),
                                           (768, 512, 128, 128),
                                           (896, 512, 128, 128)]),
-                "Counter": 0,
-                "Animation Speed": 120,
-                "Animation Completed": False,
+                "Speed": 120,
             },
             "Teleportation": {
                 "Frames": self.images_at("Reaper_Teleportation",
@@ -88,11 +78,11 @@ class Reaper(NPC):
                                           (512, 640, 128, 128),
                                           (640, 640, 128, 128),
                                           (768, 640, 128, 128)]),
-                "Counter": 0,
-                "Animation Speed": 150,
-                "Animation Completed": False,
+                "Speed": 150,
             }
         }
+        self.animation.load_sprite_animations(self.animations)
+        self.animation.change_animation("Idle")
 
         # Teleportation variables
         self.teleported = False
@@ -105,50 +95,39 @@ class Reaper(NPC):
     def movement(self):
         # If teleported or player is further than 3 blocks
         if self.distance_from(self.player) > 3 or self.teleportation_begin:
-            self.teleport()
+            self.change_state("Teleportation")
         super().movement()
 
     def update(self):
         super().update()
-        if self.current_time - self.last_teleportation_time > self.teleportation_cooldown:
-            self.teleported = False
-        if self.current_time - self.last_attack > 6000 and 1 < self.distance_from(self.player) < 3:
-            self.teleport()
-            self.last_attack = pg.time.get_ticks()
+        if self.alive:
+            if self.current_state == "Teleportation" and self.animation.completed:
+                self.teleport()
+                self.last_attack = pg.time.get_ticks()
+
+            if self.current_time - self.last_teleportation_time > self.teleportation_cooldown:
+                self.teleported = False
+
+            if self.current_time - self.last_attack > 6000 and 1 < self.distance_from(self.player) < 3:
+                self.change_state("Teleportation")
 
     def attack(self):
         super().attack()
         self.last_attack = pg.time.get_ticks()
 
     def teleport(self):
-        self.animate_teleportation()
-        if self.ready_for_teleportation:
-            while 1:
-                next_x = self.player.x - random.randint(-1, 1)
-                next_y = self.player.y - random.randint(-1, 1)
-                if not self.game.map.is_wall(next_x, next_y):
-                    self.x = next_x
-                    self.y = next_y
-                    break
+        while 1:
+            next_x = self.player.x - random.randint(-1, 1)
+            next_y = self.player.y - random.randint(-1, 1)
+            if not self.game.map.is_wall(next_x, next_y):
+                self.x = next_x
+                self.y = next_y
+                break
 
-            self.last_teleportation_time = pg.time.get_ticks()
-            self.game.sound.play_sfx(self.sfx_teleportation, [self.exact_pos, self.player.exact_pos])
-            self.angle = math.atan2(self.player.y - self.y, self.player.x - self.x)
-            self.teleported = True
-            self.teleportation_begin = False
-            self.ready_for_teleportation = False
-            self.current_animation = "Idle"
-            self.animations["Teleportation"]["Counter"] = 0
-
-    def animate_teleportation(self):
-        if not self.teleported:
-            self.teleportation_begin = True
-            self.current_animation = "Teleportation"
-            animation = self.animations[self.current_animation]
-            if animation["Animation Completed"] and animation["Counter"] < len(animation["Frames"]) - 1:
-                animation["Frames"].rotate(-1)
-                self.texture_path = animation["Frames"][0]
-                animation["Counter"] += 1
-
-            if animation["Counter"] == len(animation["Frames"]) - 1:
-                self.ready_for_teleportation = True
+        self.last_teleportation_time = pg.time.get_ticks()
+        self.game.sound.play_sfx(self.sfx_teleportation, [self.exact_pos, self.player.exact_pos])
+        self.angle = math.atan2(self.player.y - self.y, self.player.x - self.x)
+        self.teleported = True
+        self.teleportation_begin = False
+        self.ready_for_teleportation = False
+        self.change_state("Idle")

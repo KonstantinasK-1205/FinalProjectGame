@@ -7,20 +7,19 @@ class AutomaticRifle:
             "Automatic Rifle": {
                 "Type": "Auto",
                 "Unlocked": False,
-                "Standby": {
-                    "Sprites": Sprite(game).load_weapon_images("automatic_rifle", [0]),
-                    "Speed": 200,
+                "Idle": {
+                    "Frames": Sprite(game).load_weapon_images("automatic_rifle", [0]),
+                    "Speed": 0,
                 },
                 "Reload": {
-                    "Sprites": Sprite(game).load_weapon_images("automatic_rifle", ["r0", "r1", "r2", "r3", "r4", "r5",
+                    "Frames": Sprite(game).load_weapon_images("automatic_rifle", ["r0", "r1", "r2", "r3", "r4", "r5",
                                                                                    "r6", "r7", "r8", "r9", "r10"]),
-                    "Animation Speed": 240,
                     "Speed": 160,
                 },
                 "Fire": {
-                    "Sprites": Sprite(game).load_weapon_images("automatic_rifle", ["a0", "a1"]),
+                    "Frames": Sprite(game).load_weapon_images("automatic_rifle", ["a0", "a1"]),
                     "Damage": 20,
-                    "Speed": 80,
+                    "Speed": 50,
                     "Cartridge Contains": 0,
                     "Cartridge Holds": 30,
                     "Bullet Per Shot": 1,

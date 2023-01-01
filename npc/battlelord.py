@@ -40,33 +40,25 @@ class Battlelord(NPC):
             "Idle": {
                 "Frames": self.images_at("Battlelord_Idle",
                                          [(0, 0, 128, 128)]),
-                "Counter": 0,
-                "Animation Speed": 180,
-                "Animation Completed": False,
+                "Speed": 180,
             },
             "Walk": {
                 "Frames": self.images_at("Battlelord_Walk",
                                          [(0, 128, 128, 128),
                                           (128, 128, 128, 128)]),
-                "Counter": 0,
-                "Animation Speed": 180,
-                "Animation Completed": False,
+                "Speed": 180,
             },
             "Attack": {
                 "Frames": self.images_at("Battlelord_Attack",
                                          [(0, 256, 128, 128),
                                           (128, 256, 128, 128)]),
-                "Counter": 0,
-                "Animation Speed": 100,
+                "Speed": 100,
                 "Attack Speed": 200,
-                "Animation Completed": False,
             },
             "Pain": {
                 "Frames": self.images_at("Battlelord_Pain",
                                          [(0, 384, 128, 128)]),
-                "Counter": 0,
-                "Animation Speed": 450,
-                "Animation Completed": False,
+                "Speed": 450,
             },
             "Death": {
                 "Frames": self.images_at("Battlelord_Death",
@@ -76,11 +68,11 @@ class Battlelord(NPC):
                                           (384, 512, 128, 128),
                                           (512, 512, 128, 128),
                                           (640, 512, 128, 128)]),
-                "Counter": 0,
-                "Animation Speed": 200,
-                "Animation Completed": False,
+                "Speed": 200,
             }
         }
+        self.animation.load_sprite_animations(self.animations)
+        self.animation.change_animation("Idle")
 
         # Reload functionality, so enemy wouldn't non-stop fire at player
         self.is_reloading = False
@@ -101,28 +93,16 @@ class Battlelord(NPC):
 
     def attack(self):
         if not self.is_reloading:
-            if self.animations[self.current_animation]["Animation Completed"]:
-                if self.current_time - self.reaction_time_passed > self.reaction_time:
-                    if self.current_time - self.previous_shot > self.animations["Attack"]["Attack Speed"]:
-                        for i in range(5):
-                            self.create_bullet()
-                            self.bullet_amount -= 1
-                        self.game.sound.play_sfx(self.sfx_attack, [self.exact_pos, self.player.exact_pos])
-                        self.previous_shot = pg.time.get_ticks()
-                        self.reaction_time_passed = pg.time.get_ticks()
-
+            if self.animation.completed:
+                for i in range(5):
+                    self.create_bullet()
+                    self.bullet_amount -= 1
+                self.game.sound.play_sfx(self.sfx_attack, [self.exact_pos, self.player.exact_pos])
+                self.previous_shot = pg.time.get_ticks()
         else:
-            self.current_animation = 'Idle'
-            self.animate()
+            self.change_state("Idle")
 
     def create_bullet(self):
-        # Add damage reduction based on how far Player from npc
-        distance = self.distance_from(self.player)
-        if self.damage > distance:
-            damage = int(self.damage - distance)
-        else:
-            damage = 1
-
         # Calculate enemy angle, so bullet flies where NPC is looking
         angle = math.atan2((self.player.y - random.uniform(-1, 1)) - self.y,
                            (self.player.x - random.uniform(-1, 1)) - self.x)
@@ -130,5 +110,14 @@ class Battlelord(NPC):
 
         handler = self.game.object_handler
         position = [self.x, self.y, self.z + (self.height / 2)]
-        bullet_data = [damage, self.bullet_speed, self.bullet_lifetime, "Enemy", self.bullet_width, self.bullet_height]
-        handler.add_bullet(Projectile(self.game, position, angle, bullet_data, self.bullet_sprite))
+        bullet_data = [self.damage,
+                       self.bullet_speed,
+                       self.bullet_lifetime,
+                       "Enemy",
+                       self.bullet_width,
+                       self.bullet_height]
+        handler.add_bullet(Projectile(self.game,
+                                      position,
+                                      angle,
+                                      bullet_data,
+                                      self.bullet_sprite))

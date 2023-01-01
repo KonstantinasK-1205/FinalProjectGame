@@ -7,18 +7,18 @@ class Empty:
             "Empty": {
                 "Unlocked": True,
                 "Type": "Melee",
-                "Standby": {
-                    "Sprites": Sprite(game).load_weapon_images("empty", [0]),
-                    "Speed": 100,
+                "Idle": {
+                    "Frames": Sprite(game).load_weapon_images("empty", [0]),
+                    "Speed": 0,
                 },
                 "Reload": {
-                    "Sprites": Sprite(game).load_weapon_images("empty", [0]),
-                    "Speed": 100,
+                    "Frames": Sprite(game).load_weapon_images("empty", [0]),
+                    "Speed": 0,
                 },
                 "Fire": {
-                    "Sprites": Sprite(game).load_weapon_images("empty", [0]),
+                    "Frames": Sprite(game).load_weapon_images("empty", [0]),
                     "Damage": 0,
-                    "Speed": 100,
+                    "Speed": 0,
                     "Cartridge Contains": 0,
                     "Cartridge Holds": 0,
                     "Bullet Per Shot": 1,

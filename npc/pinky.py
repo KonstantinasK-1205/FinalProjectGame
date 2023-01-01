@@ -27,35 +27,27 @@ class Pinky(NPC):
             "Idle": {
                 "Frames": self.images_at("Pinky_Idle",
                                          [(0, 0, 64, 64)]),
-                "Counter": 0,
-                "Animation Speed": 180,
-                "Animation Completed": False,
+                "Speed": 180,
             },
             "Walk": {
                 "Frames": self.images_at("Pinky_Walk",
                                          [(0, 64, 64, 64),
                                           (64, 64, 64, 64),
                                           (128, 64, 64, 64)]),
-                "Counter": 0,
-                "Animation Speed": 120,
-                "Animation Completed": False,
+                "Speed": 120,
             },
             "Attack": {
                 "Frames": self.images_at("Pinky_Attack",
                                          [(0, 256, 64, 64),
                                           (64, 256, 64, 64),
                                           (128, 256, 64, 64)]),
-                "Counter": 0,
-                "Animation Speed": 300,
+                "Speed": 300,
                 "Attack Speed": 900,
-                "Animation Completed": False,
             },
             "Pain": {
                 "Frames": self.images_at("Pinky_Pain",
                                          [(0, 320, 64, 64)]),
-                "Counter": 0,
-                "Animation Speed": 150,
-                "Animation Completed": False,
+                "Speed": 150,
             },
             "Death": {
                 "Frames": self.images_at("Pinky_Death",
@@ -64,9 +56,7 @@ class Pinky(NPC):
                                           (128, 320, 64, 64),
                                           (192, 320, 64, 64),
                                           (256, 320, 64, 64)]),
-                "Counter": 0,
-                "Animation Speed": 120,
-                "Animation Completed": False,
+                "Speed": 120,
             },
             "Stomp": {
                 "Frames": self.images_at("Pinky_Stomp",
@@ -74,11 +64,11 @@ class Pinky(NPC):
                                           (64, 384, 64, 64),
                                           (128, 384, 64, 64),
                                           (192, 384, 64, 64)]),
-                "Counter": 0,
-                "Animation Speed": 400,
-                "Animation Completed": False,
+                "Speed": 400,
             }
         }
+        self.animation.load_sprite_animations(self.animations)
+        self.animation.change_animation("Idle")
 
         # Rush ability (increase speed)
         self.is_rushing = False
@@ -86,7 +76,7 @@ class Pinky(NPC):
 
         # Dash ability ( dash away from bullet )
         self.is_dashing = False
-        self.dodge_chance = 5
+        self.dodge_chance = 6
         self.dash_distance = 2
         self.dash_start_time = 0
         self.last_attack = 0
@@ -137,6 +127,4 @@ class Pinky(NPC):
         if not self.is_rushing:
             self.speed = 0.008
             self.is_rushing = True
-            self.attack_distance = 2
-            self.bullet_lifetime = 75
             self.rush_timer = pg.time.get_ticks()

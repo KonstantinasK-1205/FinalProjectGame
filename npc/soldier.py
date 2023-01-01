@@ -27,9 +27,7 @@ class Soldier(NPC):
             "Idle": {
                 "Frames": self.images_at("Soldier_Idle",
                                          [(0, 0, 64, 64)]),
-                "Counter": 0,
-                "Animation Speed": 180,
-                "Animation Completed": False,
+                "Speed": 180,
             },
             "Walk": {
                 "Frames": self.images_at("Soldier_Walk",
@@ -37,25 +35,19 @@ class Soldier(NPC):
                                           (64, 64, 64, 64),
                                           (128, 64, 64, 64),
                                           (192, 64, 64, 64)]),
-                "Counter": 0,
-                "Animation Speed": 180,
-                "Animation Completed": False,
+                "Speed": 180,
             },
             "Attack": {
                 "Frames": self.images_at("Soldier_Attack",
                                          [(0, 256, 64, 64),
                                           (64, 256, 64, 64)]),
-                "Counter": 0,
-                "Animation Speed": 400,
+                "Speed": 400,
                 "Attack Speed": 800,
-                "Animation Completed": False,
             },
             "Pain": {
                 "Frames": self.images_at("Soldier_Pain",
                                          [(0, 320, 64, 64)]),
-                "Counter": 0,
-                "Animation Speed": 300,
-                "Animation Completed": False,
+                "Speed": 300,
             },
             "Death": {
                 "Frames": self.images_at("Soldier_Death",
@@ -65,8 +57,8 @@ class Soldier(NPC):
                                           (192, 384, 64, 64),
                                           (256, 384, 64, 64),
                                           (320, 384, 64, 64)]),
-                "Counter": 0,
-                "Animation Speed": 120,
-                "Animation Completed": False,
+                "Speed": 120,
             }
         }
+        self.animation.load_sprite_animations(self.animations)
+        self.animation.change_animation("Idle")
