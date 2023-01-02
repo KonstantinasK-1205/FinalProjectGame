@@ -88,6 +88,9 @@ class Hud:
             # Maximum tile size
             self.minimap_tile = min(int(minimap_width / self.game.map.width),
                                     int(minimap_height / self.game.map.height))
+            # Reduce minimap size to fit tiles
+            minimap_width = self.minimap_tile * self.game.map.width
+            minimap_height = self.minimap_tile * self.game.map.height
 
             # Offset minimap from top right
             self.minimap_pos[0] = self.game.width - minimap_width - self.margin
@@ -102,9 +105,12 @@ class Hud:
             # Maximum tile size
             self.minimap_tile = min(int(minimap_width / self.game.map.width),
                                     int(minimap_height / self.game.map.height))
+            # Reduce minimap size to fit tiles
+            minimap_width = self.minimap_tile * self.game.map.width
+            minimap_height = self.minimap_tile * self.game.map.height
 
             # Center minimap and offset from top
-            self.minimap_pos[0] = self.game.width / 2 - minimap_width / 4
+            self.minimap_pos[0] = self.game.width / 2 - minimap_width / 2
             self.minimap_pos[1] = self.margin
 
     def draw_health_bar(self):
