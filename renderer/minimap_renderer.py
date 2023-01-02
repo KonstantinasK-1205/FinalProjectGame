@@ -94,7 +94,7 @@ class MinimapRenderer:
         self.draw_dots()
 
     def draw_walls(self):
-        glBindBuffer(GL_ARRAY_BUFFER, self.renderer.vbos["minimap_wall"])
+        glBindBuffer(GL_ARRAY_BUFFER, self.renderer.vbo_manager.vbos["minimap_wall"])
         glVertexPointer(2, GL_FLOAT, 0, ctypes.c_void_p(0))
 
         glColor4f(0, 0, 0, 0.9)
@@ -110,7 +110,7 @@ class MinimapRenderer:
 
         for c in self.unvisited_chunks:
             if c.is_valid():
-                glBindBuffer(GL_ARRAY_BUFFER, self.renderer.vbos[c.vbo])
+                glBindBuffer(GL_ARRAY_BUFFER, self.renderer.vbo_manager.vbos[c.vbo])
                 glVertexPointer(2, GL_FLOAT, 0, ctypes.c_void_p(0))
 
                 glLoadIdentity()
@@ -119,13 +119,13 @@ class MinimapRenderer:
 
                 glDrawArrays(GL_QUADS, 0, c.vbo_size)
             else:
-                glBindBuffer(GL_ARRAY_BUFFER, self.renderer.vbos["minimap_tile"])
+                glBindBuffer(GL_ARRAY_BUFFER, self.renderer.vbo_manager.vbos["minimap_tile"])
                 glVertexPointer(2, GL_FLOAT, 0, ctypes.c_void_p(0))
 
                 c.draw_tiles(self.x, self.y, self.tile_size)
 
     def draw_dots(self):
-        glBindBuffer(GL_ARRAY_BUFFER, self.renderer.vbos["minimap_dot"])
+        glBindBuffer(GL_ARRAY_BUFFER, self.renderer.vbo_manager.vbos["minimap_dot"])
         glTexCoordPointer(2, GL_FLOAT, 4 * 4, ctypes.c_void_p(0))
         glVertexPointer(2, GL_FLOAT, 4 * 4, ctypes.c_void_p(2 * 4))
 
@@ -175,7 +175,7 @@ class MinimapRenderer:
     def draw_player(self):
         size = self.tile_size * 4
 
-        glBindTexture(GL_TEXTURE_2D, self.renderer.textures["resources/icons/minimap_player.png"])
+        glBindTexture(GL_TEXTURE_2D, self.renderer.texture_manager.textures["resources/icons/minimap_player.png"])
 
         glColor3f(1, 1, 1)
 
@@ -188,6 +188,7 @@ class MinimapRenderer:
         glRotatef(math.degrees(self.game.player.angle), 0, 0, 1)
         glScalef(size, size, 1)
         glDrawArrays(GL_QUADS, 0, 4)
+
 
     class Chunk:
         WIDTH = 8

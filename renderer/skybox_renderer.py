@@ -37,7 +37,7 @@ class SkyboxRenderer:
         glEnable(GL_DEPTH_TEST)
 
     def draw_side(self, texture_name, angle):
-        glBindTexture(GL_TEXTURE_2D, self.renderer.textures["resources/textures/skybox/" + texture_name + ".jpg"])
+        glBindTexture(GL_TEXTURE_2D, self.renderer.texture_manager.textures["resources/textures/skybox/" + texture_name + ".jpg"])
 
         glPushMatrix()
 
@@ -45,7 +45,7 @@ class SkyboxRenderer:
         glRotatef(angle[0], 0, 1, 0)
         glRotatef(angle[1], 1, 0, 0)
 
-        glBindBuffer(GL_ARRAY_BUFFER, self.renderer.vbos["skybox"])
+        glBindBuffer(GL_ARRAY_BUFFER, self.renderer.vbo_manager.vbos["skybox"])
         glTexCoordPointer(2, GL_FLOAT, 5 * 4, ctypes.c_void_p(0))
         glVertexPointer(3, GL_FLOAT, 5 * 4, ctypes.c_void_p(2 * 4))
         glDrawArrays(GL_QUADS, 0, 6 * 4)

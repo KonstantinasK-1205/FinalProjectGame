@@ -90,14 +90,14 @@ class MapRenderer:
         self.layers[tile].vbo_size += 4
 
     def draw(self):
-        for layer in self.layers:
-            glBindTexture(GL_TEXTURE_2D, self.renderer.textures[layer.texture])
+        for l in self.layers:
+            glBindTexture(GL_TEXTURE_2D, self.renderer.texture_manager.textures[l.texture])
 
-            glBindBuffer(GL_ARRAY_BUFFER, self.renderer.vbos[layer.vbo])
+            glBindBuffer(GL_ARRAY_BUFFER, self.renderer.vbo_manager.vbos[l.vbo])
             glTexCoordPointer(2, GL_FLOAT, 5 * 4, ctypes.c_void_p(0))
             glVertexPointer(3, GL_FLOAT, 5 * 4, ctypes.c_void_p(2 * 4))
 
-            glDrawArrays(GL_QUADS, 0, layer.vbo_size)
+            glDrawArrays(GL_QUADS, 0, l.vbo_size)
 
     class Layer:
         def __init__(self, texture, vbo, vbo_size):
