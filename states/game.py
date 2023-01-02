@@ -11,6 +11,7 @@ class GameState(State):
         pg.mouse.set_visible(False)
         pg.event.set_grab(True)
         pg.mixer.stop()
+        self.game.hud.on_resize()
 
     def handle_events(self, event):
         self.game.player.handle_events(event)
@@ -18,6 +19,7 @@ class GameState(State):
             if event.key == pg.K_ESCAPE:
                 self.game.current_state = "Menu"
             elif event.key == pg.K_TAB:
+                self.game.hud.update_minimap((self.map_state + 1) % 3)
                 self.map_state = (self.map_state + 1) % 3
 
     def update(self):

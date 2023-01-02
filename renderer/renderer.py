@@ -63,7 +63,7 @@ class Renderer:
 
         self.load_texture_from_surface(path, surface, repeat, mipmapped)
 
-    def load_texture_from_surface(self, path, surface, repeat = False, mipmapped = False):
+    def load_texture_from_surface(self, path, surface, repeat=False, mipmapped=False):
         self.texture_manager.load_texture_from_surface(path, surface, repeat, mipmapped)
 
     def delete_texture(self, texture):

@@ -66,13 +66,14 @@ class Game:
             elif event.type == pg.WINDOWRESIZED:
                 self.font = pg.font.Font("resources/fonts/Font.ttf", int(36 / 1280 * event.x))
                 self.font_small = pg.font.Font("resources/fonts/Font.ttf", int(24 / 1280 * event.y))
+                if hasattr(self.player, "health"):
+                    self.hud.on_resize()
                 if hasattr(self.weapon, "reset_weapon_pos"):
                     self.weapon.reset_weapon_pos()
 
             self.state[self.current_state].handle_events(event)
 
     def update(self):
-        # print(self.clock.get_fps())
         self.dt = self.clock.tick()
         self.state[self.current_state].update()
 

@@ -34,6 +34,7 @@ class ObjectHandler:
             if npc in self.alive_npc_list and npc.dead:
                 self.alive_npc_list.pop(self.alive_npc_list.index(npc))
                 self.killed += 1
+                self.game.hud.on_enemy_down()
 
         for pickup in self.pickup_list:
             pickup.update()
@@ -75,6 +76,7 @@ class ObjectHandler:
     def add_npc(self, npc):
         self.npc_list.append(npc)
         self.alive_npc_list.append(npc)
+        self.game.map.enemy_amount += 1
 
     def add_pickup(self, pickup):
         self.pickup_list.append(pickup)

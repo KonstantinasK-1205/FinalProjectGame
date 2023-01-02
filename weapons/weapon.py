@@ -90,8 +90,10 @@ class Weapon:
                             accuracy = random.uniform(-weapon["Bullet Offset"],
                                                       weapon["Bullet Offset"])
                             self.create_bullet(accuracy)
+                            self.game.hud.update_bullets()
                     else:
                         self.create_bullet()
+                        self.game.hud.update_bullets()
                     self.game.sound.play_sfx(self.selected_weapon + " " + self.current_state)
                     self.last_shot = pg.time.get_ticks()
                 elif weapon["Bullet Left"] > 1:
@@ -131,10 +133,12 @@ class Weapon:
                     else:
                         weapon["Cartridge Contains"] = weapon["Bullet Left"]
                         weapon["Bullet Left"] = 0
+                    self.game.hud.update_bullets()
 
     # Other Functions
     def add_bullets(self, weapon, number):
         self.weapon_info[weapon]["Fire"]["Bullet Left"] += number
+        self.game.hud.update_bullets()
 
     def create_bullet(self, spread=None):
         weapon = self.current_weapon()["Fire"]
@@ -163,6 +167,7 @@ class Weapon:
             self.animation.change_animation("Idle")
             self.sprite = self.animation.get_sprite()
             self.reset_weapon_pos()
+            self.game.hud.update_bullets()
 
     def save_weapon_info(self):
         self.saved_weapons = copy.deepcopy(self.weapon_info)

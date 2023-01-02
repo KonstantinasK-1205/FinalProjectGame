@@ -29,7 +29,6 @@ class Sprite:
             self.width = self.height = scale[0]
 
         # Init texture and animation variables
-        self.spritesheet = None
         self.texture_path = None
         self.current_state = None
         self.delete = False
@@ -44,12 +43,6 @@ class Sprite:
         self.x = x
         self.y = y
         self.z = z
-
-    def set_width(self, width):
-        self.width = width
-
-    def set_height(self, height):
-        self.height = height
 
     def distance_from(self, other):
         return math.hypot(other.x - self.x, other.y - self.y, other.z - self.z)

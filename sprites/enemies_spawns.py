@@ -7,7 +7,8 @@ import random
 class ZombieSpawn(Sprite):
     def __init__(self, game, pos):
         super().__init__(game, pos, [0.0001])
-        self.load_texture("resources/sprites/pickups/ammo/pistol.png")
+        game.sprite_manager.load_single_image("Empty", "resources/sprites/empty.png")
+        self.texture_path = game.sprite_manager.get_sprite("Empty")
         self.pos = pos
         self.last_spawned = 0
         self.next_spawn = random.randrange(10000, 30000)
@@ -20,4 +21,3 @@ class ZombieSpawn(Sprite):
             self.game.object_handler.add_npc(Zombie(self.game, self.pos))
             self.next_spawn = random.randrange(10000, 30000)
             self.last_spawned = pg.time.get_ticks()
-            self.game.map.enemy_amount += 1

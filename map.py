@@ -117,22 +117,16 @@ class Map:
                     self.game.player.set_spawn(pos[0], pos[1])
                 elif char == "Z":
                     handler.add_npc(Zombie(self.game, pos))
-                    self.enemy_amount += 1
                 elif char == "X":
                     handler.add_npc(Soldier(self.game, pos))
-                    self.enemy_amount += 1
                 elif char == "C":
                     handler.add_npc(Pinky(self.game, pos))
-                    self.enemy_amount += 1
                 elif char == "V":
                     handler.add_npc(LostSoul(self.game, pos))
-                    self.enemy_amount += 1
                 elif char == "B":
                     handler.add_npc(Reaper(self.game, pos))
-                    self.enemy_amount += 1
                 elif char == "N":
                     handler.add_npc(Battlelord(self.game, pos))
-                    self.enemy_amount += 1
 
                 # Pickups stats
                 elif char == "q":
@@ -181,7 +175,6 @@ class Map:
             y += 1
 
             self.map_loaded = True
-
         self.game.renderer.update_map()
 
     def get_tile(self, x, y):
