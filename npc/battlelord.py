@@ -33,45 +33,33 @@ class Battlelord(NPC):
         self.sfx_pain = "Battlelord pain"
         self.sfx_death = "Battlelord death"
 
-        # Animation variables
-        self.spritesheet = self.load_image("resources/sprites/npc/Battlelord_Spritesheet.png")
-        self.current_animation = "Idle"
-        self.animations = {
+        # Animations
+        sprite = self.game.sprite_manager
+        path = "resources/sprites/npc/Battlelord/"
+        self.states = {
             "Idle": {
-                "Frames": self.images_at("Battlelord_Idle",
-                                         [(0, 0, 128, 128)]),
-                "Speed": 180,
+                "Frames": sprite.load_single_image("Battlelord Idle", path + "idle.png"),
+                "Speed": 0
             },
             "Walk": {
-                "Frames": self.images_at("Battlelord_Walk",
-                                         [(0, 128, 128, 128),
-                                          (128, 128, 128, 128)]),
-                "Speed": 180,
+                "Frames": sprite.load_multiple_images("Battlelord Walk", path + "Walk/"),
+                "Speed": 180
             },
             "Attack": {
-                "Frames": self.images_at("Battlelord_Attack",
-                                         [(0, 256, 128, 128),
-                                          (128, 256, 128, 128)]),
+                "Frames": sprite.load_multiple_images("Battlelord Attack", path + "Attack/"),
                 "Speed": 100,
-                "Attack Speed": 200,
+                "Attack Speed": 200
             },
             "Pain": {
-                "Frames": self.images_at("Battlelord_Pain",
-                                         [(0, 384, 128, 128)]),
-                "Speed": 450,
+                "Frames": sprite.load_multiple_images("Battlelord Pain", path + "Pain/"),
+                "Speed": 450
             },
             "Death": {
-                "Frames": self.images_at("Battlelord_Death",
-                                         [(0, 512, 128, 128),
-                                          (128, 512, 128, 128),
-                                          (256, 512, 128, 128),
-                                          (384, 512, 128, 128),
-                                          (512, 512, 128, 128),
-                                          (640, 512, 128, 128)]),
-                "Speed": 200,
+                "Frames": sprite.load_multiple_images("Battlelord Death", path + "Death/"),
+                "Speed": 200
             }
         }
-        self.animation.load_sprite_animations(self.animations)
+        self.animation.load_sprite_animations(self.states)
         self.animation.change_animation("Idle")
 
         # Reload functionality, so enemy wouldn't non-stop fire at player

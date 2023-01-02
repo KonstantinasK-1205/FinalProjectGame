@@ -7,26 +7,32 @@ class Tree(Sprite):
     def __init__(self, game, pos):
         variety = random.randint(0, 8) / 10
         super().__init__(game, pos, [0.7 + variety, 1.3 + variety])
-        self.load_texture("resources/sprites/environment/tree0.png")
+        game.sprite_manager.load_single_image("Tree", "resources/sprites/environment/tree0.png")
+        self.texture_path = game.sprite_manager.get_sprite("Tree")
+
+
+class Corpse(Sprite):
+    def __init__(self, game, pos):
+        super().__init__(game, pos, [0.35, 0.25])
+        corpse_no = str(random.randint(0, 2))
+        corpse_path = "corpse" + corpse_no + ".png"
+        game.sprite_manager.load_single_image("Corpse" + corpse_no, "resources/sprites/environment/" + corpse_path)
+        self.texture_path = game.sprite_manager.get_sprite("Corpse" + corpse_no)
 
 
 class BigTorch(Sprite):
     def __init__(self, game, pos):
         super().__init__(game, pos, [0.3, 0.8])
         self.animation = Animation()
-        self.spritesheet = self.load_image("resources/sprites/environment/torch_big.png")
         self.current_animation = "Idle"
-        self.animations = {
+        path = "resources/sprites/environment/TorchBig/"
+        self.states = {
             "Idle": {
-                "Frames": super().images_at("Big Torch Idle",
-                                            [(0, 0, 48, 159),
-                                             (48, 0, 48, 159),
-                                             (96, 0, 48, 159),
-                                             (144, 0, 48, 159)]),
+                "Frames": game.sprite_manager.load_multiple_images("Big Torch Idle", path),
                 "Speed": 140,
             }
         }
-        self.animation.load_sprite_animations(self.animations)
+        self.animation.load_sprite_animations(self.states)
         self.animation.change_animation("Idle")
         self.sprite = self.animation.get_sprite()
 
@@ -47,24 +53,13 @@ class SmallTorch(BigTorch):
         super().__init__(game, pos)
         self.width = 0.5
         self.height = 0.6
-        self.spritesheet = self.load_image("resources/sprites/environment/torch_small.png")
-        self.animations = {
+        path = "resources/sprites/environment/TorchSmall/"
+        self.states = {
             "Idle": {
-                "Frames": super().images_at("Small Torch Idle",
-                                            [(0, 0, 48, 64),
-                                             (48, 0, 48, 64),
-                                             (96, 0, 48, 64),
-                                             (144, 0, 48, 64)]),
+                "Frames": game.sprite_manager.load_multiple_images("Small Torch Idle", path),
                 "Speed": 180,
             }
         }
-        self.animation.load_sprite_animations(self.animations)
+        self.animation.load_sprite_animations(self.states)
         self.animation.change_animation("Idle")
         self.sprite = self.animation.get_sprite()
-
-
-class Corpse(Sprite):
-    def __init__(self, game, pos):
-        super().__init__(game, pos, [0.35, 0.25])
-        corpse_sprite = random.randint(0, 2)
-        self.load_texture("resources/sprites/environment/corpse" + str(corpse_sprite) + ".png")

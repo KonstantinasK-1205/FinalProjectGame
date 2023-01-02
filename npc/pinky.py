@@ -20,54 +20,37 @@ class Pinky(NPC):
         self.sfx_pain = "Soldier pain"
         self.sfx_death = "Soldier death"
 
-        # Animation variables
-        self.spritesheet = self.load_image("resources/sprites/npc/Pinky_Spritesheet.png")
-        self.current_animation = "Idle"
-        self.animations = {
+        # Animations
+        sprite = self.game.sprite_manager
+        path = "resources/sprites/npc/Pinky/"
+        self.states = {
             "Idle": {
-                "Frames": self.images_at("Pinky_Idle",
-                                         [(0, 0, 64, 64)]),
-                "Speed": 180,
+                "Frames": sprite.load_single_image("Pinky Idle", path + "idle.png"),
+                "Speed": 0
             },
             "Walk": {
-                "Frames": self.images_at("Pinky_Walk",
-                                         [(0, 64, 64, 64),
-                                          (64, 64, 64, 64),
-                                          (128, 64, 64, 64)]),
-                "Speed": 120,
+                "Frames": sprite.load_multiple_images("Pinky Walk", path + "Walk/"),
+                "Speed": 120
             },
             "Attack": {
-                "Frames": self.images_at("Pinky_Attack",
-                                         [(0, 256, 64, 64),
-                                          (64, 256, 64, 64),
-                                          (128, 256, 64, 64)]),
+                "Frames": sprite.load_multiple_images("Pinky Attack", path + "Attack/"),
                 "Speed": 300,
                 "Attack Speed": 900,
             },
             "Pain": {
-                "Frames": self.images_at("Pinky_Pain",
-                                         [(0, 320, 64, 64)]),
+                "Frames": sprite.load_multiple_images("Pinky Pain", path + "Pain/"),
                 "Speed": 150,
             },
             "Death": {
-                "Frames": self.images_at("Pinky_Death",
-                                         [(0, 320, 64, 64),
-                                          (64, 320, 64, 64),
-                                          (128, 320, 64, 64),
-                                          (192, 320, 64, 64),
-                                          (256, 320, 64, 64)]),
+                "Frames": sprite.load_multiple_images("Pinky Death", path + "Death/"),
                 "Speed": 120,
             },
             "Stomp": {
-                "Frames": self.images_at("Pinky_Stomp",
-                                         [(0, 384, 64, 64),
-                                          (64, 384, 64, 64),
-                                          (128, 384, 64, 64),
-                                          (192, 384, 64, 64)]),
+                "Frames": sprite.load_multiple_images("Pinky Stomp", path + "Stomp/"),
                 "Speed": 400,
             }
         }
-        self.animation.load_sprite_animations(self.animations)
+        self.animation.load_sprite_animations(self.states)
         self.animation.change_animation("Idle")
 
         # Rush ability (increase speed)

@@ -24,51 +24,33 @@ class LostSoul(NPC):
         self.sfx_pain = "Soldier pain"
         self.sfx_death = "Soldier death"
 
-        # Animation variables
-        self.spritesheet = self.load_image("resources/sprites/npc/LostSoul_Spritesheet.png")
-        self.current_animation = "Idle"
-        self.animations = {
+        # Animations
+        sprite = self.game.sprite_manager
+        path = "resources/sprites/npc/LostSoul/"
+        self.states = {
             "Idle": {
-                "Frames": self.images_at("LostSoul_Idle",
-                                         [(0, 0, 64, 64)]),
-                "Speed": 180,
+                "Frames": sprite.load_single_image("LostSoul Idle", path + "idle.png"),
+                "Speed": 0
             },
             "Walk": {
-                "Frames": self.images_at("LostSoul_Walk",
-                                         [(0, 64, 64, 64),
-                                          (64, 64, 64, 64),
-                                          (128, 64, 64, 64),
-                                          (192, 64, 64, 64)]),
-                "Speed": 180,
+                "Frames": sprite.load_multiple_images("LostSoul Walk", path + "Walk/"),
+                "Speed": 180
             },
             "Attack": {
-                "Frames": self.images_at("LostSoul_Attack",
-                                         [(0, 64, 64, 64),
-                                          (64, 64, 64, 64),
-                                          (128, 64, 64, 64),
-                                          (192, 64, 64, 64)]),
+                "Frames": sprite.load_multiple_images("LostSoul Attack", path + "Attack/"),
                 "Speed": 20,
-                "Attack Speed": 100,
+                "Attack Speed": 100
             },
             "Pain": {
-                "Frames": self.images_at("LostSoul_Pain",
-                                         [(0, 128, 64, 64)]),
-                "Speed": 300,
+                "Frames": sprite.load_multiple_images("LostSoul Pain", path + "Pain/"),
+                "Speed": 300
             },
             "Death": {
-                "Frames": self.images_at("LostSoul_Death",
-                                         [(0, 192, 64, 64),
-                                          (64, 192, 64, 64),
-                                          (128, 192, 64, 64),
-                                          (192, 192, 64, 64),
-                                          (256, 192, 64, 64),
-                                          (320, 192, 64, 64),
-                                          (384, 192, 64, 64),
-                                          (448, 192, 64, 64)]),
-                "Speed": 120,
+                "Frames": sprite.load_multiple_images("LostSoul Death", path + "Death/"),
+                "Speed": 120
             }
         }
-        self.animation.load_sprite_animations(self.animations)
+        self.animation.load_sprite_animations(self.states)
         self.animation.change_animation("Idle")
 
         # Dash ability ( dash towards player )

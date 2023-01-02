@@ -48,7 +48,7 @@ class NPC(Sprite):
         # Base Animation variables
         self.sprite = self.texture_path
         self.current_state = "Idle"
-        self.animations = {}
+        self.states = {}
 
     def update(self):
         self.current_time = pg.time.get_ticks()
@@ -190,5 +190,4 @@ class NPC(Sprite):
         return not self.alive
 
     def get_frames(self):
-        return self.animations[self.current_state]
-    
+        return self.states[self.current_state]

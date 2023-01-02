@@ -27,61 +27,37 @@ class Reaper(NPC):
         self.sfx_death = "Reaper death"
         self.sfx_teleportation = "Reaper teleportation"
 
-        # Animation variables
-        self.spritesheet = self.load_image("resources/sprites/npc/Reaper_Spritesheet.png")
-        self.current_animation = "Idle"
-        self.animations = {
+        # Animations
+        sprite = self.game.sprite_manager
+        path = "resources/sprites/npc/Reaper/"
+        self.states = {
             "Idle": {
-                "Frames": self.images_at("Reaper_Idle",
-                                         [(0, 0, 128, 128)]),
-                "Speed": 180,
+                "Frames": sprite.load_single_image("Reaper Idle", path + "idle.png"),
+                "Speed": 0
             },
             "Walk": {
-                "Frames": self.images_at("Reaper_Walk",
-                                         [(0, 128, 128, 128),
-                                          (128, 128, 128, 128),
-                                          (256, 128, 128, 128)]),
-                "Speed": 180,
+                "Frames": sprite.load_multiple_images("Reaper Walk", path + "Walk/"),
+                "Speed": 180
             },
             "Attack": {
-                "Frames": self.images_at("Reaper_Attack",
-                                         [(0, 256, 128, 128),
-                                          (128, 256, 128, 128),
-                                          (256, 256, 128, 128),
-                                          (384, 256, 128, 128)]),
+                "Frames": sprite.load_multiple_images("Reaper Attack", path + "Attack/"),
                 "Speed": 200,
                 "Attack Speed": 800,
             },
             "Pain": {
-                "Frames": self.images_at("Reaper_Pain",
-                                         [(0, 384, 128, 128)]),
+                "Frames": sprite.load_multiple_images("Reaper Pain", path + "Pain/"),
                 "Speed": 300,
             },
             "Death": {
-                "Frames": self.images_at("Reaper_Death",
-                                         [(0, 512, 128, 128),
-                                          (128, 512, 128, 128),
-                                          (256, 512, 128, 128),
-                                          (384, 512, 128, 128),
-                                          (512, 512, 128, 128),
-                                          (640, 512, 128, 128),
-                                          (768, 512, 128, 128),
-                                          (896, 512, 128, 128)]),
+                "Frames": sprite.load_multiple_images("Reaper Death", path + "Death/"),
                 "Speed": 120,
             },
             "Teleportation": {
-                "Frames": self.images_at("Reaper_Teleportation",
-                                         [(0, 640, 128, 128),
-                                          (128, 640, 128, 128),
-                                          (256, 640, 128, 128),
-                                          (384, 640, 128, 128),
-                                          (512, 640, 128, 128),
-                                          (640, 640, 128, 128),
-                                          (768, 640, 128, 128)]),
+                "Frames": sprite.load_multiple_images("Reaper Teleportation", path + "Teleportation/"),
                 "Speed": 150,
             }
         }
-        self.animation.load_sprite_animations(self.animations)
+        self.animation.load_sprite_animations(self.states)
         self.animation.change_animation("Idle")
 
         # Teleportation variables

@@ -1,23 +1,20 @@
-from sprites.sprite import *
-
-
 class AutomaticRifle:
     def __init__(self, game):
+        path = "resources/sprites/weapon/automatic_rifle/"
         self.weapon_info = {
             "Automatic Rifle": {
                 "Type": "Auto",
                 "Unlocked": False,
                 "Idle": {
-                    "Frames": Sprite(game).load_weapon_images("automatic_rifle", [0]),
-                    "Speed": 0,
+                    "Frames": game.sprite_manager.load_single_image("Automatic Rifle Idle", path + "idle.png"),
+                    "Speed": 0
                 },
                 "Reload": {
-                    "Frames": Sprite(game).load_weapon_images("automatic_rifle", ["r0", "r1", "r2", "r3", "r4", "r5",
-                                                                                   "r6", "r7", "r8", "r9", "r10"]),
-                    "Speed": 160,
+                    "Frames": game.sprite_manager.load_multiple_images("Automatic Rifle Reload", path + "Reload/"),
+                    "Speed": 160
                 },
                 "Fire": {
-                    "Frames": Sprite(game).load_weapon_images("automatic_rifle", ["a0", "a1"]),
+                    "Frames": game.sprite_manager.load_multiple_images("Automatic Rifle Fire", path + "Fire/"),
                     "Damage": 20,
                     "Speed": 50,
                     "Cartridge Contains": 0,

@@ -20,45 +20,31 @@ class Soldier(NPC):
 
         self.reaction_time = 1000
 
-        # Animation variables
-        self.spritesheet = self.load_image("resources/sprites/npc/Soldier_Spritesheet.png")
-        self.current_animation = "Idle"
-        self.animations = {
+        # Animations
+        sprite = self.game.sprite_manager
+        path = "resources/sprites/npc/Soldier/"
+        self.states = {
             "Idle": {
-                "Frames": self.images_at("Soldier_Idle",
-                                         [(0, 0, 64, 64)]),
-                "Speed": 180,
+                "Frames": sprite.load_single_image("Soldier Idle", path + "idle.png"),
+                "Speed": 0
             },
             "Walk": {
-                "Frames": self.images_at("Soldier_Walk",
-                                         [(0, 64, 64, 64),
-                                          (64, 64, 64, 64),
-                                          (128, 64, 64, 64),
-                                          (192, 64, 64, 64)]),
-                "Speed": 180,
+                "Frames": sprite.load_multiple_images("Soldier Walk", path + "Walk/"),
+                "Speed": 180
             },
             "Attack": {
-                "Frames": self.images_at("Soldier_Attack",
-                                         [(0, 256, 64, 64),
-                                          (64, 256, 64, 64)]),
-                "Speed": 400,
-                "Attack Speed": 800,
+                "Frames": sprite.load_multiple_images("Soldier Attack", path + "Attack/"),
+                "Speed": 300,
+                "Attack Speed": 600,
             },
             "Pain": {
-                "Frames": self.images_at("Soldier_Pain",
-                                         [(0, 320, 64, 64)]),
+                "Frames": sprite.load_multiple_images("Soldier Pain", path + "Pain/"),
                 "Speed": 300,
             },
             "Death": {
-                "Frames": self.images_at("Soldier_Death",
-                                         [(0, 384, 64, 64),
-                                          (64, 384, 64, 64),
-                                          (128, 384, 64, 64),
-                                          (192, 384, 64, 64),
-                                          (256, 384, 64, 64),
-                                          (320, 384, 64, 64)]),
+                "Frames": sprite.load_multiple_images("Soldier Death", path + "Death/"),
                 "Speed": 120,
             }
         }
-        self.animation.load_sprite_animations(self.animations)
+        self.animation.load_sprite_animations(self.states)
         self.animation.change_animation("Idle")

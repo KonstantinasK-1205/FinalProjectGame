@@ -5,6 +5,7 @@ from pathfinding import *
 from player import *
 from renderer.renderer import *
 from sound import *
+from sprites.sprite_manager import *
 from states.game import GameState
 from states.intro import IntroState
 from states.menu import MenuState
@@ -29,6 +30,7 @@ class Game:
         self.object_handler = ObjectHandler(self)
         self.hud = Hud(self)
         self.map = Map(self)
+        self.sprite_manager = SpriteManager(self)
         # Needs to be initialized, otherwise will crash on resize before new game
         self.player = None
         self.pathfinding = None
@@ -70,6 +72,7 @@ class Game:
             self.state[self.current_state].handle_events(event)
 
     def update(self):
+        # print(self.clock.get_fps())
         self.dt = self.clock.tick()
         self.state[self.current_state].update()
 

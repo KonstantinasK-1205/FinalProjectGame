@@ -1,22 +1,20 @@
-from sprites.sprite import *
-
-
 class Pitchfork:
     def __init__(self, game):
+        path = "resources/sprites/weapon/pitchfork/"
         self.weapon_info = {
             "Pitchfork": {
                 "Type": "Melee",
                 "Unlocked": False,
                 "Idle": {
-                    "Frames": Sprite(game).load_weapon_images("pitchfork", [0]),
-                    "Speed": 100,
+                    "Frames": game.sprite_manager.load_single_image("Pitchfork Idle", path + "idle.png"),
+                    "Speed": 0
                 },
                 "Reload": {
-                    "Frames": Sprite(game).load_weapon_images("pitchfork", [0]),
-                    "Speed": 100,
+                    "Frames": game.sprite_manager.load_single_image("Pitchfork Idle", path + "idle.png"),
+                    "Speed": 0
                 },
                 "Fire": {
-                    "Frames": Sprite(game).load_weapon_images("pitchfork", ["a1"]),
+                    "Frames": game.sprite_manager.load_multiple_images("Pitchfork Fire", path + "Fire/"),
                     "Damage": 10,
                     "Speed": 500,
                     "Cartridge Contains": 9999,

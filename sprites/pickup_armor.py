@@ -4,7 +4,8 @@ from sprites.sprite import Sprite
 class PickupArmor(Sprite):
     def __init__(self, game, pos):
         super().__init__(game, pos, [0.3])
-        self.load_texture("resources/sprites/pickups/armor.png")
+        path = "resources/sprites/pickups/armor.png"
+        self.texture_path = game.sprite_manager.load_single_image("Armor", path)[0]
         self.type = "Player"
 
     def update(self):

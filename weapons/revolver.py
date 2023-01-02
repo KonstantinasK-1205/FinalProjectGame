@@ -1,23 +1,21 @@
-from sprites.sprite import *
-
-
 class Revolver:
     def __init__(self, game):
+        path = "resources/sprites/weapon/revolver/"
         self.weapon_info = {
             "Revolver": {
                 "Type": "Semi",
                 "Unlocked": False,
                 "Idle": {
-                    "Frames": Sprite(game).load_weapon_images("revolver", [0]),
-                    "Speed": 0,
+                    "Frames": game.sprite_manager.load_single_image("Revolver Idle", path + "idle.png"),
+                    "Speed": 0
                 },
                 "Reload": {
-                    "Frames": Sprite(game).load_weapon_images("revolver", ["r0", "r1", "r2", "r3", "r4",
-                                                                           "r5", "r6", "r7", "r8"]),
-                    "Speed": 230,
+                    "Frames": game.sprite_manager.load_multiple_images("Revolver Reload", path + "Reload/"),
+
+                    "Speed": 230
                 },
                 "Fire": {
-                    "Frames": Sprite(game).load_weapon_images("revolver", ["a0", "a1", "a2"]),
+                    "Frames": game.sprite_manager.load_multiple_images("Revolver Fire", path + "Fire/"),
                     "Damage": 24,
                     "Speed": 170,
                     "Cartridge Contains": 0,

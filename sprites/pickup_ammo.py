@@ -4,7 +4,8 @@ from sprites.sprite import Sprite
 class PistolAmmo(Sprite):
     def __init__(self, game, pos):
         super().__init__(game, pos, [0.3])
-        self.load_texture("resources/sprites/pickups/ammo/pistol.png")
+        path = "resources/sprites/pickups/ammo/pistol.png"
+        self.texture_path = game.sprite_manager.load_single_image("pistol", path)[0]
         self.type = "Ammo"
 
     def update(self):
@@ -19,7 +20,8 @@ class PistolAmmo(Sprite):
 class ShotgunAmmo(Sprite):
     def __init__(self, game, pos):
         super().__init__(game, pos, [0.3])
-        self.load_texture("resources/sprites/pickups/ammo/shotgun.png")
+        path = "resources/sprites/pickups/ammo/shotgun.png"
+        self.texture_path = game.sprite_manager.load_single_image("shotgun", path)[0]
         self.type = "Ammo"
 
     def update(self):
@@ -34,7 +36,8 @@ class ShotgunAmmo(Sprite):
 class RifleAmmo(Sprite):
     def __init__(self, game, pos):
         super().__init__(game, pos, [0.3])
-        self.load_texture("resources/sprites/pickups/ammo/rifle.png")
+        path = "resources/sprites/pickups/ammo/rifle.png"
+        self.texture_path = game.sprite_manager.load_single_image("rifle", path)[0]
         self.type = "Ammo"
 
     def update(self):

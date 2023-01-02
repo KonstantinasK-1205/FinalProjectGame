@@ -1,22 +1,20 @@
-from sprites.sprite import *
-
-
 class Empty:
     def __init__(self, game):
+        path = "resources/sprites/weapon/empty/"
         self.weapon_info = {
             "Empty": {
                 "Unlocked": True,
                 "Type": "Melee",
                 "Idle": {
-                    "Frames": Sprite(game).load_weapon_images("empty", [0]),
-                    "Speed": 0,
+                    "Frames": game.sprite_manager.load_single_image("Empty Hand", path + "idle.png"),
+                    "Speed": 0
                 },
                 "Reload": {
-                    "Frames": Sprite(game).load_weapon_images("empty", [0]),
-                    "Speed": 0,
+                    "Frames": game.sprite_manager.load_single_image("Empty Hand", path + "idle.png"),
+                    "Speed": 0
                 },
                 "Fire": {
-                    "Frames": Sprite(game).load_weapon_images("empty", [0]),
+                    "Frames": game.sprite_manager.load_single_image("Empty Hand", path + "idle.png"),
                     "Damage": 0,
                     "Speed": 0,
                     "Cartridge Contains": 0,
