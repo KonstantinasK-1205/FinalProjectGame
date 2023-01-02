@@ -66,6 +66,12 @@ class Player:
         self.game.weapon.update()
         self.fill_map_visited()
 
+        self.game.renderer.camera_x = self.x
+        self.game.renderer.camera_y = self.y
+        self.game.renderer.camera_z = self.z + self.height
+        self.game.renderer.camera_angle = self.angle
+        self.game.renderer.camera_angle_ver = self.angle_ver
+
     def movement(self):
         speed = PLAYER_SPEED * self.game.dt
         speed_sin = speed * math.sin(self.angle)

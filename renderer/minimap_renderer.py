@@ -87,6 +87,14 @@ class MinimapRenderer:
         if not self.vbos_initialized:
             return
 
+        glDisable(GL_DEPTH_TEST)
+
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
+        glOrtho(0, self.game.width, self.game.height, 0, 0, 100)
+
+        glMatrixMode(GL_MODELVIEW)
+
         glBindTexture(GL_TEXTURE_2D, 0)
 
         self.draw_walls()

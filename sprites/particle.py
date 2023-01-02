@@ -7,10 +7,6 @@ class Particle(Sprite):
     def __init__(self, game, pos, size, collided_tile=1):
         super().__init__(game, pos, [0.05])
 
-        # Right now the player shoots bullets out of their legs, so account for
-        # player arm height
-        self.z += 0.5
-
         self.dx = 0
         self.dy = 0
         self.dz = 0

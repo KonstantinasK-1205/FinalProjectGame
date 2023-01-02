@@ -77,7 +77,7 @@ class Projectile:
             if res.collided and self.z < 1:
                 for i in range(5):
                     self.handler.add_sprite(
-                        Particle(self.game, (res.x, res.y, self.z - dz), [0.05, 0.05], res.collided))
+                        Particle(self.game, (res.x, res.y, self.z + dz + 0.3), [0.05, 0.05], res.collided))
                 self.game.sound.play_sfx("Bullet in wall")
                 self.delete = True
 

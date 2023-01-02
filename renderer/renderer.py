@@ -5,16 +5,14 @@ from renderer.vbo_manager import *
 from renderer.map_renderer import *
 from renderer.minimap_renderer import *
 from renderer.skybox_renderer import *
+from renderer.hud_renderer import *
+from renderer.sprite_renderer import *
 from settings import *
 
 
 class Renderer:
     def __init__(self, game):
         self.game = game
-        self.rects_to_render = []
-        self.sprites_to_render = []
-        self.draw_world = False
-        self.drawing_minimap = False
 
         glEnable(GL_TEXTURE_2D)
         glEnable(GL_DEPTH_TEST)
@@ -37,22 +35,16 @@ class Renderer:
         self.map_renderer = MapRenderer(game, self)
         self.minimap_renderer = MinimapRenderer(game, self)
         self.skybox_renderer = SkyboxRenderer(game, self)
+        self.hud_renderer = HudRenderer(game, self)
+        self.sprite_renderer = SpriteRenderer(game, self)
 
-        self.load_vbo("object", [
-            1, 0, -0.5, 0, 0,
-            0, 0,  0.5, 0, 0,
-            0, 1,  0.5, 1, 0,
-            1, 1, -0.5, 1, 0
-        ])
+        self.camera_x = 0
+        self.camera_y = 0
+        self.camera_z = 0
+        self.camera_angle = 0
+        self.camera_angle_ver = 0
 
-        self.load_vbo("hud", [
-            1, 0, 1, 1,
-            1, 1, 1, 0,
-            0, 1, 0, 0,
-            0, 0, 0, 1
-        ])
-
-        self.vbo_manager.load_sphere_vbo()
+        self.drawing_minimap = False
 
     def update_map(self):
         self.map_renderer.update_vbos()
@@ -90,16 +82,16 @@ class Renderer:
         self.vbo_manager.load_vbo(name, data)
 
     def draw_rect(self, x, y, width, height, texture=None, color=(255, 255, 255), angle=None):
-        self.rects_to_render.append(self.Renderable(x, y, None, width, height, texture, color, False, angle))
+        self.hud_renderer.rects_to_render.append(self.Renderable(x, y, None, width, height, texture, color, False, angle))
 
     def draw_fullscreen_rect(self, texture=None, color=(255, 255, 255)):
         self.draw_rect(0, 0, self.game.width, self.game.height, texture, color)
 
     def draw_sprite(self, x, y, z, width, height, texture=None, color=(255, 255, 255), angle=None):
-        self.sprites_to_render.append(self.Renderable(x, y, z, width, height, texture, color, False, angle))
+        self.sprite_renderer.sprites_to_render.append(self.Renderable(x, y, z, width, height, texture, color, False, angle))
 
     def draw_sphere(self, x, y, z, width, height, texture=None, color=(255, 255, 255)):
-        self.sprites_to_render.append(self.Renderable(x, y, z, width, height, texture, color, True, None))
+        self.sprite_renderer.sprites_to_render.append(self.Renderable(x, y, z, width, height, texture, color, True, None))
 
     def draw_minimap(self, x, y, tile_size):
         self.minimap_renderer.x = x
@@ -110,61 +102,8 @@ class Renderer:
     def draw_queued(self):
         glViewport(0, 0, self.game.width, self.game.height)
 
-        if self.draw_world:
-            self.draw_3d()
-        self.draw_2d_fg()
-
-    def draw_2d_fg(self):
-        glDisable(GL_DEPTH_TEST)
-
-        glBindBuffer(GL_ARRAY_BUFFER, self.vbo_manager.vbos["hud"])
-        glTexCoordPointer(2, GL_FLOAT, 4 * 4, ctypes.c_void_p(0))
-        glVertexPointer(2, GL_FLOAT, 4 * 4, ctypes.c_void_p(2 * 4))
-
-        glMatrixMode(GL_PROJECTION)
-        glLoadIdentity()
-        glOrtho(0, self.game.width, self.game.height, 0, 0, 100)
-
-        glMatrixMode(GL_MODELVIEW)
-
-        for rect in self.rects_to_render:
-            # Position and size should be rounded to avoid blurry text, etc.
-            rect.x = round(rect.x)
-            rect.y = round(rect.y)
-            rect.width = round(rect.width)
-            rect.height = round(rect.height)
-
-            if rect.texture == None:
-                glBindTexture(GL_TEXTURE_2D, 0)
-            else:
-                glBindTexture(GL_TEXTURE_2D, self.texture_manager.textures[rect.texture])
-
-            glColor4f(1, 1, 1, 1)
-            if not rect.color == None:
-                if len(rect.color) == 3:
-                    glColor3f(rect.color[0] / 255, rect.color[1] / 255, rect.color[2] / 255)
-                elif len(rect.color) == 4:
-                    glColor4f(rect.color[0] / 255, rect.color[1] / 255, rect.color[2] / 255, rect.color[3] / 255)
-
-            glLoadIdentity()
-            glTranslatef(rect.x, rect.y, 0)
-            if not rect.angle == None:
-                # Don't ask. Just believe.
-                glTranslatef(rect.width / 2, rect.height / 2, 0)
-                glRotatef(math.degrees(rect.angle), 0, 0, 1)
-                glTranslatef(-rect.width / 2, -rect.height / 2, 0)
-            glScalef(rect.width, rect.height, 1)
-            glDrawArrays(GL_QUADS, 0, 4)
-
-        self.rects_to_render = []
-
-        if self.drawing_minimap:
-            self.minimap_renderer.draw()
-            # Do not draw the minimap next frame unless asked again
-            self.drawing_minimap = False
-
-        glEnable(GL_DEPTH_TEST)
-        glColor4f(1, 1, 1, 1)
+        self.draw_3d()
+        self.draw_2d()
 
     def draw_3d(self):
         glClear(GL_DEPTH_BUFFER_BIT)
@@ -176,68 +115,23 @@ class Renderer:
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()
 
-        glRotatef(math.degrees(self.game.player.angle_ver), 1, 0, 0)
-        glRotatef(math.degrees(self.game.player.angle) + 90, 0, 1, 0)
+        glRotatef(math.degrees(self.camera_angle_ver), 1, 0, 0)
+        glRotatef(math.degrees(self.camera_angle) + 90, 0, 1, 0)
 
         self.skybox_renderer.draw()
 
-        glTranslatef(-self.game.player.x, -self.game.player.z - self.game.player.height, -self.game.player.y)
+        glTranslatef(-self.camera_x, -self.camera_z, -self.camera_y)
 
         self.map_renderer.draw()
-        self.draw_3d_objects()
+        self.sprite_renderer.draw()
 
-    def draw_3d_objects(self):
-        glDisable(GL_CULL_FACE)
+    def draw_2d(self):
+        if self.drawing_minimap:
+            self.minimap_renderer.draw()
+            # Do not draw the minimap next frame unless asked again
+            self.drawing_minimap = False
 
-        # Objects must be sorted from farthest to closest for transparency to
-        # work properly
-        for o in self.sprites_to_render:
-            o.__distance_from_player = math.hypot(
-                o.x - self.game.player.x,
-                o.y - self.game.player.y,
-                o.z - self.game.player.z
-            )
-        self.sprites_to_render = sorted(self.sprites_to_render, key=lambda t: t.__distance_from_player, reverse=True)
-
-        for o in self.sprites_to_render:
-            if o.texture == None:
-                glBindTexture(GL_TEXTURE_2D, 0)
-            else:
-                glBindTexture(GL_TEXTURE_2D, self.texture_manager.textures[o.texture])
-
-            if len(o.color) == 3:
-                glColor3f(o.color[0] / 255, o.color[1] / 255, o.color[2] / 255)
-            elif len(o.color) == 4:
-                glColor4f(o.color[0] / 255, o.color[1] / 255, o.color[2] / 255, o.color[3] / 255)
-
-            glPushMatrix()
-
-            glTranslatef(o.x, o.z, o.y)
-            if o.angle == None:
-                # TODO: Why does the player angle need an offset?
-                glRotatef(-math.degrees(self.game.player.angle) + 90, 0, 1, 0)
-            else:
-                glRotatef(math.degrees(o.angle), 0, 1, 0)
-            glScalef(o.width, o.height, 1)
-
-            if o.sphere:
-                glBindBuffer(GL_ARRAY_BUFFER, self.vbo_manager.vbos["sphere"])
-                glTexCoordPointer(2, GL_FLOAT, 5 * 4, ctypes.c_void_p(0 * 4))
-                glVertexPointer(3, GL_FLOAT, 5 * 4, ctypes.c_void_p(2 * 4))
-                glDrawArrays(GL_QUADS, 0, self.vbo_manager.sphere_vbo_verts)
-            else:
-                glBindBuffer(GL_ARRAY_BUFFER, self.vbo_manager.vbos["object"])
-                glTexCoordPointer(2, GL_FLOAT, 5 * 4, ctypes.c_void_p(0))
-                glVertexPointer(3, GL_FLOAT, 5 * 4, ctypes.c_void_p(2 * 4))
-                glDrawArrays(GL_QUADS, 0, 4)
-
-            glPopMatrix()
-
-        self.sprites_to_render = []
-
-        glEnable(GL_CULL_FACE)
-
-        glColor4f(1, 1, 1, 1)
+        self.hud_renderer.draw()
 
 
     class Renderable:
