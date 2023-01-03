@@ -1,5 +1,6 @@
 class Minimap:
     def __init__(self, game, hud):
+        # Init main variables
         self.game = game
         self.hud = hud
 
@@ -9,34 +10,12 @@ class Minimap:
         self.tile_size = 0
         self.last_map_state = 0
 
-        # Enemy (left / killed ) stats variables
-        self.enemy_killed_text = None
-        self.enemy_left_text = None
-        self.text_width = 0
-        self.text_height = 0
-
     def draw(self, map_state):
         if map_state > 0:
-            if map_state > 1:
-                self.game.renderer.draw_rect(
-                    self.game.width - self.text_width - self.hud.margin,
-                    self.game.height - self.text_height - self.hud.margin,
-                    self.enemy_killed_text.get_width(),
-                    self.enemy_killed_text.get_height(),
-                    "killed_text"
-                )
-                self.game.renderer.draw_rect(
-                    self.game.width - self.text_width - self.hud.margin,
-                    self.game.height - self.text_height + self.enemy_killed_text.get_size()[1] - self.hud.margin,
-                    self.enemy_left_text.get_width(),
-                    self.enemy_left_text.get_height(),
-                    "left_text"
-                )
             self.game.renderer.draw_minimap(self.x, self.y, self.tile_size)
 
     def on_change(self):
         self.update_map_size(self.last_map_state)
-        self.update_enemy_stats()
 
     def update_map_size(self, map_state):
         self.last_map_state = map_state
@@ -72,20 +51,3 @@ class Minimap:
             # Center minimap and offset from top
             self.x = self.game.width / 2 - minimap_width / 2
             self.y = self.hud.margin
-
-    def update_enemy_stats(self):
-        enemy_left = self.game.map.enemy_amount - self.game.object_handler.killed
-        self.enemy_killed_text = self.game.font_small.render("Enemies killed: " +
-                                                             str(self.game.object_handler.killed),
-                                                             True,
-                                                             (255, 255, 255))
-        self.enemy_left_text = self.game.font_small.render("Enemies left: " +
-                                                           str(enemy_left),
-                                                           True,
-                                                           (255, 255, 255))
-
-        self.text_width = max(self.enemy_killed_text.get_size()[0], self.enemy_left_text.get_size()[0])
-        self.text_height = self.enemy_killed_text.get_size()[1] + self.enemy_left_text.get_size()[1]
-
-        self.game.renderer.load_texture_from_surface("killed_text", self.enemy_killed_text)
-        self.game.renderer.load_texture_from_surface("left_text", self.enemy_left_text)

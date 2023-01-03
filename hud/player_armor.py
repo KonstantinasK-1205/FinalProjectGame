@@ -1,8 +1,10 @@
 class ArmorBar:
     def __init__(self, game, hud):
+        # Init main variables
         self.game = game
         self.hud = hud
 
+        # Init armor icon and bar variables
         self.armor_icon_width = 0
         self.armor_icon_height = 0
         self.armor_bar_width = 0
@@ -10,7 +12,10 @@ class ArmorBar:
         self.armor_bar_hp = 0
         self.armor_text = None
 
+        # Load armor icon texture
         self.game.renderer.load_texture_from_file("resources/icons/gui_armor.png")
+
+        self.armor = 0
 
     def draw(self):
         self.game.renderer.draw_rect(
@@ -45,7 +50,7 @@ class ArmorBar:
 
     def on_change(self):
         self.update_armorbar_size()
-        self.update_armorbar_info()
+        self.update_armorbar_info(self.armor)
 
     def update_armorbar_size(self):
         # Recalculate armor icon size
@@ -55,9 +60,13 @@ class ArmorBar:
         # Recalculate armor bar size
         self.armor_bar_width = self.game.width / 8
         self.armor_bar_height = self.game.height / 25
-        self.update_armorbar_info()
+        self.update_armorbar_info(self.armor)
 
-    def update_armorbar_info(self):
-        self.armor_text = self.game.font_small.render(str(self.game.player.armor), True, (0, 0, 64))
+    def update_armorbar_info(self, armor):
+        # Assign argument armor to variable
+        self.armor = armor
+
+        # Update armor text information
+        self.armor_bar_hp = (self.armor_bar_width / 100) * self.armor
+        self.armor_text = self.game.font_small.render(str(self.armor), True, (0, 0, 64))
         self.game.renderer.load_texture_from_surface("armor_text", self.armor_text)
-        self.armor_bar_hp = (self.armor_bar_width / 100) * self.game.player.armor

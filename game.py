@@ -22,8 +22,18 @@ class Game:
         pg.display.set_mode((WIDTH, HEIGHT), pg.RESIZABLE | pg.OPENGL | pg.DOUBLEBUF, vsync=VSYNC)
         pg.display.set_caption("Final Project")
         pg.display.set_icon(pg.image.load("logo.png"))
+
+        # Init variables
+        self.font = None
+        self.font_small = None
+        self.font_smaller = None
         self.show_fps = True
         self.running = False
+
+        # Needs to be initialized, otherwise will crash on resize before new game
+        self.player = None
+        self.pathfinding = None
+        self.weapon = None
 
         self.clock = pg.time.Clock()
         self.renderer = Renderer(self)
@@ -31,15 +41,10 @@ class Game:
         self.object_handler = ObjectHandler(self)
         self.hud = Hud(self)
         self.map = Map(self)
-        # Needs to be initialized, otherwise will crash on resize before new game
-        self.player = None
-        self.pathfinding = None
-        self.weapon = None
+        self.sound = Sound()
 
         self.starting_map = "Level1"
         self.current_map = "Level1"
-
-        self.sound = Sound()
 
         self.init_fonts()
 
@@ -98,7 +103,7 @@ class Game:
         self.hud = Hud(self)
 
         self.pathfinding = PathFinding(self)
-        self.hud.level_change()
+        self.hud.level_change(self.player.health, self.player.armor)
 
     def next_level(self, level):
         self.map_started_to_change = pg.time.get_ticks()
@@ -111,7 +116,7 @@ class Game:
         self.weapon.save_weapon_info()
 
         self.pathfinding = PathFinding(self)
-        self.hud.level_change()
+        self.hud.level_change(self.player.health, self.player.armor)
         print(pg.time.get_ticks() - self.map_started_to_change)
 
     def restart_level(self, level):
@@ -123,7 +128,7 @@ class Game:
         self.weapon.load_weapon_info()
 
         self.pathfinding = PathFinding(self)
-        self.hud.level_change()
+        self.hud.level_change(self.player.health, self.player.armor)
 
     def run(self):
         self.running = True

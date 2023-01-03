@@ -54,7 +54,7 @@ class WeaponStats:
         self.cartridge_bullet_left = self.game.font_small.render(str(cartridge), True, (255, 255, 255))
         self.game.renderer.load_texture_from_surface("cartridge_bullet", self.cartridge_bullet_left)
 
-        self.total_bullet_left = self.game.font_small.render(str(overall), True, (180, 180, 180))
+        self.total_bullet_left = self.game.font_smaller.render(str(overall), True, (180, 180, 180))
         self.game.renderer.load_texture_from_surface("total_bullet", self.total_bullet_left)
 
     def update_current_weapon(self, weapon, cartridge, overall):
