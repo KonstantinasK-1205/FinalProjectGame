@@ -34,7 +34,7 @@ class ObjectHandler:
             if npc in self.alive_npc_list and npc.dead:
                 self.alive_npc_list.pop(self.alive_npc_list.index(npc))
                 self.killed += 1
-                self.game.hud.on_enemy_down()
+                self.game.hud.minimap.update_enemy_stats()
 
         for pickup in self.pickup_list:
             pickup.update()

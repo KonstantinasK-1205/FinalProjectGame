@@ -1,5 +1,5 @@
 from object_handler import *
-from hud import *
+from hud.hud_manager import *
 from map import *
 from pathfinding import *
 from player import *
@@ -27,10 +27,10 @@ class Game:
 
         self.clock = pg.time.Clock()
         self.renderer = Renderer(self)
+        self.sprite_manager = SpriteManager(self)
         self.object_handler = ObjectHandler(self)
         self.hud = Hud(self)
         self.map = Map(self)
-        self.sprite_manager = SpriteManager(self)
         # Needs to be initialized, otherwise will crash on resize before new game
         self.player = None
         self.pathfinding = None
@@ -98,6 +98,7 @@ class Game:
         self.hud = Hud(self)
 
         self.pathfinding = PathFinding(self)
+        self.hud.level_change()
 
     def next_level(self, level):
         self.map_started_to_change = pg.time.get_ticks()
@@ -110,6 +111,8 @@ class Game:
         self.weapon.save_weapon_info()
 
         self.pathfinding = PathFinding(self)
+        self.hud.level_change()
+        print(pg.time.get_ticks() - self.map_started_to_change)
 
     def restart_level(self, level):
         self.object_handler = ObjectHandler(self)
@@ -120,6 +123,7 @@ class Game:
         self.weapon.load_weapon_info()
 
         self.pathfinding = PathFinding(self)
+        self.hud.level_change()
 
     def run(self):
         self.running = True

@@ -90,10 +90,12 @@ class Weapon:
                             accuracy = random.uniform(-weapon["Bullet Offset"],
                                                       weapon["Bullet Offset"])
                             self.create_bullet(accuracy)
-                            self.game.hud.update_bullets()
+                            self.game.hud.weapons_hud.update_bullet_left(weapon["Cartridge Contains"],
+                                                                         weapon["Bullet Left"])
                     else:
                         self.create_bullet()
-                        self.game.hud.update_bullets()
+                        self.game.hud.weapons_hud.update_bullet_left(weapon["Cartridge Contains"],
+                                                                     weapon["Bullet Left"])
                     self.game.sound.play_sfx(self.selected_weapon + " " + self.current_state)
                     self.last_shot = pg.time.get_ticks()
                 elif weapon["Bullet Left"] > 1:
@@ -133,12 +135,12 @@ class Weapon:
                     else:
                         weapon["Cartridge Contains"] = weapon["Bullet Left"]
                         weapon["Bullet Left"] = 0
-                    self.game.hud.update_bullets()
+                    self.game.hud.weapons_hud.update_bullet_left(weapon["Cartridge Contains"], weapon["Bullet Left"])
 
     # Other Functions
     def add_bullets(self, weapon, number):
         self.weapon_info[weapon]["Fire"]["Bullet Left"] += number
-        self.game.hud.update_bullets()
+        self.game.hud.weapons_hud.update_bullet_left(self.bullet_left_in_weapon(), self.total_bullet_left())
 
     def create_bullet(self, spread=None):
         weapon = self.current_weapon()["Fire"]
@@ -159,6 +161,7 @@ class Weapon:
     def unlock(self, weapon):
         self.weapon_info[weapon]["Unlocked"] = True
         self.change_weapon(weapon)
+        self.game.hud.weapons_hud.weapon_unlocked(weapon, self.bullet_left_in_weapon(), self.total_bullet_left())
 
     def change_weapon(self, weapon):
         if self.weapon_info[weapon]["Unlocked"]:
@@ -167,7 +170,8 @@ class Weapon:
             self.animation.change_animation("Idle")
             self.sprite = self.animation.get_sprite()
             self.reset_weapon_pos()
-            self.game.hud.update_bullets()
+            self.game.hud.weapons_hud.update_current_weapon(weapon, self.bullet_left_in_weapon(),
+                                                            self.total_bullet_left())
 
     def save_weapon_info(self):
         self.saved_weapons = copy.deepcopy(self.weapon_info)

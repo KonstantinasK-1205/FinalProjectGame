@@ -155,7 +155,7 @@ class Player:
         if new_health > 100:
             new_health = 100
         self.health = new_health
-        self.game.hud.update_player_info()
+        self.game.hud.healthbar.update_healthbar_info()
 
     def add_armor(self, armor):
         # Increase player armor value without exceeding max value
@@ -163,7 +163,7 @@ class Player:
         if new_armor > 100:
             new_armor = 100
         self.armor = new_armor
-        self.game.hud.update_player_info()
+        self.game.hud.armorbar.update_armorbar_info()
 
     def apply_damage(self, damage):
         # Calculate player health and armor applying damage
@@ -176,7 +176,7 @@ class Player:
             self.armor = 0
             self.health -= damage
 
-        self.game.hud.update_player_info()
+        self.game.hud.healthbar.update_healthbar_info()
         # Give audible & visual feedback to player, if he is still alive
         if self.health > 1:
             self.game.current_state_obj.hit_flash_ms = 0

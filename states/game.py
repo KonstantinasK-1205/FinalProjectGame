@@ -19,7 +19,7 @@ class GameState(State):
             if event.key == pg.K_ESCAPE:
                 self.game.current_state = "Menu"
             elif event.key == pg.K_TAB:
-                self.game.hud.update_minimap((self.map_state + 1) % 3)
+                self.game.hud.minimap.update_map_size((self.map_state + 1) % 3)
                 self.map_state = (self.map_state + 1) % 3
 
     def update(self):
