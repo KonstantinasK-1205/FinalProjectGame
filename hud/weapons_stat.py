@@ -5,6 +5,7 @@ class WeaponStats:
         self.hud = hud
 
         # Load all weapon icons
+        self.game.renderer.load_texture_from_file("resources/sprites/weapon/empty/idle.png")
         self.game.renderer.load_texture_from_file("resources/sprites/weapon/pitchfork/icon.png")
         self.game.renderer.load_texture_from_file("resources/sprites/weapon/revolver/icon.png")
         self.game.renderer.load_texture_from_file("resources/sprites/weapon/double_shotgun/icon.png")
@@ -58,7 +59,9 @@ class WeaponStats:
         self.game.renderer.load_texture_from_surface("total_bullet", self.total_bullet_left)
 
     def update_current_weapon(self, weapon, cartridge, overall):
-        if weapon == "Pitchfork":
+        if weapon == "Empty":
+            self.current_selected_weapon = "resources/sprites/weapon/empty/idle.png"
+        elif weapon == "Pitchfork":
             self.current_selected_weapon = "resources/sprites/weapon/pitchfork/icon.png"
         elif weapon == "Revolver":
             self.current_selected_weapon = "resources/sprites/weapon/revolver/icon.png"
@@ -69,5 +72,5 @@ class WeaponStats:
         self.update_bullet_left(cartridge, overall)
 
     def weapon_unlocked(self, weapon, cartridge, overall):
-        self.update_bullet_left(cartridge, overall)
+        self.update_current_weapon(weapon, cartridge, overall)
         pass

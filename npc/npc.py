@@ -87,7 +87,6 @@ class NPC(Sprite):
 
         if self.seeing_player:
             if self.distance_from(self.player) < self.attack_distance:
-
                 self.change_state("Attack")
                 self.attack()
             else:

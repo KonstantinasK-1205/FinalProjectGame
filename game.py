@@ -39,12 +39,13 @@ class Game:
         self.renderer = Renderer(self)
         self.sprite_manager = SpriteManager(self)
         self.object_handler = ObjectHandler(self)
+        self.player = Player(self)
         self.hud = Hud(self)
         self.map = Map(self)
         self.sound = Sound()
 
-        self.starting_map = "Level1"
-        self.current_map = "Level1"
+        self.starting_map = "T_Level1"
+        self.current_map = "T_Level1"
 
         self.init_fonts()
 
@@ -100,7 +101,6 @@ class Game:
         self.map.get_map(level)
         self.player.on_level_change()
         self.weapon.save_weapon_info()
-        self.hud = Hud(self)
 
         self.pathfinding = PathFinding(self)
         self.hud.level_change(self.player.health, self.player.armor)
@@ -117,6 +117,7 @@ class Game:
 
         self.pathfinding = PathFinding(self)
         self.hud.level_change(self.player.health, self.player.armor)
+
         print(pg.time.get_ticks() - self.map_started_to_change)
 
     def restart_level(self, level):

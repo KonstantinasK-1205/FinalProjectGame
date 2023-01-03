@@ -25,7 +25,7 @@ class Weapon:
 
         # Set current weapon and its state
         self.selected_weapon = self.saved_current_weapon = "Empty"
-        self.current_state = self.saved_current_state = "Idle"
+        self.current_state = "Idle"
         self.current_index = 0
 
         # Make animations ready to use
@@ -90,12 +90,8 @@ class Weapon:
                             accuracy = random.uniform(-weapon["Bullet Offset"],
                                                       weapon["Bullet Offset"])
                             self.create_bullet(accuracy)
-                            self.game.hud.weapons_hud.update_bullet_left(weapon["Cartridge Contains"],
-                                                                         weapon["Bullet Left"])
                     else:
                         self.create_bullet()
-                        self.game.hud.weapons_hud.update_bullet_left(weapon["Cartridge Contains"],
-                                                                     weapon["Bullet Left"])
                     self.game.sound.play_sfx(self.selected_weapon + " " + self.current_state)
                     self.last_shot = pg.time.get_ticks()
                 elif weapon["Bullet Left"] > 1:
@@ -157,34 +153,34 @@ class Weapon:
         position = [player.x, player.y, player.z + (player.height / 2)]
         bullet_data = [weapon["Damage"], weapon["Bullet Velocity"], weapon["Bullet Lifetime"], "Player", 0.05, 0.05]
         handler.add_bullet(Projectile(self.game, position, angle, bullet_data))
+        self.game.hud.weapons_hud.update_bullet_left(weapon["Cartridge Contains"],
+                                                     weapon["Bullet Left"])
 
     def unlock(self, weapon):
         self.weapon_info[weapon]["Unlocked"] = True
         self.change_weapon(weapon)
-        self.game.hud.weapons_hud.weapon_unlocked(weapon, self.bullet_left_in_weapon(), self.total_bullet_left())
 
     def change_weapon(self, weapon):
         if self.weapon_info[weapon]["Unlocked"]:
             self.selected_weapon = weapon
             self.animation.load_sprite_animations(self.current_weapon())
-            self.animation.change_animation("Idle")
+            self.change_state("Idle")
             self.sprite = self.animation.get_sprite()
             self.reset_weapon_pos()
-            self.game.hud.weapons_hud.update_current_weapon(weapon, self.bullet_left_in_weapon(),
+            self.game.hud.weapons_hud.update_current_weapon(weapon,
+                                                            self.bullet_left_in_weapon(),
                                                             self.total_bullet_left())
 
     def save_weapon_info(self):
-        self.saved_weapons = copy.deepcopy(self.weapon_info)
+        self.saved_weapons = copy.copy(self.weapon_info)
         self.saved_current_weapon = self.selected_weapon
-        self.saved_current_state = self.current_state
-        self.saved_sprite = self.sprite
 
     def load_weapon_info(self):
-        self.weapon_info.clear()
-        self.weapon_info = copy.deepcopy(self.saved_weapons)
-        self.selected_weapon = self.saved_current_weapon
-        self.current_state = self.saved_current_state
-        self.sprite = self.saved_sprite
+        self.weapon_info = copy.copy(self.saved_weapons)
+        self.change_weapon(self.saved_current_weapon)
+        self.game.hud.weapons_hud.update_current_weapon(self.saved_current_weapon,
+                                                        self.bullet_left_in_weapon(),
+                                                        self.total_bullet_left())
 
     # Getters
     def current_weapon(self):
