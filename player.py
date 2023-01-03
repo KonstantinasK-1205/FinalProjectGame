@@ -17,8 +17,8 @@ class Player:
         self.width = 0.6
         self.height = 0.6
 
-        self.angle = PLAYER_ANGLE
-        self.angle_ver = 0
+        self.saved_angle = self.angle = PLAYER_ANGLE
+        self.saved_angle_ver = self.angle_ver = 0
 
         self.armor = 0
         self.health = 100
@@ -187,8 +187,10 @@ class Player:
         return math.hypot(other.x - self.x, other.y - self.y, other.z - self.z)
 
     def save_player_stats(self):
-        self.saved_health = copy.deepcopy(self.health)
-        self.saved_armor = copy.deepcopy(self.armor)
+        self.saved_health = copy.copy(self.health)
+        self.saved_armor = copy.copy(self.armor)
+        self.saved_angle = self.angle
+        self.saved_angle_ver = self.angle_ver
 
     def load_player_stats(self):
         self.moving_forw = False
@@ -196,5 +198,7 @@ class Player:
         self.moving_left = False
         self.moving_right = False
 
-        self.health = copy.deepcopy(self.saved_health)
-        self.armor = copy.deepcopy(self.saved_armor)
+        self.health = self.saved_health
+        self.armor = self.saved_armor
+        self.angle = self.saved_angle
+        self.angle_ver = self.saved_angle_ver

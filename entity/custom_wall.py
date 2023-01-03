@@ -10,7 +10,7 @@ class BreakableWall(Sprite):
         super().__init__(game, pos, [1, 1.5])
         self.game = game
         path = "resources/sprites/default.png"
-        self.texture_path = game.sprite_manager.load_single_image("Breakable Wall 0", path)
+        self.texture_path = game.sprite_manager.load_single_image("Breakable Wall 0", path)[0]
         self.health = 150
         self.angle = 0
         self.angle_updated = False
