@@ -63,7 +63,7 @@ class OptionsState(State):
                         self.on_hover(menu, False)
                 else:
                     self.on_hover(menu, False)
-        elif event.type == pg.MOUSEBUTTONUP:
+        elif event.type == pg.MOUSEBUTTONUP and event.button == 1:
             for menu in self.menu_list:
                 mouse_pos = pg.mouse.get_pos()
                 # Menu positions
@@ -80,7 +80,7 @@ class OptionsState(State):
                             self.apply_settings()
                         if "Back" in menu:
                             self.game.current_state = "Menu"
-        elif event.type == pg.VIDEORESIZE:
+        elif event.type == pg.WINDOWSIZECHANGED:
             self.create_menu_text()
 
     def update(self):
@@ -94,10 +94,9 @@ class OptionsState(State):
     def apply_settings(self):
         resolution = self.menu_list["Resolution"]["Option"]
         if self.menu_list["Full screen"]["Option"]:
-            pg.display.set_mode(resolution, pg.FULLSCREEN | pg.OPENGL | pg.DOUBLEBUF,
-                                self.menu_list["Vsync"]["Option"])
+            pg.display.set_mode(resolution, pg.RESIZABLE | pg.FULLSCREEN | pg.OPENGL | pg.DOUBLEBUF, self.menu_list["Vsync"]["Option"])
         else:
-            pg.display.set_mode(resolution, pg.OPENGL | pg.DOUBLEBUF, self.menu_list["Vsync"]["Option"])
+            pg.display.set_mode(resolution, pg.RESIZABLE | pg.OPENGL | pg.DOUBLEBUF, self.menu_list["Vsync"]["Option"])
 
         self.game.sound.sound_enabled = self.menu_list["Sounds"]["Option"]
         self.game.show_fps = self.menu_list["Show FPS"]["Option"]

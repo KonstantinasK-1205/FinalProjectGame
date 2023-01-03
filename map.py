@@ -45,6 +45,10 @@ class Map:
         # Find map size
         y = 0
         while line := map_file.readline():
+            # Skip lines with map constants
+            if ": " in line:
+                continue
+
             x = 0
             skip = False
             for char in line:

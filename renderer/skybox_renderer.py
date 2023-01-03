@@ -7,10 +7,10 @@ class SkyboxRenderer:
         self.renderer = renderer
 
         renderer.load_vbo("skybox", [
-            1, 0, -1, 1,  1,
-            1, 1, -1, 1, -1,
-            0, 1,  1, 1, -1,
-            0, 0,  1, 1,  1
+            1, 0, -10, 10,  10,
+            1, 1, -10, 10, -10,
+            0, 1,  10, 10, -10,
+            0, 0,  10, 10,  10
         ])
 
         renderer.load_texture_from_file("resources/textures/skybox/up.jpg")
@@ -23,6 +23,10 @@ class SkyboxRenderer:
     def draw(self):
         glDisable(GL_FOG)
         glDisable(GL_DEPTH_TEST)
+
+        glBindBuffer(GL_ARRAY_BUFFER, self.renderer.vbo_manager.vbos["skybox"])
+        glTexCoordPointer(2, GL_FLOAT, 5 * 4, ctypes.c_void_p(0))
+        glVertexPointer(3, GL_FLOAT, 5 * 4, ctypes.c_void_p(2 * 4))
 
         self.draw_side("up", (0, 0))
 
@@ -41,13 +45,9 @@ class SkyboxRenderer:
 
         glPushMatrix()
 
-        glScalef(10, 10, 10)
         glRotatef(angle[0], 0, 1, 0)
         glRotatef(angle[1], 1, 0, 0)
 
-        glBindBuffer(GL_ARRAY_BUFFER, self.renderer.vbo_manager.vbos["skybox"])
-        glTexCoordPointer(2, GL_FLOAT, 5 * 4, ctypes.c_void_p(0))
-        glVertexPointer(3, GL_FLOAT, 5 * 4, ctypes.c_void_p(2 * 4))
         glDrawArrays(GL_QUADS, 0, 6 * 4)
 
         glPopMatrix()

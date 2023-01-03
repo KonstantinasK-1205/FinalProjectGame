@@ -46,7 +46,7 @@ class MenuState(State):
                         self.update_menu_text(False, menu)
                 else:
                     self.update_menu_text(False, menu)
-        elif event.type == pg.MOUSEBUTTONUP:
+        elif event.type == pg.MOUSEBUTTONUP and event.button == 1:
             for menu in self.menu_list:
                 mouse_pos = pg.mouse.get_pos()
                 # Menu positions
@@ -70,7 +70,7 @@ class MenuState(State):
                             self.game.current_state = "Options"
                         elif menu == "Exit":
                             self.game.running = False
-        elif event.type == pg.VIDEORESIZE:
+        elif event.type == pg.WINDOWSIZECHANGED:
             self.create_menu_text()
 
     def update(self):

@@ -39,9 +39,9 @@ class Game:
         self.starting_map = "Level1"
         self.current_map = "Level1"
 
-        self.font = pg.font.Font("resources/fonts/Font.ttf", int(36 / 1280 * WIDTH))
-        self.font_small = pg.font.Font("resources/fonts/Font.ttf", int(24 / 1280 * WIDTH))
         self.sound = Sound()
+
+        self.init_fonts()
 
         self.state = {
             "Intro": IntroState(self),
@@ -59,13 +59,17 @@ class Game:
     def __del__(self):
         pg.quit()
 
+    def init_fonts(self):
+        self.font = pg.font.Font("resources/fonts/Font.ttf", int(36 / 720 * self.height))
+        self.font_small = pg.font.Font("resources/fonts/Font.ttf", int(24 / 720 * self.height))
+        self.font_smaller = pg.font.Font("resources/fonts/Font.ttf", int(18 / 720 * self.height))
+
     def handle_events(self):
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.running = False
-            elif event.type == pg.WINDOWRESIZED:
-                self.font = pg.font.Font("resources/fonts/Font.ttf", int(36 / 1280 * event.x))
-                self.font_small = pg.font.Font("resources/fonts/Font.ttf", int(24 / 1280 * event.y))
+            elif event.type == pg.WINDOWSIZECHANGED:
+                self.init_fonts()
                 if hasattr(self.player, "health"):
                     self.hud.on_resize()
                 if hasattr(self.weapon, "reset_weapon_pos"):
@@ -95,8 +99,6 @@ class Game:
 
         self.pathfinding = PathFinding(self)
 
-        self.renderer.draw_world = True
-
     def next_level(self, level):
         self.map_started_to_change = pg.time.get_ticks()
         self.object_handler = ObjectHandler(self)
@@ -108,7 +110,6 @@ class Game:
         self.weapon.save_weapon_info()
 
         self.pathfinding = PathFinding(self)
-        print(pg.time.get_ticks() - self.map_started_to_change)
 
     def restart_level(self, level):
         self.object_handler = ObjectHandler(self)
