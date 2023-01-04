@@ -42,7 +42,7 @@ class OptionsState(State):
     def on_set(self):
         self.create_menu_text()
 
-    def handle_events(self, event):
+    def handle_event(self, event):
         if not self.initialized:
             return
 

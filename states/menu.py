@@ -13,10 +13,10 @@ class MenuState(State):
 
     def on_set(self):
         if self.game.map.map_loaded:
-            self.menu_list = {"Final Project!": {}, "Resume Game": {}, "Restart Level": {},
+            self.menu_list = {"Final Project": {}, "Resume Game": {}, "Restart Level": {},
                               "New Game": {}, "Options": {}, "Exit": {}}
         else:
-            self.menu_list = {"Final Project!": {}, "New Game": {}, "Options": {}, "Exit": {}}
+            self.menu_list = {"Final Project": {}, "New Game": {}, "Options": {}, "Exit": {}}
 
         self.initialized = False
 
@@ -25,7 +25,7 @@ class MenuState(State):
         pg.event.set_grab(False)
         pg.mixer.stop()
 
-    def handle_events(self, event):
+    def handle_event(self, event):
         if not self.initialized:
             return
 

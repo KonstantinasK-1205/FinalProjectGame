@@ -22,7 +22,7 @@ class Particle(Sprite):
 
         # Try to find collided wall texture
         if collided_tile > 0:
-            self.texture_path = "resources/textures/wall" + str(collided_tile) + ".png"
+            self.texture_path = "resources/textures/desert/wall_" + str(collided_tile) + ".jpg"
 
     def update(self):
         super().update()

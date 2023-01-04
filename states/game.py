@@ -13,7 +13,7 @@ class GameState(State):
         pg.mixer.stop()
         self.game.hud.on_resize()
 
-    def handle_events(self, event):
+    def handle_event(self, event):
         self.game.player.handle_events(event)
         if event.type == pg.KEYUP:
             if event.key == pg.K_ESCAPE:

@@ -8,10 +8,10 @@ class MapRenderer:
         self.layers = []
         self.vbos_initialized = False
 
-        renderer.load_texture_from_file("resources/textures/floor.png", True, True)
+        renderer.load_texture_from_file("resources/textures/desert/floor_1.jpg", True, True)
         self.wall_textures = 4
-        for i in range(self.wall_textures):
-            renderer.load_texture_from_file("resources/textures/wall" + str(i + 1) + ".png", True, True)
+        for i in range(1, self.wall_textures + 1):
+            renderer.load_texture_from_file("resources/textures/desert/wall_" + str(i) + ".jpg", True, True)
 
     def update_vbos(self):
         # Separate layers are used to draw surfaces with different textures
@@ -21,9 +21,9 @@ class MapRenderer:
         for i in range(self.wall_textures + 1):
             layer_data.append([])
             if i == 0:
-                self.layers.append(MapRenderer.Layer("resources/textures/floor.png", "map_layer_0", 0))
+                self.layers.append(MapRenderer.Layer("resources/textures/desert/floor_1.jpg", "map_layer_0", 0))
             else:
-                self.layers.append(MapRenderer.Layer("resources/textures/wall" + str(i) + ".png", "map_layer_" + str(i), 0))
+                self.layers.append(MapRenderer.Layer("resources/textures/desert/wall_" + str(i) + ".jpg", "map_layer_" + str(i), 0))
 
         for i in range(self.game.map.height):
             for j in range(self.game.map.width):

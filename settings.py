@@ -25,3 +25,6 @@ HIT_FLASH_MS = 100
 
 # Map change delay
 MAP_CHANGE_WAIT_MS = 2000
+
+# Maximum texture size (0 disables downscaling)
+TEXTURE_SIZE = 0

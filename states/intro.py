@@ -11,7 +11,7 @@ class IntroState(State):
         self.text.append("Press Space or Left Mouse Button to proceed to menu!")
         self.update_state_text()
 
-    def handle_events(self, event):
+    def handle_event(self, event):
         if event.type == pg.KEYUP:
             if event.key == pg.K_RETURN or event.key == pg.K_SPACE:
                 self.game.current_state = "Menu"

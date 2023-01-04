@@ -21,7 +21,7 @@ class Game:
         pg.init()
         pg.display.set_mode((WIDTH, HEIGHT), pg.RESIZABLE | pg.OPENGL | pg.DOUBLEBUF, vsync=VSYNC)
         pg.display.set_caption("Final Project")
-        pg.display.set_icon(pg.image.load("logo.png"))
+        pg.display.set_icon(pg.image.load("resources/icons/game_icon.png"))
 
         # Init variables
         self.font = None
@@ -56,7 +56,7 @@ class Game:
             "Loading": LoadingState(self),
             "Game": GameState(self),
             "Win": WinState(self),
-            "Game over": LoseState(self)
+            "Lose": LoseState(self)
         }
         self.current_state = "Intro"
         self.map_started_to_change = 0
@@ -66,9 +66,9 @@ class Game:
         pg.quit()
 
     def init_fonts(self):
-        self.font = pg.font.Font("resources/fonts/Font.ttf", int(36 / 720 * self.height))
-        self.font_small = pg.font.Font("resources/fonts/Font.ttf", int(24 / 720 * self.height))
-        self.font_smaller = pg.font.Font("resources/fonts/Font.ttf", int(18 / 720 * self.height))
+        self.font = pg.font.Font("resources/fonts/font.ttf", int(36 / 720 * self.height))
+        self.font_small = pg.font.Font("resources/fonts/font.ttf", int(24 / 720 * self.height))
+        self.font_smaller = pg.font.Font("resources/fonts/font.ttf", int(18 / 720 * self.height))
 
     def handle_events(self):
         for event in pg.event.get():
@@ -81,7 +81,7 @@ class Game:
                 if hasattr(self.weapon, "reset_weapon_pos"):
                     self.weapon.reset_weapon_pos()
 
-            self.state[self.current_state].handle_events(event)
+            self.state[self.current_state].handle_event(event)
 
     def update(self):
         self.dt = self.clock.tick()

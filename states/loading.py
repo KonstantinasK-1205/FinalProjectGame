@@ -14,7 +14,7 @@ class LoadingState(State):
         self.elapsed_ms = 0
         self.text = []
 
-    def handle_events(self, event):
+    def handle_event(self, event):
         if self.elapsed_ms > STATE_WAIT_MS:
             if event.type == pg.KEYUP:
                 if event.key == pg.K_RETURN or event.key == pg.K_SPACE:

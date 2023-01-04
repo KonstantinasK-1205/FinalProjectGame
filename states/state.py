@@ -14,7 +14,7 @@ class State:
     def on_set(self):
         pass
 
-    def handle_events(self, events):
+    def handle_event(self, event):
         pass
 
     def update(self):
