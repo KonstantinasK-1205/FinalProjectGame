@@ -5,6 +5,7 @@ class Animation:
     def __init__(self):
         self.sprite_info = None
         self.frames = {}
+        self.frames_len = 0
         self.frame_duration = 0
         self.current_frame = 0
         self.elapsed_time = 0
@@ -19,6 +20,7 @@ class Animation:
         self.current_frame = 0
         self.elapsed_time = 0
         self.frames = self.sprite_info[self.state]["Frames"]
+        self.frames_len = len(self.frames) - 1
         self.frame_duration = self.sprite_info[self.state]["Speed"]
         self.completed = False
 
@@ -28,12 +30,12 @@ class Animation:
 
         # If the elapsed time is greater than the frame duration, move to the next frame
         if self.elapsed_time > self.frame_duration:
-            self.current_frame += 1
+            self.current_frame = self.current_frame + 1
             self.elapsed_time = 0
 
         # If the current frame is the last frame, set the completed flag to True
-        if self.current_frame > len(self.frames) - 1:
-            self.current_frame -= 1
+        if self.current_frame > self.frames_len:
+            self.current_frame = self.current_frame - 1
             self.completed = True
             return
 
@@ -43,10 +45,9 @@ class Animation:
             self.elapsed_time = 0
             # If the state is "Death", keep the animation at the last frame
             if self.state == "Death":
-                self.current_frame = len(self.frames) - 1
+                self.current_frame = self.frames_len
             else:
-                self.state = "Idle"
-                self.frames = self.sprite_info[self.state]["Frames"]
+                self.change_animation("Idle")
             return
 
     def get_state(self):
