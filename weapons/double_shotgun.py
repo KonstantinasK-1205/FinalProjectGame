@@ -20,7 +20,7 @@ class DoubleShotgun:
                     "Cartridge Contains": 0,
                     "Cartridge Holds": 2,
                     "Bullet Per Shot": 2,
-                    "Bullet Left": 12,
+                    "Bullet Left": 18,
                     "Bullet Lifetime": 500,
                     "Bullet Velocity": 0.03,
                     "Bullet Offset": 0.1,

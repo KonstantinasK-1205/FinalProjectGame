@@ -21,7 +21,7 @@ class Revolver:
                     "Cartridge Contains": 0,
                     "Cartridge Holds": 8,
                     "Bullet Per Shot": 1,
-                    "Bullet Left": 8,
+                    "Bullet Left": 36,
                     "Bullet Lifetime": 300,
                     "Bullet Velocity": 0.05,
                     "Bullet Offset": 0,

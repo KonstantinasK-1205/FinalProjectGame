@@ -20,7 +20,7 @@ class AutomaticRifle:
                     "Cartridge Contains": 0,
                     "Cartridge Holds": 30,
                     "Bullet Per Shot": 1,
-                    "Bullet Left": 30,
+                    "Bullet Left": 45,
                     "Bullet Lifetime": 700,
                     "Bullet Velocity": 0.06,
                     "Bullet Offset": 0.02,
