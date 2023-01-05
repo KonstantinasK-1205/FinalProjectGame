@@ -8,6 +8,7 @@ class Sprite:
     def __init__(self, game, pos=None, scale=None):
         self.game = game
         self.player = game.player
+        self.sprite_manager = game.sprite_manager
 
         # Init position and dimension
         if pos is None:

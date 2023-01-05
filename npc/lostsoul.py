@@ -25,28 +25,27 @@ class LostSoul(NPC):
         self.sfx_death = "Soldier death"
 
         # Animations
-        sprite = self.game.sprite_manager
         path = "resources/sprites/npc/LostSoul/"
         self.states = {
             "Idle": {
-                "Frames": sprite.load_single_image("LostSoul Idle", path + "idle.png"),
+                "Frames": self.sprite_manager.load_single_image("LostSoul Idle", path + "idle.png"),
                 "Speed": 0
             },
             "Walk": {
-                "Frames": sprite.load_multiple_images("LostSoul Walk", path + "Walk/"),
+                "Frames": self.sprite_manager.load_multiple_images("LostSoul Walk", path + "Walk/"),
                 "Speed": 180
             },
             "Attack": {
-                "Frames": sprite.load_multiple_images("LostSoul Attack", path + "Attack/"),
+                "Frames": self.sprite_manager.load_multiple_images("LostSoul Attack", path + "Attack/"),
                 "Speed": 20,
                 "Attack Speed": 100
             },
             "Pain": {
-                "Frames": sprite.load_multiple_images("LostSoul Pain", path + "Pain/"),
+                "Frames": self.sprite_manager.load_multiple_images("LostSoul Pain", path + "Pain/"),
                 "Speed": 300
             },
             "Death": {
-                "Frames": sprite.load_multiple_images("LostSoul Death", path + "Death/"),
+                "Frames": self.sprite_manager.load_multiple_images("LostSoul Death", path + "Death/"),
                 "Speed": 120
             }
         }
@@ -96,4 +95,4 @@ class LostSoul(NPC):
 
         # Multiply by thirteen or more to convert it to real position
         # and let fly behind player ( else, it will travel by few pixels )
-        self.dash_distance = self.distance_from(self.game.player) * random.randint(2, 4)
+        self.dash_distance = self.distance_from_player * random.randint(2, 4)

@@ -38,7 +38,10 @@ class NPC(Sprite):
         self.attack_distance = 1
 
         self.sensing_range = 35  # 0.5   = 1 grid block
+        self.distance_from_player = 0
         self.seeing_player = False
+        self.seeing_player_counter = 0
+        self.seeing_player_interval = 30  # Ticks
 
         # Base Sounds
         self.sfx_attack = "Soldier attack"
@@ -68,32 +71,43 @@ class NPC(Sprite):
             self.change_state("Death")
             return
 
-        # If player too far from NPC, quit logic
-        if self.distance_from(self.player) > 20:
-            return
-
         # If NPC hurt, he can't do anything else
         if self.pain:
-            if not self.animation.is_playing():
+            if self.animation.completed:
                 self.pain = False
             self.change_state("Pain")
             return
 
-        # Calculate NPC angle which is always opposing player - used for movement and sight
-        self.angle = math.atan2(self.player.y - self.y, self.player.x - self.x)
+        # Calculate distance from player once per tick and reuse it
+        self.distance_from_player = self.distance_from(self.player)
 
-        # May be computationally intensive, so calculate only once per tick
-        self.seeing_player = self.can_see_player()
+        # Check if seeing_player_interval (default 30 ticks), has passed and set bool to false
+        # This will limit can_see_player(), as we don't need to check that each tick
+        if self.seeing_player_counter >= self.seeing_player_interval:
+            self.seeing_player = False
 
-        if self.seeing_player:
-            if self.distance_from(self.player) < self.attack_distance:
-                self.change_state("Attack")
-                self.attack()
+        # If player too far from NPC, quit logic
+        if self.distance_from_player < self.sensing_range:
+
+            # Calculate NPC angle which is always opposing player - used for movement and sight
+            self.angle = math.atan2(self.player.y - self.y, self.player.x - self.x)
+
+            # If enemy isn't seeing player, allow it to check if he sees player
+            if not self.seeing_player:
+                self.seeing_player = self.can_see_player()
+                self.seeing_player_counter = 0
             else:
-                self.change_state("Walk")
-                self.movement()
-        else:
-            self.change_state("Idle")
+                self.seeing_player_counter += 1
+
+            if self.seeing_player:
+                if self.distance_from_player < self.attack_distance:
+                    self.change_state("Attack")
+                    self.attack()
+                else:
+                    self.change_state("Walk")
+                    self.movement()
+            else:
+                self.change_state("Idle")
 
     # Attack
     def attack(self):
@@ -104,8 +118,10 @@ class NPC(Sprite):
 
     def create_bullet(self):
         position = [self.x, self.y, self.z + (self.height / 2)]
+
         angle = [math.atan2(self.player.y - self.y, self.player.x - self.x),
                  math.atan(self.player.z - self.z)]
+
         bullet_data = [self.damage,
                        self.bullet_speed,
                        self.bullet_lifetime,
@@ -147,25 +163,25 @@ class NPC(Sprite):
             self.y = res.y
 
     def can_see_player(self):
-        # Larger step sizes are more efficient, but may cause NPC to see through
-        # the player
+        # Init variables
         step = 0.5
-        # Limiting the max number of steps makes NPC near-sighted, but prevents
-        # the check from taking too long
-        max_steps = self.sensing_range
+        x, y, z = self.exact_pos
+
+        # Get player grid pos once, and reuse it
+        player_grid_pos = self.player.grid_pos
 
         # Calculate NPC sin and cos of angle once
         cos_angle = math.cos(self.angle)
         sin_angle = math.sin(self.angle)
-        x, y, z = self.exact_pos
+
         # If it is possible to walk straight line to the player, it means that
         # NPC can see them
-        for i in range(max_steps):
+        for i in range(self.sensing_range):
             x += cos_angle * step
             y += sin_angle * step
             if self.game.map.is_wall(x, y):
                 break
-            elif self.player.grid_pos == (int(x), int(y)):
+            elif player_grid_pos == (int(x), int(y)):
                 return True
         return False
 

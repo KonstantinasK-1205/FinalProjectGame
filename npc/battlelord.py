@@ -34,28 +34,27 @@ class Battlelord(NPC):
         self.sfx_death = "Battlelord death"
 
         # Animations
-        sprite = self.game.sprite_manager
         path = "resources/sprites/npc/Battlelord/"
         self.states = {
             "Idle": {
-                "Frames": sprite.load_single_image("Battlelord Idle", path + "idle.png"),
+                "Frames": self.sprite_manager.load_single_image("Battlelord Idle", path + "idle.png"),
                 "Speed": 0
             },
             "Walk": {
-                "Frames": sprite.load_multiple_images("Battlelord Walk", path + "Walk/"),
+                "Frames": self.sprite_manager.load_multiple_images("Battlelord Walk", path + "Walk/"),
                 "Speed": 180
             },
             "Attack": {
-                "Frames": sprite.load_multiple_images("Battlelord Attack", path + "Attack/"),
+                "Frames": self.sprite_manager.load_multiple_images("Battlelord Attack", path + "Attack/"),
                 "Speed": 100,
                 "Attack Speed": 200
             },
             "Pain": {
-                "Frames": sprite.load_multiple_images("Battlelord Pain", path + "Pain/"),
+                "Frames": self.sprite_manager.load_multiple_images("Battlelord Pain", path + "Pain/"),
                 "Speed": 450
             },
             "Death": {
-                "Frames": sprite.load_multiple_images("Battlelord Death", path + "Death/"),
+                "Frames": self.sprite_manager.load_multiple_images("Battlelord Death", path + "Death/"),
                 "Speed": 200
             }
         }

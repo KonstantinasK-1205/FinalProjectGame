@@ -21,32 +21,31 @@ class Pinky(NPC):
         self.sfx_death = "Soldier death"
 
         # Animations
-        sprite = self.game.sprite_manager
         path = "resources/sprites/npc/Pinky/"
         self.states = {
             "Idle": {
-                "Frames": sprite.load_single_image("Pinky Idle", path + "idle.png"),
+                "Frames": self.sprite_manager.load_single_image("Pinky Idle", path + "idle.png"),
                 "Speed": 0
             },
             "Walk": {
-                "Frames": sprite.load_multiple_images("Pinky Walk", path + "Walk/"),
+                "Frames": self.sprite_manager.load_multiple_images("Pinky Walk", path + "Walk/"),
                 "Speed": 120
             },
             "Attack": {
-                "Frames": sprite.load_multiple_images("Pinky Attack", path + "Attack/"),
+                "Frames": self.sprite_manager.load_multiple_images("Pinky Attack", path + "Attack/"),
                 "Speed": 300,
                 "Attack Speed": 900,
             },
             "Pain": {
-                "Frames": sprite.load_multiple_images("Pinky Pain", path + "Pain/"),
+                "Frames": self.sprite_manager.load_multiple_images("Pinky Pain", path + "Pain/"),
                 "Speed": 150,
             },
             "Death": {
-                "Frames": sprite.load_multiple_images("Pinky Death", path + "Death/"),
+                "Frames": self.sprite_manager.load_multiple_images("Pinky Death", path + "Death/"),
                 "Speed": 120,
             },
             "Stomp": {
-                "Frames": sprite.load_multiple_images("Pinky Stomp", path + "Stomp/"),
+                "Frames": self.sprite_manager.load_multiple_images("Pinky Stomp", path + "Stomp/"),
                 "Speed": 400,
             }
         }
@@ -81,7 +80,7 @@ class Pinky(NPC):
                 self.speed = 0.0025
                 self.is_dashing = False
 
-        if self.current_time - self.last_attack > 7000 and self.distance_from(self.player) <= 3 and not self.is_rushing:
+        if self.current_time - self.last_attack > 7000 and self.distance_from_player <= 3 and not self.is_rushing:
             self.start_rush()
             self.last_attack = pg.time.get_ticks()
 
@@ -108,6 +107,6 @@ class Pinky(NPC):
 
     def start_rush(self):
         if not self.is_rushing:
-            self.speed = 0.008
+            self.speed = 0.009
             self.is_rushing = True
             self.rush_timer = pg.time.get_ticks()

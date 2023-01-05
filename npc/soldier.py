@@ -21,28 +21,27 @@ class Soldier(NPC):
         self.reaction_time = 1000
 
         # Animations
-        sprite = self.game.sprite_manager
         path = "resources/sprites/npc/Soldier/"
         self.states = {
             "Idle": {
-                "Frames": sprite.load_single_image("Soldier Idle", path + "idle.png"),
+                "Frames": self.sprite_manager.load_single_image("Soldier Idle", path + "idle.png"),
                 "Speed": 0
             },
             "Walk": {
-                "Frames": sprite.load_multiple_images("Soldier Walk", path + "Walk/"),
+                "Frames": self.sprite_manager.load_multiple_images("Soldier Walk", path + "Walk/"),
                 "Speed": 180
             },
             "Attack": {
-                "Frames": sprite.load_multiple_images("Soldier Attack", path + "Attack/"),
+                "Frames": self.sprite_manager.load_multiple_images("Soldier Attack", path + "Attack/"),
                 "Speed": 300,
                 "Attack Speed": 600,
             },
             "Pain": {
-                "Frames": sprite.load_multiple_images("Soldier Pain", path + "Pain/"),
+                "Frames": self.sprite_manager.load_multiple_images("Soldier Pain", path + "Pain/"),
                 "Speed": 300,
             },
             "Death": {
-                "Frames": sprite.load_multiple_images("Soldier Death", path + "Death/"),
+                "Frames": self.sprite_manager.load_multiple_images("Soldier Death", path + "Death/"),
                 "Speed": 120,
             }
         }

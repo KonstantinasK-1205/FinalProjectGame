@@ -28,32 +28,31 @@ class Reaper(NPC):
         self.sfx_teleportation = "Reaper teleportation"
 
         # Animations
-        sprite = self.game.sprite_manager
         path = "resources/sprites/npc/Reaper/"
         self.states = {
             "Idle": {
-                "Frames": sprite.load_single_image("Reaper Idle", path + "idle.png"),
+                "Frames": self.sprite_manager.load_single_image("Reaper Idle", path + "idle.png"),
                 "Speed": 0
             },
             "Walk": {
-                "Frames": sprite.load_multiple_images("Reaper Walk", path + "Walk/"),
+                "Frames": self.sprite_manager.load_multiple_images("Reaper Walk", path + "Walk/"),
                 "Speed": 180
             },
             "Attack": {
-                "Frames": sprite.load_multiple_images("Reaper Attack", path + "Attack/"),
+                "Frames": self.sprite_manager.load_multiple_images("Reaper Attack", path + "Attack/"),
                 "Speed": 200,
                 "Attack Speed": 800,
             },
             "Pain": {
-                "Frames": sprite.load_multiple_images("Reaper Pain", path + "Pain/"),
+                "Frames": self.sprite_manager.load_multiple_images("Reaper Pain", path + "Pain/"),
                 "Speed": 300,
             },
             "Death": {
-                "Frames": sprite.load_multiple_images("Reaper Death", path + "Death/"),
+                "Frames": self.sprite_manager.load_multiple_images("Reaper Death", path + "Death/"),
                 "Speed": 120,
             },
             "Teleportation": {
-                "Frames": sprite.load_multiple_images("Reaper Teleportation", path + "Teleportation/"),
+                "Frames": self.sprite_manager.load_multiple_images("Reaper Teleportation", path + "Teleportation/"),
                 "Speed": 150,
             }
         }
@@ -70,9 +69,10 @@ class Reaper(NPC):
 
     def movement(self):
         # If teleported or player is further than 3 blocks
-        if self.distance_from(self.player) > 3 or self.teleportation_begin:
+        if self.distance_from_player > 3 or self.teleportation_begin:
             self.change_state("Teleportation")
-        super().movement()
+        else:
+            super().movement()
 
     def update(self):
         super().update()
@@ -84,7 +84,7 @@ class Reaper(NPC):
             if self.current_time - self.last_teleportation_time > self.teleportation_cooldown:
                 self.teleported = False
 
-            if self.current_time - self.last_attack > 6000 and 1 < self.distance_from(self.player) < 3:
+            if self.current_time - self.last_attack > 6000 and 1 < self.distance_from_player < 3:
                 self.change_state("Teleportation")
 
     def attack(self):

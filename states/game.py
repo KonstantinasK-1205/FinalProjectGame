@@ -31,6 +31,11 @@ class GameState(State):
         if self.hit_flash_ms < HIT_FLASH_MS:
             self.hit_flash_ms = self.hit_flash_ms + self.game.dt
 
+        # Uncomment when profiling, turns game only for 22sec.
+        # print(pg.time.get_ticks())
+        # if pg.time.get_ticks() > 22000:
+        #    self.game.running = False
+
     def draw(self):
         self.game.object_handler.draw()
         self.game.weapon.draw()

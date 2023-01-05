@@ -18,28 +18,27 @@ class Zombie(NPC):
         self.sfx_death = "Zombie death"
 
         # Animations
-        sprite = self.game.sprite_manager
         path = "resources/sprites/npc/Zombie/"
         self.states = {
             "Idle": {
-                "Frames": sprite.load_single_image("Zombie Idle", path + "idle.png"),
+                "Frames": self.sprite_manager.load_single_image("Zombie Idle", path + "idle.png"),
                 "Speed": 0
             },
             "Walk": {
-                "Frames": sprite.load_multiple_images("Zombie Walk", path + "Walk/"),
+                "Frames": self.sprite_manager.load_multiple_images("Zombie Walk", path + "Walk/"),
                 "Speed": 200
             },
             "Attack": {
-                "Frames": sprite.load_multiple_images("Zombie Attack", path + "Attack/"),
+                "Frames": self.sprite_manager.load_multiple_images("Zombie Attack", path + "Attack/"),
                 "Speed": 200,
                 "Attack Speed": 600,
             },
             "Pain": {
-                "Frames": sprite.load_multiple_images("Zombie Pain", path + "Pain/"),
+                "Frames": self.sprite_manager.load_multiple_images("Zombie Pain", path + "Pain/"),
                 "Speed": 300,
             },
             "Death": {
-                "Frames": sprite.load_multiple_images("Zombie Death", path + "Death/"),
+                "Frames": self.sprite_manager.load_multiple_images("Zombie Death", path + "Death/"),
                 "Speed": 120,
             }
         }
