@@ -48,18 +48,24 @@ class SpriteRenderer:
 
         self.renderer.load_vbo("sphere", data)
 
+    def can_see(self, x, y):
+        angle = (self.game.player.angle - math.atan2(y - self.renderer.camera_y, x - self.renderer.camera_x)) % math.tau
+        tolerance = math.pi / 4
+        return angle < tolerance or angle > math.tau - tolerance
+
     def draw(self):
         glDisable(GL_CULL_FACE)
 
         # Objects must be sorted from farthest to closest for transparency to
         # work properly
+        self.sprites_to_render = [o for o in self.sprites_to_render if self.can_see(o.x, o.y)]
         for o in self.sprites_to_render:
             o.__distance_from_camera = math.hypot(
                 o.x - self.renderer.camera_x,
                 o.y - self.renderer.camera_y,
                 o.z - self.renderer.camera_z
             )
-        self.sprites_to_render = sorted(self.sprites_to_render, key=lambda t: t.__distance_from_camera, reverse=True)
+        self.sprites_to_render = sorted(self.sprites_to_render, key=lambda o: o.__distance_from_camera, reverse=True)
 
         # It is faster to only rebind the buffer and reset the pointers if the
         # sprite VBO differs
@@ -68,16 +74,26 @@ class SpriteRenderer:
         glTexCoordPointer(2, GL_FLOAT, 5 * 4, ctypes.c_void_p(0))
         glVertexPointer(3, GL_FLOAT, 5 * 4, ctypes.c_void_p(2 * 4))
 
-        for o in self.sprites_to_render:
-            if o.texture == None:
-                glBindTexture(GL_TEXTURE_2D, 0)
-            else:
-                glBindTexture(GL_TEXTURE_2D, self.renderer.texture_manager.textures[o.texture])
+        last_texture = None
+        glBindTexture(GL_TEXTURE_2D, 0)
 
-            if len(o.color) == 3:
-                glColor3f(o.color[0] / 255, o.color[1] / 255, o.color[2] / 255)
-            elif len(o.color) == 4:
-                glColor4f(o.color[0] / 255, o.color[1] / 255, o.color[2] / 255, o.color[3] / 255)
+        last_color = (255, 255, 255)
+        glColor3f(last_color[0] / 255, last_color[1] / 255, last_color[2] / 255)
+
+        for o in self.sprites_to_render:
+            if not o.texture == last_texture:
+                last_texture = o.texture
+                if o.texture == None:
+                    glBindTexture(GL_TEXTURE_2D, 0)
+                else:
+                    glBindTexture(GL_TEXTURE_2D, self.renderer.texture_manager.textures[o.texture])
+
+            if not o.color == last_color:
+                last_color = o.color
+                if len(o.color) == 3:
+                    glColor3f(o.color[0] / 255, o.color[1] / 255, o.color[2] / 255)
+                elif len(o.color) == 4:
+                    glColor4f(o.color[0] / 255, o.color[1] / 255, o.color[2] / 255, o.color[3] / 255)
 
             glPushMatrix()
 
