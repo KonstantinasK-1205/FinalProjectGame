@@ -65,7 +65,7 @@ class SettingsManager:
                         elif value == "false":
                             value = False
                         else:
-                            print("Settings value", key, "is not a boolean! Value",value)
+                            print("Settings value", key, "is not a boolean!")
                             continue
 
                     # Validate value
@@ -97,8 +97,10 @@ class SettingsManager:
                 # Replace boolean values with correct strings
                 if type(self.settings[key]) == bool:
                     if self.settings[key] == True:
-                        self.settings[key] = "true"
+                        str_value = "true"
                     elif self.settings[key] == False:
-                        self.settings[key] = "false"
+                        str_value = "false"
+                else:
+                    str_value = str(self.settings[key])
 
-                settings_file.write(key + " " + str(self.settings[key]) + "\n")
+                settings_file.write(key + " " + str_value + "\n")

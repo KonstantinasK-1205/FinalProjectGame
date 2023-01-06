@@ -117,9 +117,9 @@ class OptionsState(State):
 
         resolution = self.menu_list["Resolution"]["Option"]
         if self.menu_list["Fullscreen"]["Option"]:
-            pg.display.set_mode(resolution, pg.RESIZABLE | pg.FULLSCREEN | pg.OPENGL | pg.DOUBLEBUF, self.menu_list["VSync"]["Option"])
+            pg.display.set_mode(resolution, pg.RESIZABLE | pg.FULLSCREEN | pg.OPENGL | pg.DOUBLEBUF, vsync=self.menu_list["VSync"]["Option"])
         else:
-            pg.display.set_mode(resolution, pg.RESIZABLE | pg.OPENGL | pg.DOUBLEBUF, self.menu_list["VSync"]["Option"])
+            pg.display.set_mode(resolution, pg.RESIZABLE | pg.OPENGL | pg.DOUBLEBUF, vsync=self.menu_list["VSync"]["Option"])
 
         if self.menu_list["Music"]["Option"]:
             self.game.sound.play_music()
