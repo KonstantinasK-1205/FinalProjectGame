@@ -78,7 +78,7 @@ class SpriteRenderer:
         glBindTexture(GL_TEXTURE_2D, 0)
 
         last_color = (255, 255, 255)
-        glColor3f(last_color[0] / 255, last_color[1] / 255, last_color[2] / 255)
+        glColor3ub(last_color[0], last_color[1], last_color[2])
 
         for o in self.sprites_to_render:
             if not o.texture == last_texture:
@@ -91,9 +91,9 @@ class SpriteRenderer:
             if not o.color == last_color:
                 last_color = o.color
                 if len(o.color) == 3:
-                    glColor3f(o.color[0] / 255, o.color[1] / 255, o.color[2] / 255)
+                    glColor3ub(o.color[0], o.color[1], o.color[2])
                 elif len(o.color) == 4:
-                    glColor4f(o.color[0] / 255, o.color[1] / 255, o.color[2] / 255, o.color[3] / 255)
+                    glColor4ub(o.color[0], o.color[1], o.color[2], o.color[3])
 
             glPushMatrix()
 

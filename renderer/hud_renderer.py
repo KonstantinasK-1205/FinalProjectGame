@@ -29,28 +29,28 @@ class HudRenderer:
         glMatrixMode(GL_MODELVIEW)
 
         for rect in self.rects_to_render:
-            # Position and size should be rounded to avoid blurry text, etc.
-            rect.x = round(rect.x)
-            rect.y = round(rect.y)
-            rect.width = round(rect.width)
-            rect.height = round(rect.height)
+            # Position and size should be integer to avoid blurry text
+            rect.x = int(rect.x)
+            rect.y = int(rect.y)
+            rect.width = int(rect.width)
+            rect.height = int(rect.height)
 
             if rect.texture:
                 glBindTexture(GL_TEXTURE_2D, self.renderer.texture_manager.textures[rect.texture])
             else:
                 glBindTexture(GL_TEXTURE_2D, 0)
 
-            glColor4f(1, 1, 1, 1)
-            if rect.color:
-                if len(rect.color) == 3:
-                    glColor3f(rect.color[0] / 255, rect.color[1] / 255, rect.color[2] / 255)
-                elif len(rect.color) == 4:
-                    glColor4f(rect.color[0] / 255, rect.color[1] / 255, rect.color[2] / 255, rect.color[3] / 255)
+            if len(rect.color) == 3:
+                glColor3ub(rect.color[0], rect.color[1], rect.color[2])
+            elif len(rect.color) == 4:
+                glColor4ub(rect.color[0], rect.color[1], rect.color[2], rect.color[3])
 
             glLoadIdentity()
             glTranslatef(rect.x, rect.y, 0)
-            if not rect.angle == None:
-                # Rotate around rect center
+            # No rotation is needed if the angle is not set, or is 0, so the
+            # following check is valid
+            if rect.angle:
+                # Offset to rotate around center
                 glTranslatef(rect.width / 2, rect.height / 2, 0)
                 glRotatef(math.degrees(rect.angle), 0, 0, 1)
                 glTranslatef(-rect.width / 2, -rect.height / 2, 0)

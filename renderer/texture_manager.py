@@ -1,7 +1,6 @@
 from renderer.opengl import *
 import math
 import pygame as pg
-from settings import *
 
 
 class TextureManager:
@@ -27,12 +26,13 @@ class TextureManager:
     def load_texture_from_surface(self, path, surface, repeat = False, mipmapped = False):
         self.texture_sizes[path] = (surface.get_width(), surface.get_height())
 
-        # Downscale texture if greater than TEXTURE_SIZE
+        # Downscale texture if greater than maximum size
         # Enabled only for resources/ textures to avoid rescaling text
-        if TEXTURE_SIZE > 0 and "resources/" in path:
-            if surface.get_width() > TEXTURE_SIZE or surface.get_height() > TEXTURE_SIZE:
-                new_width = min(TEXTURE_SIZE, surface.get_width())
-                new_height = min(TEXTURE_SIZE, surface.get_height())
+        max_size = self.game.settings_manager.settings["texture_size"]
+        if max_size > 0 and "resources/" in path:
+            if surface.get_width() > max_size or surface.get_height() > max_size:
+                new_width = min(max_size, surface.get_width())
+                new_height = min(max_size, surface.get_height())
                 surface = pg.transform.scale(surface, (new_width, new_height))
 
         # Pygame text can produce a 0 width surface, so in such cases replace

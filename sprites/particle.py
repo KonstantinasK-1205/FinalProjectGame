@@ -55,7 +55,7 @@ class Particle(Sprite):
 
     def draw(self):
         # Once lifetime reaches 0.-1, it will fade out
-        a = min(255, 255 + self.lifetime * 255)
+        a = max(0, min(255, int(255 + self.lifetime * 255)))
         if self.texture_path:
             self.game.renderer.draw_sphere(self.x, self.y, self.z, self.width,
                                            self.height, self.texture_path, (255, 255, 255, a))

@@ -7,7 +7,6 @@ from renderer.minimap_renderer import *
 from renderer.skybox_renderer import *
 from renderer.hud_renderer import *
 from renderer.sprite_renderer import *
-from settings import *
 
 
 class Renderer:
@@ -110,7 +109,11 @@ class Renderer:
 
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        gluPerspective(FOV, self.game.width / self.game.height, 0.1, 50)
+        gluPerspective(
+            self.game.settings_manager.settings["fov"],
+            self.game.width / self.game.height,
+            0.1, 50
+        )
 
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()

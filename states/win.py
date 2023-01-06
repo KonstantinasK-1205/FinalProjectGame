@@ -32,5 +32,5 @@ class WinState(State):
         self.elapsed_ms = pg.time.get_ticks() - self.on_set_ms
 
     def draw(self):
-        self.game.renderer.draw_fullscreen_rect(color=(44, 44, 44))
+        super().draw()
         self.draw_state_text()

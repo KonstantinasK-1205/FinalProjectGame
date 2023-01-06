@@ -5,9 +5,11 @@ class OptionsState(State):
     def __init__(self, game):
         super().__init__(game)
 
-        self.current_resolution = (WIDTH, HEIGHT)
+        self.current_resolution = (self.game.width, self.game.height)
         self.available_resolutions = pg.display.list_modes()
-        self.index_of_resolution = self.available_resolutions.index(self.current_resolution)
+        self.index_of_resolution = 0
+        if self.current_resolution in self.available_resolutions:
+            self.index_of_resolution = self.available_resolutions.index(self.current_resolution)
 
         self.menu_surfaces = []
         self.menu_height = 0
@@ -18,17 +20,20 @@ class OptionsState(State):
             "Resolution": {
                 "Option": self.current_resolution
             },
-            "Full screen": {
-                "Option": False
+            "Fullscreen": {
+                "Option": self.game.settings_manager.settings["fullscreen"]
             },
-            "Vsync": {
-                "Option": True
+            "VSync": {
+                "Option": self.game.settings_manager.settings["vsync"]
+            },
+            "Sound": {
+                "Option": self.game.settings_manager.settings["sound"]
+            },
+            "Music": {
+                "Option": self.game.settings_manager.settings["music"]
             },
             "Show FPS": {
-                "Option": self.game.show_fps
-            },
-            "Sounds": {
-                "Option": self.game.sound.sound_enabled
+                "Option": self.game.settings_manager.settings["show_fps"]
             },
             "Apply": {
                 "Option": None
@@ -40,6 +45,12 @@ class OptionsState(State):
         self.initialized = False
 
     def on_set(self):
+        self.current_resolution = (self.game.width, self.game.height)
+        self.index_of_resolution = 0
+        if self.current_resolution in self.available_resolutions:
+            self.index_of_resolution = self.available_resolutions.index(self.current_resolution)
+
+        self.menu_list["Resolution"]["Option"] = self.current_resolution
         self.create_menu_text()
 
     def handle_event(self, event):
@@ -81,25 +92,39 @@ class OptionsState(State):
                         if "Back" in menu:
                             self.game.current_state = "Menu"
         elif event.type == pg.WINDOWSIZECHANGED:
+            self.current_resolution = (self.game.width, self.game.height)
+            self.menu_list["Resolution"]["Option"] = self.current_resolution
             self.create_menu_text()
 
     def update(self):
         pass
 
     def draw(self):
-        self.game.renderer.draw_fullscreen_rect(color=(44, 44, 44))
+        super().draw()
         self.draw_menu_text()
         self.initialized = True
 
     def apply_settings(self):
-        resolution = self.menu_list["Resolution"]["Option"]
-        if self.menu_list["Full screen"]["Option"]:
-            pg.display.set_mode(resolution, pg.RESIZABLE | pg.FULLSCREEN | pg.OPENGL | pg.DOUBLEBUF, self.menu_list["Vsync"]["Option"])
-        else:
-            pg.display.set_mode(resolution, pg.RESIZABLE | pg.OPENGL | pg.DOUBLEBUF, self.menu_list["Vsync"]["Option"])
+        settings_manager = self.game.settings_manager
+        settings_manager.settings["width"] = self.menu_list["Resolution"]["Option"][0]
+        settings_manager.settings["height"] = self.menu_list["Resolution"]["Option"][1]
+        settings_manager.settings["fullscreen"] = self.menu_list["Fullscreen"]["Option"]
+        settings_manager.settings["vsync"] = self.menu_list["VSync"]["Option"]
+        settings_manager.settings["sound"] = self.menu_list["Sound"]["Option"]
+        settings_manager.settings["music"] = self.menu_list["Music"]["Option"]
+        settings_manager.settings["show_fps"] = self.menu_list["Show FPS"]["Option"]
+        settings_manager.save()
 
-        self.game.sound.sound_enabled = self.menu_list["Sounds"]["Option"]
-        self.game.show_fps = self.menu_list["Show FPS"]["Option"]
+        resolution = self.menu_list["Resolution"]["Option"]
+        if self.menu_list["Fullscreen"]["Option"]:
+            pg.display.set_mode(resolution, pg.RESIZABLE | pg.FULLSCREEN | pg.OPENGL | pg.DOUBLEBUF, self.menu_list["VSync"]["Option"])
+        else:
+            pg.display.set_mode(resolution, pg.RESIZABLE | pg.OPENGL | pg.DOUBLEBUF, self.menu_list["VSync"]["Option"])
+
+        if self.menu_list["Music"]["Option"]:
+            self.game.sound.play_music()
+        else:
+            self.game.sound.stop_music()
 
     def change_setting(self, menu):
         menu_dict = self.menu_list[menu]
@@ -115,8 +140,7 @@ class OptionsState(State):
             menu_dict["Surface"] = self.game.font_small.render("< " + menu_dict["Original Title"] + " >",
                                                                True, (255, 255, 255))
             self.game.renderer.load_texture_from_surface("menu_text_" + str(menu), menu_dict["Surface"])
-
-        if type(menu_dict["Option"]) == bool:
+        elif type(menu_dict["Option"]) == bool:
             # Reverse boolean and set correct (ON/OFF) option text
             menu_dict["Option"] = not menu_dict["Option"]
             option_text = 'Off' if menu_dict["Option"] is False else 'On'

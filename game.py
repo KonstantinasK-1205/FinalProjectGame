@@ -14,12 +14,35 @@ from states.loading import LoadingState
 from states.lose import LoseState
 from states.win import WinState
 from weapons.weapon import Weapon
+from settings_manager import *
 
 
 class Game:
     def __init__(self):
+        # Initialize the settings manager first as it may be needed for window
+        # and other object initialization
+        self.settings_manager = SettingsManager()
+        self.settings_manager.load()
+
         pg.init()
-        pg.display.set_mode((WIDTH, HEIGHT), pg.RESIZABLE | pg.OPENGL | pg.DOUBLEBUF, vsync=VSYNC)
+        if self.settings_manager.settings["fullscreen"]:
+            pg.display.set_mode(
+                (
+                    self.settings_manager.settings["width"],
+                    self.settings_manager.settings["height"]
+                ),
+                pg.FULLSCREEN | pg.RESIZABLE | pg.OPENGL | pg.DOUBLEBUF,
+                vsync=self.settings_manager.settings["vsync"]
+            )
+        else:
+            pg.display.set_mode(
+                (
+                    self.settings_manager.settings["width"],
+                    self.settings_manager.settings["height"]
+                ),
+                pg.RESIZABLE | pg.OPENGL | pg.DOUBLEBUF,
+                vsync=self.settings_manager.settings["vsync"]
+            )
         pg.display.set_caption("Final Project")
         pg.display.set_icon(pg.image.load("resources/icons/game_icon.png"))
 
@@ -27,7 +50,6 @@ class Game:
         self.font = None
         self.font_small = None
         self.font_smaller = None
-        self.show_fps = True
         self.running = False
 
         # Needs to be initialized, otherwise will crash on resize before new game
@@ -42,10 +64,10 @@ class Game:
         self.player = Player(self)
         self.hud = Hud(self)
         self.map = Map(self)
-        self.sound = Sound()
+        self.sound = Sound(self)
 
-        self.starting_map = "T_Level3"
-        self.current_map = "T_Level3"
+        self.starting_map = "Level1"
+        self.current_map = "Level1"
 
         self.init_fonts()
 

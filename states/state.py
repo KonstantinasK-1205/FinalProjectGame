@@ -1,5 +1,7 @@
-from settings import *
 import pygame as pg
+
+
+STATE_WAIT_MS = 500
 
 
 class State:
@@ -21,7 +23,7 @@ class State:
         pass
 
     def draw(self):
-        pass
+        self.game.renderer.draw_fullscreen_rect(color=(44, 44, 44))
 
     def update_state_text(self):
         self.text_surfaces = []

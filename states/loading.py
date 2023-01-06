@@ -38,5 +38,5 @@ class LoadingState(State):
             self.update_state_text()
 
     def draw(self):
-        self.game.renderer.draw_fullscreen_rect(color=(44, 44, 44))
+        super().draw()
         self.draw_state_text()

@@ -1,6 +1,3 @@
-from settings import *
-
-
 class ObjectHandler:
     def __init__(self, game):
         self.game = game
@@ -53,8 +50,8 @@ class ObjectHandler:
             self.game.current_state = "Lose"
 
         if self.map_change:
-            self.map_change_wait_ms = self.map_change_wait_ms + self.game.dt
-            if self.map_change_wait_ms >= MAP_CHANGE_WAIT_MS:
+            self.map_change_wait_ms += self.game.dt
+            if self.map_change_wait_ms >= 2000:
                 self.map_change = False
                 if self.game.map.next_level:
                     self.game.current_state = "Loading"

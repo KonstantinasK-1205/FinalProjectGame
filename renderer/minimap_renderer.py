@@ -164,6 +164,7 @@ class MinimapRenderer:
         for pickup in self.game.object_handler.pickup_list:
             if not self.game.map.is_visited(pickup.x, pickup.y):
                 continue
+
             if pickup.type == "Ammo":
                 glColor3f(1, 1, 0.8)
             elif pickup.type == "Weapon":

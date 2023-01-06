@@ -77,7 +77,7 @@ class MenuState(State):
         pass
 
     def draw(self):
-        self.game.renderer.draw_fullscreen_rect(color=(44, 44, 44))
+        super().draw()
         self.draw_menu_text()
         self.initialized = True
 

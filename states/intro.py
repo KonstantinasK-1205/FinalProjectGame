@@ -19,5 +19,5 @@ class IntroState(State):
             self.game.current_state = "Menu"
 
     def draw(self):
-        self.game.renderer.draw_fullscreen_rect(color=(44, 44, 44))
+        super().draw()
         self.draw_state_text()

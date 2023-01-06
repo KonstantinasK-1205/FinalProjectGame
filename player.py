@@ -1,6 +1,5 @@
 import pygame as pg
 
-from settings import *
 from collections import deque
 from collision import *
 import copy
@@ -17,7 +16,7 @@ class Player:
         self.width = 0.6
         self.height = 0.6
 
-        self.saved_angle = self.angle = PLAYER_ANGLE
+        self.saved_angle = self.angle = 0
         self.saved_angle_ver = self.angle_ver = 0
 
         self.armor = 0
@@ -55,8 +54,9 @@ class Player:
 
     def update(self):
         rel = pg.mouse.get_rel()
-        self.angle = (self.angle + rel[0] * MOUSE_SENSITIVITY) % math.tau
-        self.angle_ver = (self.angle_ver + rel[1] * MOUSE_SENSITIVITY) % math.tau
+        sensitivity = self.game.settings_manager.settings["sensitivity"]
+        self.angle = (self.angle + rel[0] * sensitivity) % math.tau
+        self.angle_ver = (self.angle_ver + rel[1] * sensitivity) % math.tau
         if math.radians(90) < self.angle_ver < math.radians(180):
             self.angle_ver = math.radians(90)
         elif math.radians(180) < self.angle_ver < math.radians(270):
@@ -73,7 +73,7 @@ class Player:
         self.game.renderer.camera_angle_ver = self.angle_ver
 
     def movement(self):
-        speed = PLAYER_SPEED * self.game.dt
+        speed = 0.003 * self.game.dt
         speed_sin = speed * math.sin(self.angle)
         speed_cos = speed * math.cos(self.angle)
 
