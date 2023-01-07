@@ -45,7 +45,7 @@ class Renderer:
 
         self.drawing_minimap = False
 
-    def update_map(self):
+    def update_map_vbos(self):
         self.map_renderer.update_vbos()
         self.minimap_renderer.update_vbos()
 

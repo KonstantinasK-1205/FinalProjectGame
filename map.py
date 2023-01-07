@@ -20,29 +20,61 @@ from sprites.enemies_spawns import *
 class Map:
     def __init__(self, game):
         self.game = game
-        self.width = 0
-        self.height = 0
-        self.data = []
-        self.data_visited = []
+
+        self.size = (0, 0)
+
+        self.floors = []
+        self.walls = []
+        self.visited = []
+
         self.enemy_amount = 0
-        self.map_loaded = False
         self.next_level = None
 
-    def get_map(self, level):
-        self.width = 0
-        self.height = 0
-        self.data = []
-        self.enemy_amount = 0
-        self.map_loaded = False
+        self.created = False
 
-        # In case a map was already loaded, remove old objects
+    def create(self, size):
+        self.size = size
+
+        self.floors = [0] * self.size[0] * self.size[1]
+        self.walls = [0] * self.size[0] * self.size[1]
+        self.visited = [False] * self.size[0] * self.size[1]
+
+        self.enemy_amount = 0
+        self.next_level = None
+
+        self.created = True
+
         self.game.object_handler.reset()
-        self.next_level = None
 
-        path = "resources/levels/" + level + ".txt"
+    def resize(self, size):
+        new_size = size
+        new_floors = [0] * self.size[0] * self.size[1]
+        new_walls = [0] * self.size[0] * self.size[1]
+        new_visited = [False] * self.size[0] * self.size[1]
+
+        overlap_size = (
+            min(self.size[0], new_size[0]),
+            min(self.size[1], new_size[1])
+        )
+        for i in range(overlap_size[1]):
+            for j in range(overlap_size[0]):
+                new_floors[j + i * new_size[0]] = self.floors[j + i * self.size[0]]
+                new_walls[j + i * new_size[0]] = self.walls[j + i * self.size[0]]
+                new_visited[j + i * new_size[0]] = self.visited[j + i * self.size[0]]
+
+        self.size = new_size
+        self.floors = new_floors
+        self.walls = new_walls
+        self.visited = new_visited
+
+    def load(self, filename):
+        path = "resources/levels/" + filename + ".txt"
         map_file = open(path, "r")
 
         # Find map size
+        width = 0
+        height = 0
+
         y = 0
         while line := map_file.readline():
             # Skip lines with map constants
@@ -60,15 +92,15 @@ class Map:
                     elif not char == "\t":
                         skip = True
                 x += 1
-                self.width = max(self.width, x)
+                width = max(width, x)
             y += 1
-        self.height = y
+        height = y
 
-        self.data = [0] * self.width * self.height
-        self.data_visited = [False] * self.width * self.height
-        handler = self.game.object_handler
+        self.create((width, height))
 
         # Read map data
+        handler = self.game.object_handler
+
         map_file.seek(0)
         y = 0
         while line := map_file.readline():
@@ -114,10 +146,12 @@ class Map:
                 # index
                 pos = (x + 0.5, y + 0.5)
                 if char.isdigit():
-                    self.data[x + y * self.width] = int(char)
+                    self.walls[x + y * self.size[0]] = int(char)
+                else:
+                    self.floors[x + y * self.size[0]] = 1
 
                 # Player and Enemies
-                elif char == "O":
+                if char == "O":
                     self.game.player.set_spawn(pos[0], pos[1])
                 elif char == "Z":
                     handler.add_npc(Zombie(self.game, pos))
@@ -175,32 +209,49 @@ class Map:
                 # Spawns
                 elif char == ",":
                     handler.add_sprite(ZombieSpawn(self.game, pos))
+
+                # Floor 2 (testing)
+                elif char == "_":
+                    self.floors[x + y * self.size[0]] = 2
                 x += 1
             y += 1
 
-            self.map_loaded = True
-        self.game.renderer.update_map()
+        self.game.renderer.update_map_vbos()
 
-    def get_tile(self, x, y):
-        if x < 0 or x >= self.width or y < 0 or y >= self.height:
+    def is_floor(self, x, y):
+        if x < 0 or x >= self.size[0] or y < 0 or y >= self.size[1]:
+            return True
+        return self.floors[int(x) + int(y) * self.size[0]] != 0
+
+    def get_floor(self, x, y):
+        if x < 0 or x >= self.size[0] or y < 0 or y >= self.size[1]:
             return 0
-        return self.data[int(x) + int(y) * self.width]
+        return self.floors[int(x) + int(y) * self.size[0]]
 
     def is_wall(self, x, y):
-        if x < 0 or x >= self.width or y < 0 or y >= self.height:
+        if x < 0 or x >= self.size[0] or y < 0 or y >= self.size[1]:
             return True
-        return self.data[int(x) + int(y) * self.width] != 0
+        return self.walls[int(x) + int(y) * self.size[0]] != 0
+
+    def get_wall(self, x, y):
+        if x < 0 or x >= self.size[0] or y < 0 or y >= self.size[1]:
+            return 0
+        return self.walls[int(x) + int(y) * self.size[0]]
 
     def is_visited(self, x, y):
-        if x < 0 or x >= self.width or y < 0 or y >= self.height:
+        if x < 0 or x >= self.size[0] or y < 0 or y >= self.size[1]:
             return False
-        return self.data_visited[int(x) + int(y) * self.width] == True
+        return self.visited[int(x) + int(y) * self.size[0]] == True
 
     def set_visited(self, x, y, value=True):
-        if x < 0 or x >= self.width or y < 0 or y >= self.height:
+        if x < 0 or x >= self.size[0] or y < 0 or y >= self.size[1]:
             return
-        self.data_visited[int(x) + int(y) * self.width] = value
+        self.visited[int(x) + int(y) * self.size[0]] = value
 
     @property
-    def size(self):
-        return self.width, self.height
+    def width(self):
+        return self.size[0]
+
+    @property
+    def height(self):
+        return self.size[1]

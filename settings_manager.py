@@ -18,7 +18,7 @@ class SettingsManager:
         }
 
         # Validation requirements for each value:
-        # Type (int, float or string); minimum value; maximum value
+        # Type (int, float, bool or string); minimum value; maximum value
         self.validation = {
             "width": (int, 1, None),
             "height": (int, 1, None),

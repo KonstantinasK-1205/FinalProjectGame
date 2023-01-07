@@ -27,12 +27,12 @@ class BreakableWall(Sprite):
                 self.x = self.x
                 self.y = self.y + 0.5
                 self.angle = math.pi / 2
-                texture = str(self.game.map.get_tile(self.x, self.y - 1))
+                texture = str(self.game.map.get_wall(self.x, self.y - 1))
             else:
                 self.x = self.x + 0.5
                 self.y = self.y
                 self.angle = 0
-                texture = str(self.game.map.get_tile(self.x + 1, self.y))
+                texture = str(self.game.map.get_wall(self.x + 1, self.y))
             # Load wall and crack texture and blend them
             wall = pg.image.load("resources/textures/desert/wall_" + texture + ".jpg")
             wall.blit(pg.image.load("resources/textures/crack.png"), (0, 0), special_flags=pg.BLEND_SUB)

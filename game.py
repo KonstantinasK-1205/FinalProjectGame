@@ -25,24 +25,15 @@ class Game:
         self.settings_manager.load()
 
         pg.init()
-        if self.settings_manager.settings["fullscreen"]:
-            pg.display.set_mode(
-                (
-                    self.settings_manager.settings["width"],
-                    self.settings_manager.settings["height"]
-                ),
-                pg.FULLSCREEN | pg.RESIZABLE | pg.OPENGL | pg.DOUBLEBUF,
-                vsync=self.settings_manager.settings["vsync"]
-            )
-        else:
-            pg.display.set_mode(
-                (
-                    self.settings_manager.settings["width"],
-                    self.settings_manager.settings["height"]
-                ),
-                pg.RESIZABLE | pg.OPENGL | pg.DOUBLEBUF,
-                vsync=self.settings_manager.settings["vsync"]
-            )
+        fullscreen = pg.FULLSCREEN if self.settings_manager.settings["fullscreen"] else 0
+        pg.display.set_mode(
+            (
+                self.settings_manager.settings["width"],
+                self.settings_manager.settings["height"]
+            ),
+            fullscreen | pg.RESIZABLE | pg.OPENGL | pg.DOUBLEBUF,
+            vsync=self.settings_manager.settings["vsync"]
+        )
         pg.display.set_caption("Final Project")
         pg.display.set_icon(pg.image.load("resources/icons/game_icon.png"))
 
@@ -114,26 +105,24 @@ class Game:
         self.renderer.draw_queued()
         pg.display.flip()
 
-    def new_game(self, level):
+    def new_game(self, level_filename):
         self.player = Player(self)
         self.weapon = Weapon(self)
         self.object_handler = ObjectHandler(self)
 
-        self.map = Map(self)
-        self.map.get_map(level)
+        self.map.load(level_filename)
         self.player.on_level_change()
         self.weapon.save_weapon_info()
 
         self.pathfinding = PathFinding(self)
         self.hud.level_change(self.player.health, self.player.armor)
 
-    def next_level(self, level):
+    def next_level(self, level_filename):
         self.map_started_to_change = pg.time.get_ticks()
         self.object_handler = ObjectHandler(self)
 
-        self.map = Map(self)
-        self.map.get_map(level)
-        self.current_map = level
+        self.map.load(level_filename)
+        self.current_map = level_filename
         self.player.on_level_change()
         self.weapon.save_weapon_info()
 
@@ -142,11 +131,10 @@ class Game:
 
         print(pg.time.get_ticks() - self.map_started_to_change)
 
-    def restart_level(self, level):
+    def restart_level(self, level_filename):
         self.object_handler = ObjectHandler(self)
 
-        self.map = Map(self)
-        self.map.get_map(level)
+        self.map.load(level_filename)
         self.player.load_player_stats()
         self.weapon.load_weapon_info()
 

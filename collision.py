@@ -14,33 +14,33 @@ def resolve_collision(x, y, dx, dy, tilemap, radius):
     # First handle motion and collision in the X axis
     if new_x < x:
         if tilemap.is_wall(new_x - radius, y - radius):
-            collided = tilemap.get_tile(new_x - radius, y - radius)
+            collided = tilemap.get_wall(new_x - radius, y - radius)
             new_x = math.ceil(new_x - radius) + radius + margin
         elif tilemap.is_wall(new_x - radius, y + radius):
-            collided = tilemap.get_tile(new_x - radius, y + radius)
+            collided = tilemap.get_wall(new_x - radius, y + radius)
             new_x = math.ceil(new_x - radius) + radius + margin
     elif new_x > x:
         if tilemap.is_wall(new_x + radius, y - radius):
-            collided = tilemap.get_tile(new_x + radius, y - radius)
+            collided = tilemap.get_wall(new_x + radius, y - radius)
             new_x = math.floor(new_x + radius) - radius - margin
         elif tilemap.is_wall(new_x + radius, y + radius):
-            collided = tilemap.get_tile(new_x + radius, y + radius)
+            collided = tilemap.get_wall(new_x + radius, y + radius)
             new_x = math.floor(new_x + radius) - radius - margin
 
     # Next handle motion and collision in the Y axis
     if new_y < y:
         if tilemap.is_wall(new_x - radius, new_y - radius):
-            collided = tilemap.get_tile(new_x - radius, new_y - radius)
+            collided = tilemap.get_wall(new_x - radius, new_y - radius)
             new_y = math.ceil(new_y - radius) + radius + margin
         elif tilemap.is_wall(new_x + radius, new_y - radius):
-            collided = tilemap.get_tile(new_x + radius, new_y - radius)
+            collided = tilemap.get_wall(new_x + radius, new_y - radius)
             new_y = math.ceil(new_y - radius) + radius + margin
     elif new_y > y:
         if tilemap.is_wall(new_x - radius, new_y + radius):
-            collided = tilemap.get_tile(new_x - radius, new_y + radius)
+            collided = tilemap.get_wall(new_x - radius, new_y + radius)
             new_y = math.floor(new_y + radius) - radius - margin
         elif tilemap.is_wall(new_x + radius, new_y + radius):
-            collided = tilemap.get_tile(new_x + radius, new_y + radius)
+            collided = tilemap.get_wall(new_x + radius, new_y + radius)
             new_y = math.floor(new_y + radius) - radius - margin
 
     return CollisionResult(new_x, new_y, collided)
