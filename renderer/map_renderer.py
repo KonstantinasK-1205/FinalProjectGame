@@ -68,37 +68,37 @@ class MapRenderer:
     def add_visible_wall(self, x, y, direction, layer_data):
         WALL_HEIGHT = 1.5
 
-        layer = self.game.map.get_wall(x, y)
-        if layer < 1:
+        layer = self.game.map.get_wall(x, y) - 1
+        if layer < 0:
             return
 
         if direction == 0:
             layer_data[layer].extend([
-                1, 0          , x + 1, 0          , y + 0,
-                1, WALL_HEIGHT, x + 1, WALL_HEIGHT, y + 0,
-                0, WALL_HEIGHT, x + 1, WALL_HEIGHT, y + 1,
-                0, 0          , x + 1, 0          , y + 1
+                1, 0, x + 1, 0          , y + 0,
+                1, 1, x + 1, WALL_HEIGHT, y + 0,
+                0, 1, x + 1, WALL_HEIGHT, y + 1,
+                0, 0, x + 1, 0          , y + 1
             ])
         elif direction == 1:
             layer_data[layer].extend([
-                0, 0          , x + 0, 0          , y + 0,
-                1, 0          , x + 0, 0          , y + 1,
-                1, WALL_HEIGHT, x + 0, WALL_HEIGHT, y + 1,
-                0, WALL_HEIGHT, x + 0, WALL_HEIGHT, y + 0
+                0, 0, x + 0, 0          , y + 0,
+                1, 0, x + 0, 0          , y + 1,
+                1, 1, x + 0, WALL_HEIGHT, y + 1,
+                0, 1, x + 0, WALL_HEIGHT, y + 0
             ])
         elif direction == 2:
             layer_data[layer].extend([
-                0, 0          , x + 0, 0          , y + 1,
-                1, 0          , x + 1, 0          , y + 1,
-                1, WALL_HEIGHT, x + 1, WALL_HEIGHT, y + 1,
-                0, WALL_HEIGHT, x + 0, WALL_HEIGHT, y + 1
+                0, 0, x + 0, 0          , y + 1,
+                1, 0, x + 1, 0          , y + 1,
+                1, 1, x + 1, WALL_HEIGHT, y + 1,
+                0, 1, x + 0, WALL_HEIGHT, y + 1
             ])
         else:
             layer_data[layer].extend([
-                1, 0          , x + 0, 0          , y + 0,
-                1, WALL_HEIGHT, x + 0, WALL_HEIGHT, y + 0,
-                0, WALL_HEIGHT, x + 1, WALL_HEIGHT, y + 0,
-                0, 0          , x + 1, 0          , y + 0
+                1, 0, x + 0, 0          , y + 0,
+                1, 1, x + 0, WALL_HEIGHT, y + 0,
+                0, 1, x + 1, WALL_HEIGHT, y + 0,
+                0, 0, x + 1, 0          , y + 0
             ])
         self.wall_layers[layer].vbo_size += 4
 

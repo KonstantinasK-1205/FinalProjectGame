@@ -14,9 +14,9 @@ class MenuState(State):
     def on_set(self):
         if self.game.map.created:
             self.menu_list = {"Final Project": {}, "Resume Game": {}, "Restart Level": {},
-                              "New Game": {}, "Options": {}, "Exit": {}}
+                              "New Game": {}, "Controls": {}, "Options": {}, "Exit": {}}
         else:
-            self.menu_list = {"Final Project": {}, "New Game": {}, "Options": {}, "Exit": {}}
+            self.menu_list = {"Final Project": {}, "New Game": {}, "Controls": {}, "Options": {}, "Exit": {}}
 
         self.initialized = False
 
@@ -66,6 +66,8 @@ class MenuState(State):
                             self.game.restart_level(self.game.current_map)
                         elif menu == "Resume Game":
                             self.game.current_state = "Game"
+                        elif menu == "Controls":
+                            self.game.current_state = "Controls"
                         elif menu == "Options":
                             self.game.current_state = "Options"
                         elif menu == "Exit":

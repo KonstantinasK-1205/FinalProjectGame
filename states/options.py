@@ -5,53 +5,21 @@ class OptionsState(State):
     def __init__(self, game):
         super().__init__(game)
 
-        self.current_resolution = (self.game.width, self.game.height)
-        self.available_resolutions = pg.display.list_modes()
-        self.index_of_resolution = 0
-        if self.current_resolution in self.available_resolutions:
-            self.index_of_resolution = self.available_resolutions.index(self.current_resolution)
-
         self.menu_surfaces = []
         self.menu_height = 0
-        self.menu_list = {
-            "Options": {
-                "Option": None
-            },
-            "Resolution": {
-                "Option": self.current_resolution
-            },
-            "Fullscreen": {
-                "Option": self.game.settings_manager.settings["fullscreen"]
-            },
-            "VSync": {
-                "Option": self.game.settings_manager.settings["vsync"]
-            },
-            "Sound": {
-                "Option": self.game.settings_manager.settings["sound"]
-            },
-            "Music": {
-                "Option": self.game.settings_manager.settings["music"]
-            },
-            "Show FPS": {
-                "Option": self.game.settings_manager.settings["show_fps"]
-            },
-            "Apply": {
-                "Option": None
-            },
-            "Back": {
-                "Option": None
-            }}
+        self.menu_list = {}
 
         self.initialized = False
 
     def on_set(self):
-        self.current_resolution = (self.game.width, self.game.height)
-        self.index_of_resolution = 0
-        if self.current_resolution in self.available_resolutions:
-            self.index_of_resolution = self.available_resolutions.index(self.current_resolution)
+        self.menu_list = {"Options": {}, "Video Options": {}, "Audio Options": {}, "Back": {}}
 
-        self.menu_list["Resolution"]["Option"] = self.current_resolution
+        self.initialized = False
+
         self.create_menu_text()
+        pg.mouse.set_visible(True)
+        pg.event.set_grab(False)
+        pg.mixer.stop()
 
     def handle_event(self, event):
         if not self.initialized:
@@ -69,11 +37,11 @@ class OptionsState(State):
 
                 if pos_y < mouse_pos[1] < pos_y + height:
                     if pos_x < mouse_pos[0] < pos_x + width:
-                        self.on_hover(menu, True)
+                        self.update_menu_text(True, menu)
                     else:
-                        self.on_hover(menu, False)
+                        self.update_menu_text(False, menu)
                 else:
-                    self.on_hover(menu, False)
+                    self.update_menu_text(False, menu)
         elif event.type == pg.MOUSEBUTTONUP and event.button == 1:
             for menu in self.menu_list:
                 mouse_pos = pg.mouse.get_pos()
@@ -86,14 +54,13 @@ class OptionsState(State):
 
                 if pos_x < mouse_pos[0] < pos_x + width:
                     if pos_y < mouse_pos[1] < pos_y + height:
-                        self.change_setting(menu)
-                        if "Apply" in menu:
-                            self.apply_settings()
-                        if "Back" in menu:
+                        if menu == "Video Options":
+                            self.game.current_state = "VideoOptions"
+                        elif menu == "Audio Options":
+                            self.game.current_state = "AudioOptions"
+                        elif menu == "Back":
                             self.game.current_state = "Menu"
         elif event.type == pg.WINDOWSIZECHANGED:
-            self.current_resolution = (self.game.width, self.game.height)
-            self.menu_list["Resolution"]["Option"] = self.current_resolution
             self.create_menu_text()
 
     def update(self):
@@ -104,80 +71,22 @@ class OptionsState(State):
         self.draw_menu_text()
         self.initialized = True
 
-    def apply_settings(self):
-        settings_manager = self.game.settings_manager
-        settings_manager.settings["width"] = self.menu_list["Resolution"]["Option"][0]
-        settings_manager.settings["height"] = self.menu_list["Resolution"]["Option"][1]
-        settings_manager.settings["fullscreen"] = self.menu_list["Fullscreen"]["Option"]
-        settings_manager.settings["vsync"] = self.menu_list["VSync"]["Option"]
-        settings_manager.settings["sound"] = self.menu_list["Sound"]["Option"]
-        settings_manager.settings["music"] = self.menu_list["Music"]["Option"]
-        settings_manager.settings["show_fps"] = self.menu_list["Show FPS"]["Option"]
-        settings_manager.save()
-
-        resolution = self.menu_list["Resolution"]["Option"]
-        fullscreen = pg.FULLSCREEN if settings_manager.settings["fullscreen"] else 0
-        pg.display.set_mode(
-            resolution,
-            fullscreen | pg.RESIZABLE | pg.OPENGL | pg.DOUBLEBUF,
-            vsync=self.menu_list["VSync"]["Option"]
-        )
-
-        if self.menu_list["Music"]["Option"]:
-            self.game.sound.play_music()
-        else:
-            self.game.sound.stop_music()
-
-    def change_setting(self, menu):
-        menu_dict = self.menu_list[menu]
-        # Change settings only those who have Option
-        if type(menu_dict["Option"]) == tuple:
-            self.index_of_resolution -= 1
-            if self.index_of_resolution < 0:
-                self.index_of_resolution = len(self.available_resolutions) - 1
-            menu_dict["Option"] = self.available_resolutions[self.index_of_resolution]
-            option_text = menu_dict["Option"]
-            # Set button text and update it for renderer
-            menu_dict["Original Title"] = menu + ": " + str(option_text)
-            menu_dict["Surface"] = self.game.font_small.render("< " + menu_dict["Original Title"] + " >",
-                                                               True, (255, 255, 255))
-            self.game.renderer.load_texture_from_surface("menu_text_" + str(menu), menu_dict["Surface"])
-        elif type(menu_dict["Option"]) == bool:
-            # Reverse boolean and set correct (ON/OFF) option text
-            menu_dict["Option"] = not menu_dict["Option"]
-            option_text = 'Off' if menu_dict["Option"] is False else 'On'
-
-            # Set button text and update it for renderer
-            menu_dict["Original Title"] = menu + ": " + option_text
-            menu_dict["Surface"] = self.game.font_small.render("< " + menu_dict["Original Title"] + " >",
-                                                               True, (255, 255, 255))
-            self.game.renderer.load_texture_from_surface("menu_text_" + str(menu), menu_dict["Surface"])
-
-    def on_hover(self, menu, hover):
-        menu_dict = self.menu_list[menu]
-        font_small = self.game.font_small
-        if hover:
-            menu_dict["Surface"] = font_small.render("< " + menu_dict["Original Title"] + " >", True, (255, 255, 255))
-        else:
-            menu_dict["Surface"] = font_small.render(menu_dict["Original Title"], True, (255, 255, 255))
-        self.game.renderer.load_texture_from_surface("menu_text_" + str(menu), menu_dict["Surface"])
-
     def create_menu_text(self):
         self.menu_surfaces = []
         self.menu_height = 0
 
         for menu in self.menu_list:
-            menu_dict = self.menu_list[menu]
-            if type(menu_dict["Option"]) == bool:
-                menu_dict["Original Title"] = menu + ": " + self.get_boolean_state(menu_dict["Option"])
-            elif type(menu_dict["Option"]) == tuple:
-                menu_dict["Original Title"] = menu + ": " + str(menu_dict["Option"])
+            if menu == "Options":
+                surface = self.game.font.render(menu, True, (255, 255, 255))
+                self.menu_list[menu]["Clickable"] = False
             else:
-                menu_dict["Original Title"] = menu
+                surface = self.game.font_small.render(menu, True, (255, 255, 255))
+                self.menu_list[menu]["Clickable"] = True
 
-            menu_dict["Surface"] = self.game.font_small.render(menu_dict["Original Title"], True, (255, 255, 255))
-            menu_dict["Menu Height"] = self.menu_height
-            self.menu_height += menu_dict["Surface"].get_height()
+            self.menu_list[menu]["Original Title"] = menu
+            self.menu_list[menu]["Menu Height"] = self.menu_height
+            self.menu_list[menu]["Surface"] = surface
+            self.menu_height += surface.get_height()
 
     def draw_menu_text(self):
         for i, menu in enumerate(self.menu_list):
@@ -198,7 +107,15 @@ class OptionsState(State):
                 "menu_text_" + str(i)
             )
 
-    def get_boolean_state(self, boolean):
-        if boolean:
-            return "On"
-        return "Off"
+    def update_menu_text(self, hover, menu):
+        menu_dict = self.menu_list[menu]
+        if not menu_dict["Clickable"]:
+            return
+
+        if hover:
+            surface = self.game.font_small.render("< " + menu + " >", True, (255, 255, 255))
+        else:
+            surface = self.game.font_small.render(menu_dict["Original Title"], True, (255, 255, 255))
+
+        self.menu_list[menu]["Surface"] = surface
+        self.game.renderer.load_texture_from_surface("menu_text_" + str(menu), surface)

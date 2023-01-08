@@ -13,6 +13,8 @@ class State:
         self.text_surfaces = []
         self.text_height = 0
 
+        self.game.renderer.load_texture_from_file("resources/textures/menu_bg.jpg")
+
     def on_set(self):
         pass
 
@@ -23,7 +25,7 @@ class State:
         pass
 
     def draw(self):
-        self.game.renderer.draw_fullscreen_rect(color=(44, 44, 44))
+        self.game.renderer.draw_fullscreen_rect(texture="resources/textures/menu_bg.jpg")
 
     def update_state_text(self):
         self.text_surfaces = []

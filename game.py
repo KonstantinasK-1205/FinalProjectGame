@@ -7,12 +7,14 @@ from renderer.renderer import *
 from sound import *
 from sprites.sprite_manager import *
 from states.game import GameState
-from states.intro import IntroState
 from states.menu import MenuState
 from states.options import OptionsState
 from states.loading import LoadingState
 from states.lose import LoseState
 from states.win import WinState
+from states.controls import ControlsState
+from states.video_options import VideoOptionsState
+from states.audio_options import AudioOptionsState
 from weapons.weapon import Weapon
 from settings_manager import *
 
@@ -63,15 +65,17 @@ class Game:
         self.init_fonts()
 
         self.state = {
-            "Intro": IntroState(self),
             "Menu": MenuState(self),
             "Options": OptionsState(self),
             "Loading": LoadingState(self),
             "Game": GameState(self),
             "Win": WinState(self),
-            "Lose": LoseState(self)
+            "Lose": LoseState(self),
+            "Controls": ControlsState(self),
+            "VideoOptions": VideoOptionsState(self),
+            "AudioOptions": AudioOptionsState(self)
         }
-        self.current_state = "Intro"
+        self.current_state = "Menu"
         self.map_started_to_change = 0
         self.dt = 0
 

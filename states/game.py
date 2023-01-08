@@ -1,7 +1,6 @@
 from states.state import *
 
 class GameState(State):
-
     def __init__(self, game):
         super().__init__(game)
         self.map_state = 0

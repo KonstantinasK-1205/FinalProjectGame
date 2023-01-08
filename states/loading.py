@@ -12,7 +12,12 @@ class LoadingState(State):
         self.game_ready = False
         self.on_set_ms = pg.time.get_ticks()
         self.elapsed_ms = 0
-        self.text = []
+        self.title_text = "Welcome to " + self.game.current_map + "!"
+        self.text = [
+            "",
+            "Press Space or Left Mouse Button to continue..."
+        ]
+        self.update_state_text()
 
     def handle_event(self, event):
         if self.elapsed_ms > STATE_WAIT_MS:
@@ -24,18 +29,6 @@ class LoadingState(State):
 
     def update(self):
         self.elapsed_ms = pg.time.get_ticks() - self.on_set_ms
-
-        if self.elapsed_ms < STATE_WAIT_MS:
-            dot_count = 1 + self.elapsed_ms // 200 % 3
-            self.title_text = "Loading " + self.game.current_map + "." * dot_count
-            self.update_state_text()
-        else:
-            self.title_text = ""
-            self.text = [
-                self.game.current_map + " loaded!",
-                "Press Space or Left Mouse Button to continue..."
-            ]
-            self.update_state_text()
 
     def draw(self):
         super().draw()
