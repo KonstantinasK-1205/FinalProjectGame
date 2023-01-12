@@ -28,5 +28,5 @@ class LevelChangeChunk(Sprite):
     def update(self):
         super().update()
 
-        if self.distance_from(self.player) < 0.5:
+        if self.distance_from(self.player) < 0.5 and self.game.map.next_level:
             self.game.next_level(self.game.map.next_level)

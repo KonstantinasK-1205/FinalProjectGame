@@ -68,5 +68,5 @@ class ArmorBar:
 
         # Update armor text information
         self.armor_bar_hp = (self.armor_bar_width / 100) * self.armor
-        self.armor_text = self.game.font_small.render(str(self.armor), True, (0, 0, 64))
+        self.armor_text = self.game.fonts[1].render(str(self.armor), True, (0, 0, 64))
         self.game.renderer.load_texture_from_surface("armor_text", self.armor_text)

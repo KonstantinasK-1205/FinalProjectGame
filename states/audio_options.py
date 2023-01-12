@@ -109,7 +109,7 @@ class AudioOptionsState(State):
             option_text = menu_dict["Option"]
             # Set button text and update it for renderer
             menu_dict["Original Title"] = menu + ": " + str(option_text)
-            menu_dict["Surface"] = self.game.font_small.render("< " + menu_dict["Original Title"] + " >",
+            menu_dict["Surface"] = self.game.fonts[1].render("< " + menu_dict["Original Title"] + " >",
                                                                True, (255, 255, 255))
             self.game.renderer.load_texture_from_surface("menu_text_" + str(menu), menu_dict["Surface"])
         elif type(menu_dict["Option"]) == bool:
@@ -119,13 +119,13 @@ class AudioOptionsState(State):
 
             # Set button text and update it for renderer
             menu_dict["Original Title"] = menu + ": " + option_text
-            menu_dict["Surface"] = self.game.font_small.render("< " + menu_dict["Original Title"] + " >",
+            menu_dict["Surface"] = self.game.fonts[1].render("< " + menu_dict["Original Title"] + " >",
                                                                True, (255, 255, 255))
             self.game.renderer.load_texture_from_surface("menu_text_" + str(menu), menu_dict["Surface"])
 
     def on_hover(self, menu, hover):
         menu_dict = self.menu_list[menu]
-        font_small = self.game.font_small
+        font_small = self.game.fonts[1]
         if hover:
             menu_dict["Surface"] = font_small.render("< " + menu_dict["Original Title"] + " >", True, (255, 255, 255))
         else:
@@ -146,9 +146,9 @@ class AudioOptionsState(State):
                 menu_dict["Original Title"] = menu
 
             if menu_dict["Original Title"] == "Audio Options":
-                menu_dict["Surface"] = self.game.font.render(menu_dict["Original Title"], True, (255, 255, 255))
+                menu_dict["Surface"] = self.game.fonts[0].render(menu_dict["Original Title"], True, (255, 255, 255))
             else:
-                menu_dict["Surface"] = self.game.font_small.render(menu_dict["Original Title"], True, (255, 255, 255))
+                menu_dict["Surface"] = self.game.fonts[1].render(menu_dict["Original Title"], True, (255, 255, 255))
             menu_dict["Menu Height"] = self.menu_height
             self.menu_height += menu_dict["Surface"].get_height()
 

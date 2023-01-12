@@ -68,5 +68,5 @@ class HealthBar:
 
         # Update health text information
         self.health_bar_hp = (self.health_bar_width / 100) * health
-        self.health_text = self.game.font_small.render(str(health), True, (0, 64, 0))
+        self.health_text = self.game.fonts[1].render(str(health), True, (0, 64, 0))
         self.game.renderer.load_texture_from_surface("health_text", self.health_text)

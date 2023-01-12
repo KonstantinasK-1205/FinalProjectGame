@@ -40,9 +40,12 @@ class Game:
         pg.display.set_icon(pg.image.load("resources/icons/game_icon.png"))
 
         # Init variables
-        self.font = None
-        self.font_small = None
-        self.font_smaller = None
+        self.fonts = [None] * 3
+        self.unscaled_fonts = [
+            pg.font.Font("resources/fonts/font.ttf", 36),
+            pg.font.Font("resources/fonts/font.ttf", 24),
+            pg.font.Font("resources/fonts/font.ttf", 18)
+        ]
         self.running = False
 
         # Needs to be initialized, otherwise will crash on resize before new game
@@ -83,9 +86,9 @@ class Game:
         pg.quit()
 
     def init_fonts(self):
-        self.font = pg.font.Font("resources/fonts/font.ttf", int(36 / 720 * self.height))
-        self.font_small = pg.font.Font("resources/fonts/font.ttf", int(24 / 720 * self.height))
-        self.font_smaller = pg.font.Font("resources/fonts/font.ttf", int(18 / 720 * self.height))
+        self.fonts[0] = pg.font.Font("resources/fonts/font.ttf", int(36 / 720 * self.height))
+        self.fonts[1] = pg.font.Font("resources/fonts/font.ttf", int(24 / 720 * self.height))
+        self.fonts[2] = pg.font.Font("resources/fonts/font.ttf", int(18 / 720 * self.height))
 
     def handle_events(self):
         for event in pg.event.get():
