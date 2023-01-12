@@ -1,13 +1,11 @@
 from entity.custom_wall import *
 
-from npc.battlelord import *
-from npc.lostsoul import *
-from npc.pinky import *
-from npc.reaper import *
-from npc.soldier import *
-from npc.zombie import *
+from entity.npc.enemies.battlelord import *
+from entity.npc.enemies.lostsoul import *
+from entity.npc.enemies.pinky import *
+from entity.npc.enemies.reaper import *
+from entity.npc.enemies.soldier import *
 
-from sprites.sprite import Sprite
 from sprites.pickup_ammo import *
 from sprites.environment_assets import *
 from sprites.pickup_misc import *
@@ -124,8 +122,7 @@ class Map:
                     if len(parameter) >= 4:
                         weapon["Fire"]["Cartridge Contains"] = int(parameter[3])
                 else:
-                    print("Error while loading " + path)
-                    print("-> Couldn't find weapon " + parameter[0])
+                    print("map.py: Error while loading - " + path + ", couldn't find weapon - " + parameter[0])
                 continue
             if "Next Level" in line:
                 if "None" in line:
@@ -144,7 +141,7 @@ class Map:
 
                 # world_map should only contain ints which refer to wall texture
                 # index
-                pos = (x + 0.5, y + 0.5)
+                pos = [x + 0.5, y + 0.5, 0]
                 if char.isdigit():
                     self.walls[x + y * self.size[0]] = int(char)
                 else:
@@ -204,7 +201,7 @@ class Map:
                 elif char == "]":
                     handler.add_sprite(LevelChangeChunk(self.game, pos))
                 elif char == "[":
-                    handler.add_sprite(BreakableWall(self.game, (x, y)))
+                    handler.add_sprite(BreakableWall(self.game, [x, y, 0]))
 
                 # Spawns
                 elif char == ",":

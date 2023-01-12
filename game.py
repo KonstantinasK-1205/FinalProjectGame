@@ -133,7 +133,8 @@ class Game:
         self.pathfinding = PathFinding(self)
         self.hud.level_change(self.player.health, self.player.armor)
 
-        print(pg.time.get_ticks() - self.map_started_to_change)
+        print("Map: " + str(self.current_map) + ", loaded in: " + str(
+            pg.time.get_ticks() - self.map_started_to_change) + "ms.")
 
     def restart_level(self, level_filename):
         self.object_handler = ObjectHandler(self)

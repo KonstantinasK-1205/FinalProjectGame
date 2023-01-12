@@ -49,21 +49,24 @@ class SpriteRenderer:
         self.renderer.load_vbo("sphere", data)
 
     def can_see(self, x, y):
-        angle = (self.game.player.angle - math.atan2(y - self.renderer.camera_y, x - self.renderer.camera_x)) % math.tau
+        angle = (self.game.player.angle[0] - math.atan2(y - self.renderer.camera_pos[1],
+                                                        x - self.renderer.camera_pos[0])) % math.tau
         tolerance = math.pi / 4
         return angle < tolerance or angle > math.tau - tolerance
 
     def draw(self):
         glDisable(GL_CULL_FACE)
 
+        # Save camera position for quicker access
+        camera_pos = self.renderer.camera_pos
         # Objects must be sorted from farthest to closest for transparency to
         # work properly
         self.sprites_to_render = [o for o in self.sprites_to_render if self.can_see(o.x, o.y)]
         for o in self.sprites_to_render:
             o.__distance_from_camera = math.hypot(
-                o.x - self.renderer.camera_x,
-                o.y - self.renderer.camera_y,
-                o.z - self.renderer.camera_z
+                o.x - camera_pos[0],
+                o.y - camera_pos[1],
+                o.z - camera_pos[2]
             )
         self.sprites_to_render = sorted(self.sprites_to_render, key=lambda o: o.__distance_from_camera, reverse=True)
 
@@ -99,7 +102,7 @@ class SpriteRenderer:
 
             glTranslatef(o.x, o.z, o.y)
             if o.angle == None:
-                glRotatef(-math.degrees(self.renderer.camera_angle) + 90, 0, 1, 0)
+                glRotatef(-math.degrees(self.renderer.camera_angle[0]) + 90, 0, 1, 0)
             else:
                 glRotatef(math.degrees(o.angle), 0, 1, 0)
             glScalef(o.width, o.height, 1)
@@ -122,7 +125,6 @@ class SpriteRenderer:
             glPopMatrix()
 
         self.sprites_to_render = []
-
 
     class Sprite:
         def __init__(self, x, y, z, width, height, texture, color, sphere, angle):

@@ -14,7 +14,7 @@ class TextureManager:
         try:
             surface = pg.image.load(path)
         except FileNotFoundError:
-            print("Failed to load texture " + path)
+            print("texture_manager.py: Failed to load texture - " + path)
             # Load a checkerboard error texture
             surface = pg.Surface((2, 2))
             surface.set_at((0, 1), (255, 0, 255))

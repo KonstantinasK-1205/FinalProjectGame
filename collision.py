@@ -1,53 +1,58 @@
 import math
 
 
-def resolve_collision(x, y, dx, dy, tilemap, radius):
+def resolve_collision(pos, dx, dy, tilemap, radius):
     # Margin is used to push the player away from a wall and prevent the
     # collision from persisting due to rounding or floating point error
     margin = 0.001
 
-    new_x = x + dx
-    new_y = y + dy
+    new_pos = [pos[0] + dx, pos[1] + dy, pos[2]]
 
     collided = None
 
     # First handle motion and collision in the X axis
-    if new_x < x:
-        if tilemap.is_wall(new_x - radius, y - radius):
-            collided = tilemap.get_wall(new_x - radius, y - radius)
-            new_x = math.ceil(new_x - radius) + radius + margin
-        elif tilemap.is_wall(new_x - radius, y + radius):
-            collided = tilemap.get_wall(new_x - radius, y + radius)
-            new_x = math.ceil(new_x - radius) + radius + margin
-    elif new_x > x:
-        if tilemap.is_wall(new_x + radius, y - radius):
-            collided = tilemap.get_wall(new_x + radius, y - radius)
-            new_x = math.floor(new_x + radius) - radius - margin
-        elif tilemap.is_wall(new_x + radius, y + radius):
-            collided = tilemap.get_wall(new_x + radius, y + radius)
-            new_x = math.floor(new_x + radius) - radius - margin
+    if new_pos[0] < pos[0]:
+
+        if tilemap.is_wall(new_pos[0] - radius, pos[1] - radius):
+            collided = tilemap.get_wall(new_pos[0] - radius, pos[1] - radius)
+            new_pos[0] = math.ceil(new_pos[0] - radius) + radius + margin
+
+        elif tilemap.is_wall(new_pos[0] - radius, pos[1] + radius):
+            collided = tilemap.get_wall(new_pos[0] - radius, pos[1] + radius)
+            new_pos[0] = math.ceil(new_pos[0] - radius) + radius + margin
+
+    elif new_pos[0] > pos[0]:
+        if tilemap.is_wall(new_pos[0] + radius, pos[1] - radius):
+            collided = tilemap.get_wall(new_pos[0] + radius, pos[1] - radius)
+            new_pos[0] = math.floor(new_pos[0] + radius) - radius - margin
+
+        elif tilemap.is_wall(new_pos[0] + radius, pos[1] + radius):
+            collided = tilemap.get_wall(new_pos[0] + radius, pos[1] + radius)
+            new_pos[0] = math.floor(new_pos[0] + radius) - radius - margin
 
     # Next handle motion and collision in the Y axis
-    if new_y < y:
-        if tilemap.is_wall(new_x - radius, new_y - radius):
-            collided = tilemap.get_wall(new_x - radius, new_y - radius)
-            new_y = math.ceil(new_y - radius) + radius + margin
-        elif tilemap.is_wall(new_x + radius, new_y - radius):
-            collided = tilemap.get_wall(new_x + radius, new_y - radius)
-            new_y = math.ceil(new_y - radius) + radius + margin
-    elif new_y > y:
-        if tilemap.is_wall(new_x - radius, new_y + radius):
-            collided = tilemap.get_wall(new_x - radius, new_y + radius)
-            new_y = math.floor(new_y + radius) - radius - margin
-        elif tilemap.is_wall(new_x + radius, new_y + radius):
-            collided = tilemap.get_wall(new_x + radius, new_y + radius)
-            new_y = math.floor(new_y + radius) - radius - margin
+    if new_pos[1] < pos[1]:
+        if tilemap.is_wall(new_pos[0] - radius, new_pos[1] - radius):
+            collided = tilemap.get_wall(new_pos[0] - radius, new_pos[1] - radius)
+            new_pos[1] = math.ceil(new_pos[1] - radius) + radius + margin
 
-    return CollisionResult(new_x, new_y, collided)
+        elif tilemap.is_wall(new_pos[0] + radius, new_pos[1] - radius):
+            collided = tilemap.get_wall(new_pos[0] + radius, new_pos[1] - radius)
+            new_pos[1] = math.ceil(new_pos[1] - radius) + radius + margin
+
+    elif new_pos[1] > pos[1]:
+        if tilemap.is_wall(new_pos[0] - radius, new_pos[1] + radius):
+            collided = tilemap.get_wall(new_pos[0] - radius, new_pos[1] + radius)
+            new_pos[1] = math.floor(new_pos[1] + radius) - radius - margin
+
+        elif tilemap.is_wall(new_pos[0] + radius, new_pos[1] + radius):
+            collided = tilemap.get_wall(new_pos[0] + radius, new_pos[1] + radius)
+            new_pos[1] = math.floor(new_pos[1] + radius) - radius - margin
+
+    return CollisionResult(new_pos, collided)
 
 
 class CollisionResult:
-    def __init__(self, x, y, collided):
-        self.x = x
-        self.y = y
+    def __init__(self, pos, collided):
+        self.pos = pos
         self.collided = collided

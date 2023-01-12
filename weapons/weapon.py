@@ -144,13 +144,12 @@ class Weapon:
         handler = self.game.object_handler
 
         if spread:
-            angle_hor = player.angle + spread
-            angle_ver = -player.angle_ver + spread
+            angle = [player.angle[0] + spread,
+                     -player.angle[1] + spread]
         else:
-            angle_hor = player.angle
-            angle_ver = -player.angle_ver
-        angle = [angle_hor, angle_ver]
-        position = [player.x, player.y, player.z + (player.height / 2)]
+            angle = [player.angle[0],
+                     -player.angle[1]]
+        position = [player.pos[0], player.pos[1], player.pos[2] + (player.size[1] / 2)]
         bullet_data = [weapon["Damage"], weapon["Bullet Velocity"], weapon["Bullet Lifetime"], "Player", 0.05, 0.05]
         handler.add_bullet(Projectile(self.game, position, angle, bullet_data))
         self.game.hud.weapons_hud.update_bullet_left(weapon["Cartridge Contains"],

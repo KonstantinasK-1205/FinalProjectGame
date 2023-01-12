@@ -37,11 +37,8 @@ class Renderer:
         self.hud_renderer = HudRenderer(game, self)
         self.sprite_renderer = SpriteRenderer(game, self)
 
-        self.camera_x = 0
-        self.camera_y = 0
-        self.camera_z = 0
-        self.camera_angle = 0
-        self.camera_angle_ver = 0
+        self.camera_pos = [0, 0, 0]
+        self.camera_angle = [0, 0]
 
         self.drawing_minimap = False
 
@@ -49,11 +46,11 @@ class Renderer:
         self.map_renderer.update_vbos()
         self.minimap_renderer.update_vbos()
 
-    def load_texture_from_file(self, path, repeat = False, mipmapped = False):
+    def load_texture_from_file(self, path, repeat=False, mipmapped=False):
         try:
             surface = pg.image.load(path)
         except FileNotFoundError:
-            print("Failed to load texture " + path)
+            print("renderer.py: Failed to load texture - " + path)
             # Load a checkerboard error texture
             surface = pg.Surface((2, 2))
             surface.set_at((0, 1), (255, 0, 255))
@@ -81,20 +78,31 @@ class Renderer:
         self.vbo_manager.load_vbo(name, data)
 
     def draw_rect(self, x, y, width, height, texture=None, color=(255, 255, 255), angle=None):
-        self.hud_renderer.rects_to_render.append(self.Renderable(x, y, None, width, height, texture, color, False, angle))
+        self.hud_renderer.rects_to_render.append(
+            self.Renderable(x, y, None, width, height, texture, color, False, angle))
 
     def draw_fullscreen_rect(self, texture=None, color=(255, 255, 255)):
         self.draw_rect(0, 0, self.game.width, self.game.height, texture, color)
 
-    def draw_sprite(self, x, y, z, width, height, texture=None, color=(255, 255, 255), angle=None):
-        self.sprite_renderer.sprites_to_render.append(self.Renderable(x, y, z, width, height, texture, color, False, angle))
+    def draw_sprite(self, pos, size, texture=None, color=(255, 255, 255), angle=None):
+        self.sprite_renderer.sprites_to_render.append(self.Renderable(pos[0], pos[1], pos[2],
+                                                                      size[0], size[1],
+                                                                      texture,
+                                                                      color,
+                                                                      False,
+                                                                      angle))
 
-    def draw_sphere(self, x, y, z, width, height, texture=None, color=(255, 255, 255)):
-        self.sprite_renderer.sprites_to_render.append(self.Renderable(x, y, z, width, height, texture, color, True, None))
+    def draw_sphere(self, pos, size, texture=None, color=(255, 255, 255)):
+        self.sprite_renderer.sprites_to_render.append(self.Renderable(pos[0], pos[1], pos[2],
+                                                                      size[0], size[1],
+                                                                      texture,
+                                                                      color,
+                                                                      True,
+                                                                      None))
 
     def draw_minimap(self, x, y, tile_size):
-        self.minimap_renderer.x = x
-        self.minimap_renderer.y = y
+        self.minimap_renderer.pos[0] = x
+        self.minimap_renderer.pos[1] = y
         self.minimap_renderer.tile_size = tile_size
         self.drawing_minimap = True
 
@@ -118,12 +126,12 @@ class Renderer:
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()
 
-        glRotatef(math.degrees(self.camera_angle_ver), 1, 0, 0)
-        glRotatef(math.degrees(self.camera_angle) + 90, 0, 1, 0)
+        glRotatef(math.degrees(self.camera_angle[1]), 1, 0, 0)
+        glRotatef(math.degrees(self.camera_angle[0]) + 90, 0, 1, 0)
 
         self.skybox_renderer.draw()
 
-        glTranslatef(-self.camera_x, -self.camera_z, -self.camera_y)
+        glTranslatef(-self.camera_pos[0], -self.camera_pos[2], -self.camera_pos[1])
 
         self.map_renderer.draw()
         self.sprite_renderer.draw()
@@ -135,7 +143,6 @@ class Renderer:
             self.drawing_minimap = False
 
         self.hud_renderer.draw()
-
 
     class Renderable:
         def __init__(self, x, y, z, width, height, texture, color, sphere, angle):

@@ -3,10 +3,10 @@ Weapon: Double Shotgun,Unlocked,60
 Weapon: Revolver,Unlocked,48
 Next Level: Level5
 1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1
-1																													1						1
-1															Z									Z					1	q		O		q	1
-1						,						,			,														1	@		f		@	1
-1											Z							,			,								1	D		d		D	1
+1			@																										1						1
+1		]													Z									Z					1	q		O		q	1
+1			@			,						,			,														1	@		f		@	1
+1	1	1	1								Z							,			,								1	D		d		D	1
 1		Z					,																						1	@		s		@	1
 1														,							Z								1	D		a		D	1
 1								,																					1	@		F		@	1

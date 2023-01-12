@@ -103,7 +103,7 @@ class Sound:
             else:
                 sound.play()
         else:
-            print("Sound wasn't found: " + sound)
+            print("sound.py: Sound doesn't exist - " + sound)
 
     def play_music(self):
         if not self.game.settings_manager.settings["music"] or pg.mixer_music.get_busy():

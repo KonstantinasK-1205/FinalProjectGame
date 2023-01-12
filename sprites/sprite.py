@@ -1,49 +1,70 @@
-from collections import deque
 import math
-import os
-import pygame as pg
 
 
 class Sprite:
-    def __init__(self, game, pos=None, scale=None):
+    def __init__(self, game, pos=None, size=None):
+        # Variables to other objects
         self.game = game
         self.player = game.player
         self.sprite_manager = game.sprite_manager
 
-        # Init position and dimension
-        if pos is None:
-            self.x = self.y = self.z = 0
-        else:
-            self.x = pos[0]
-            self.y = pos[1]
-            if len(pos) == 3:
-                self.z = pos[2]
-            else:
-                self.z = 0
+        # Position and size variables
+        self.pos = [0, 0, 0] if pos is None else pos
+        self.size = [0, 0] if size is None else size
 
-        if scale is None:
-            self.width = self.height = 0
-        elif len(scale) > 1:
-            self.width = scale[0]
-            self.height = scale[1]
-        else:
-            self.width = self.height = scale[0]
-
-        # Init texture and animation variables
-        self.texture_path = None
-        self.current_state = None
+        # Path to sprite and delete variable
+        self.sprite = None
         self.delete = False
 
     def update(self):
         pass
 
     def draw(self):
-        self.game.renderer.draw_sprite(self.x, self.y, self.z, self.width, self.height, self.texture_path)
+        self.game.renderer.draw_sprite(self.pos,
+                                       self.size,
+                                       self.sprite)
 
-    def set_position(self, x, y, z=0):
-        self.x = x
-        self.y = y
-        self.z = z
-
+    # Calculate distance between sprite and passed object position
     def distance_from(self, other):
-        return math.hypot(other.x - self.x, other.y - self.y, other.z - self.z)
+        return math.hypot(self.pos[0] - other.pos[0],  # X Position
+                          self.pos[1] - other.pos[1],  # Y Position
+                          self.pos[2] - other.pos[2])  # Z Position
+
+    # Positional getters
+    # Returns exact (float) position
+    @property
+    def exact_pos(self):
+        return self.pos
+
+    # Returns grid (int) position
+    @property
+    def grid_pos(self):
+        return [int(self.pos[0]),  # X Position
+                int(self.pos[1]),  # Y Position
+                int(self.pos[2])]  # Z Position
+
+    # Returns exact (float) position on X axis
+    @property
+    def pos_x(self):
+        return self.pos[0]
+
+    # Returns exact (float) position on Y axis
+    @property
+    def pos_y(self):
+        return self.pos[1]
+
+    # Returns exact (float) position on Z axis
+    @property
+    def pos_z(self):
+        return self.pos[2]
+
+    # Size getters
+    # Returns sprite (image) width
+    @property
+    def width(self):
+        return self.size[0]
+
+    # Returns sprite (image) height
+    @property
+    def height(self):
+        return self.size[1]

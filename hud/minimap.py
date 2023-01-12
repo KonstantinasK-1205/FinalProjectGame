@@ -5,14 +5,13 @@ class Minimap:
         self.hud = hud
 
         # Minimap variables
-        self.x = 0
-        self.y = 0
+        self.pos = [0, 0, 0]
         self.tile_size = 0
         self.last_map_state = 0
 
     def draw(self, map_state):
         if map_state > 0:
-            self.game.renderer.draw_minimap(self.x, self.y, self.tile_size)
+            self.game.renderer.draw_minimap(self.pos[0], self.pos[1], self.tile_size)
 
     def on_change(self):
         self.update_map_size(self.last_map_state)
@@ -32,8 +31,8 @@ class Minimap:
             minimap_width = self.tile_size * self.game.map.width
 
             # Offset minimap from top right
-            self.x = self.game.width - minimap_width - self.hud.margin
-            self.y = self.hud.margin
+            self.pos[0] = self.game.width - minimap_width - self.hud.margin
+            self.pos[1] = self.hud.margin
 
         # Display a large minimap
         elif map_state == 2:
@@ -49,5 +48,5 @@ class Minimap:
             minimap_width = self.tile_size * self.game.map.width
 
             # Center minimap and offset from top
-            self.x = self.game.width / 2 - minimap_width / 2
-            self.y = self.hud.margin
+            self.pos[0] = self.game.width / 2 - minimap_width / 2
+            self.pos[1] = self.hud.margin

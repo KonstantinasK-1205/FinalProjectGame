@@ -6,26 +6,12 @@ class ObjectHandler:
         self.sprite_list = []
         self.bullet_list = []
         self.alive_npc_list = []
-        self.npc_positions = []
         self.killed = 0
-
-        self.dmgIncreased = False
 
         self.map_change = False
         self.map_change_wait_ms = 0
 
-    def kill_reward(self):
-        reward = self.killed
-        if self.game.map.enemy_amount > 10 and reward > int(self.game.map.enemy_amount / 1.5) and not self.dmgIncreased:
-            self.game.weapon.set_damage_buff(1.5)
-            self.game.sound.play_sfx("Player dmg buff")
-            self.dmgIncreased = True
-
-        if reward >= self.game.map.enemy_amount:
-            self.map_change = True
-
     def update(self):
-        self.npc_positions = [npc.grid_pos for npc in self.npc_list if npc.alive]
         for npc in self.npc_list:
             npc.update()
             if npc in self.alive_npc_list and npc.dead:
@@ -43,8 +29,6 @@ class ObjectHandler:
         for bullet in self.bullet_list:
             bullet.update()
         self.bullet_list = [bullet for bullet in self.bullet_list if not bullet.delete]
-
-        self.kill_reward()
 
         if self.game.player.health <= 0:
             self.game.current_state = "Lose"
@@ -88,4 +72,3 @@ class ObjectHandler:
         self.pickup_list = []
         self.sprite_list = []
         self.alive_npc_list = []
-        self.npc_positions = []

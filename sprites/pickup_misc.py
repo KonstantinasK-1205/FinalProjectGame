@@ -5,7 +5,7 @@ class BonusLevel(Sprite):
     def __init__(self, game, pos):
         super().__init__(game, pos, [0.5, 0.5])
         path = "resources/sprites/pickups/misc/silver_card.png"
-        self.texture_path = game.sprite_manager.load_single_image("silver_card", path)[0]
+        self.sprite = game.sprite_manager.load_single_image("silver_card", path)[0]
         self.type = "Other"
 
     def update(self):
@@ -21,7 +21,7 @@ class LevelChangeChunk(Sprite):
     def __init__(self, game, pos):
         super().__init__(game, pos, [0.5, 0.5])
         path = "resources/sprites/pickups/empty.png"
-        self.texture_path = game.sprite_manager.load_single_image("empty", path)[0]
+        self.sprite = game.sprite_manager.load_single_image("empty", path)[0]
         self.change_to = None
         self.type = "Other"
 

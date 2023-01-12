@@ -10,9 +10,11 @@ class PathFinding:
         self.visited = None
 
     def get_path(self, start, goal):
+        start = tuple(start)
+        goal = tuple(goal)
         # Fail if start or goal positions are in walls as this causes
         # pathfinding to take a long time
-        if self.game.map.is_wall(start[0], start[1]) or self.game.map.is_wall(goal[0], goal[1]):
+        if self.game.map.is_wall(int(start[0]), int(start[1])) or self.game.map.is_wall(int(goal[0]), int(goal[1])):
             return start
 
         self.visited = self.bfs(start, goal, self.graph)
@@ -38,13 +40,13 @@ class PathFinding:
                 break
 
             for next_node in next_nodes:
-                if next_node not in visited and next_node not in self.game.object_handler.npc_positions:
+                if next_node not in visited and next_node:
                     queue.append(next_node)
                     visited[next_node] = cur_node
         return visited
 
     def get_next_nodes(self, x, y):
-        return [(x + dx, y + dy) for dx, dy in self.ways if not self.game.map.is_wall(x + dx, y + dy)]
+        return [(x + dx, y + dy) for dx, dy in self.ways if not self.game.map.is_wall(int(x + dx), int(y + dy))]
 
     def get_graph(self):
         for i in range(self.game.map.height):

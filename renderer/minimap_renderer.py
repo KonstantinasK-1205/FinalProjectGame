@@ -6,8 +6,7 @@ class MinimapRenderer:
     def __init__(self, game, renderer):
         self.game = game
         self.renderer = renderer
-        self.x = 0
-        self.y = 0
+        self.pos = [0, 0, 0]
         self.tile_size = 0
         self.wall_vbo_size = None
         self.unvisited_chunks = []
@@ -38,16 +37,16 @@ class MinimapRenderer:
         self.wall_vbo_size = 0
 
         data = []
-        for i in range(self.game.map.height):
-            for j in range(self.game.map.width):
-                if not self.game.map.is_wall(j, i):
+        for y in range(self.game.map.height):
+            for x in range(self.game.map.width):
+                if not self.game.map.is_wall(x, y):
                     continue
 
                 data.extend([
-                    j + 1, i + 1,
-                    j + 1, i + 0,
-                    j + 0, i + 0,
-                    j + 0, i + 1
+                    x + 1, y + 1,
+                    x + 1, y + 0,
+                    x + 0, y + 0,
+                    x + 0, y + 1
                 ])
                 self.wall_vbo_size += 4
 
@@ -77,8 +76,7 @@ class MinimapRenderer:
                 self.renderer.load_vbo(vbo, data)
                 self.unvisited_chunks.append(MinimapRenderer.Chunk(
                     self.game,
-                    cx * MinimapRenderer.Chunk.WIDTH,
-                    cy * MinimapRenderer.Chunk.HEIGHT,
+                    [cx * MinimapRenderer.Chunk.WIDTH, cy * MinimapRenderer.Chunk.HEIGHT, 0],
                     vbo,
                     vbo_size
                 ))
@@ -108,7 +106,7 @@ class MinimapRenderer:
         glColor4f(0, 0, 0, 0.9)
 
         glLoadIdentity()
-        glTranslatef(self.x, self.y, 0)
+        glTranslatef(self.pos[0], self.pos[1], self.pos[2])
         glScalef(self.tile_size, self.tile_size, 1)
 
         glDrawArrays(GL_QUADS, 0, self.wall_vbo_size)
@@ -122,7 +120,7 @@ class MinimapRenderer:
                 glVertexPointer(2, GL_FLOAT, 0, ctypes.c_void_p(0))
 
                 glLoadIdentity()
-                glTranslatef(self.x, self.y, 0)
+                glTranslatef(self.pos[0], self.pos[1], self.pos[2])
                 glScalef(self.tile_size, self.tile_size, 1)
 
                 glDrawArrays(GL_QUADS, 0, c.vbo_size)
@@ -130,7 +128,7 @@ class MinimapRenderer:
                 glBindBuffer(GL_ARRAY_BUFFER, self.renderer.vbo_manager.vbos["minimap_tile"])
                 glVertexPointer(2, GL_FLOAT, 0, ctypes.c_void_p(0))
 
-                c.draw_tiles(self.x, self.y, self.tile_size)
+                c.draw_tiles(self.pos, self.tile_size)
 
     def draw_dots(self):
         glBindBuffer(GL_ARRAY_BUFFER, self.renderer.vbo_manager.vbos["minimap_dot"])
@@ -146,13 +144,13 @@ class MinimapRenderer:
 
         glColor3f(1, 0, 0)
         for enemy in self.game.object_handler.alive_npc_list:
-            if not self.game.map.is_visited(enemy.x, enemy.y):
+            if not self.game.map.is_visited(enemy.pos[0], enemy.pos[1]):
                 continue
 
             glLoadIdentity()
             glTranslatef(
-                self.x + enemy.x * self.tile_size,
-                self.y + enemy.y * self.tile_size,
+                self.pos[0] + enemy.pos[0] * self.tile_size,
+                self.pos[1] + enemy.pos[1] * self.tile_size,
                 0
             )
             glScalef(size, size, 1)
@@ -162,7 +160,7 @@ class MinimapRenderer:
         size = self.tile_size / 3
 
         for pickup in self.game.object_handler.pickup_list:
-            if not self.game.map.is_visited(pickup.x, pickup.y):
+            if not self.game.map.is_visited(pickup.pos[0], pickup.pos[1]):
                 continue
 
             if pickup.type == "Ammo":
@@ -174,8 +172,8 @@ class MinimapRenderer:
 
             glLoadIdentity()
             glTranslatef(
-                self.x + pickup.x * self.tile_size,
-                self.y + pickup.y * self.tile_size,
+                self.pos[0] + pickup.pos[0] * self.tile_size,
+                self.pos[1] + pickup.pos[1] * self.tile_size,
                 0
             )
             glScalef(size, size, 1)
@@ -190,47 +188,45 @@ class MinimapRenderer:
 
         glLoadIdentity()
         glTranslatef(
-            self.x + self.game.player.x * self.tile_size,
-            self.y + self.game.player.y * self.tile_size,
+            self.pos[0] + self.game.player.pos[0] * self.tile_size,
+            self.pos[1] + self.game.player.pos[1] * self.tile_size,
             0
         )
-        glRotatef(math.degrees(self.game.player.angle), 0, 0, 1)
+        glRotatef(math.degrees(self.game.player.angle[0]), 0, 0, 1)
         glScalef(size, size, 1)
         glDrawArrays(GL_QUADS, 0, 4)
-
 
     class Chunk:
         WIDTH = 8
         HEIGHT = 8
 
-        def __init__(self, game, x, y, vbo, vbo_size):
+        def __init__(self, game, pos, vbo, vbo_size):
             self.game = game
-            self.x = x
-            self.y = y
+            self.pos = pos
             self.vbo = vbo
             self.vbo_size = vbo_size
             self.valid = True
 
         def is_valid(self):
             # Do not recheck if this chunk was already invalidated, as an
-            # already visitd chunk will not be unvisited
+            # already visited chunk will not be unvisited
             if not self.valid:
                 return False
 
-            for i in range(self.y, self.y + MinimapRenderer.Chunk.HEIGHT):
-                for j in range(self.x, self.x + MinimapRenderer.Chunk.WIDTH):
-                    if self.game.map.is_visited(j, i):
+            for y in range(self.pos[1], self.pos[1] + MinimapRenderer.Chunk.HEIGHT):
+                for x in range(self.pos[0], self.pos[0] + MinimapRenderer.Chunk.WIDTH):
+                    if self.game.map.is_visited(x, y):
                         self.valid = False
                         return False
             return True
 
-        def draw_tiles(self, x, y, tile_size):
-            for i in range(self.y, self.y + MinimapRenderer.Chunk.HEIGHT):
-                for j in range(self.x, self.x + MinimapRenderer.Chunk.WIDTH):
-                    if self.game.map.is_wall(j, i) or self.game.map.is_visited(j, i):
+        def draw_tiles(self, pos, tile_size):
+            for y in range(self.pos[1], self.pos[1] + MinimapRenderer.Chunk.HEIGHT):
+                for x in range(self.pos[0], self.pos[0] + MinimapRenderer.Chunk.WIDTH):
+                    if self.game.map.is_wall(x, y) or self.game.map.is_visited(x, y):
                         continue
 
                     glLoadIdentity()
-                    glTranslatef(x + j * tile_size, y + i * tile_size, 0)
+                    glTranslatef(pos[0] + x * tile_size, pos[1] + y * tile_size, 0)
                     glScalef(tile_size, tile_size, 1)
                     glDrawArrays(GL_QUADS, 0, self.vbo_size)

@@ -3,9 +3,9 @@ from sprites.sprite import Sprite
 
 class PickupHealth(Sprite):
     def __init__(self, game, pos):
-        super().__init__(game, pos, [0.3])
+        super().__init__(game, pos, [0.3, 0.3])
         path = "resources/sprites/pickups/health.png"
-        self.texture_path = game.sprite_manager.load_single_image("Healthpack", path)[0]
+        self.sprite = game.sprite_manager.load_single_image("Healthpack", path)[0]
         self.type = "Player"
 
     def update(self):

@@ -8,7 +8,7 @@ class Tree(Sprite):
         variety = random.randint(0, 8) / 10
         super().__init__(game, pos, [0.7 + variety, 1.3 + variety])
         game.sprite_manager.load_single_image("Tree", "resources/sprites/environment/tree0.png")
-        self.texture_path = game.sprite_manager.get_sprite("Tree")
+        self.sprite = game.sprite_manager.get_sprite("Tree")
 
 
 class Corpse(Sprite):
@@ -17,7 +17,7 @@ class Corpse(Sprite):
         corpse_no = str(random.randint(0, 2))
         corpse_path = "corpse" + corpse_no + ".png"
         game.sprite_manager.load_single_image("Corpse" + corpse_no, "resources/sprites/environment/" + corpse_path)
-        self.texture_path = game.sprite_manager.get_sprite("Corpse" + corpse_no)
+        self.sprite = game.sprite_manager.get_sprite("Corpse" + corpse_no)
 
 
 class BigTorch(Sprite):
@@ -45,14 +45,13 @@ class BigTorch(Sprite):
         self.sprite = self.animation.get_sprite()
 
     def draw(self):
-        self.game.renderer.draw_sprite(self.x, self.y, self.z, self.width, self.height, self.sprite)
+        self.game.renderer.draw_sprite(self.pos, self.size, self.sprite)
 
 
 class SmallTorch(BigTorch):
     def __init__(self, game, pos):
         super().__init__(game, pos)
-        self.width = 0.5
-        self.height = 0.6
+        self.size = [0.5, 0.6]
         path = "resources/sprites/environment/TorchSmall/"
         self.states = {
             "Idle": {

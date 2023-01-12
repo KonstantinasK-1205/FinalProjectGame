@@ -21,9 +21,13 @@ class Hud:
         self.margin = self.game.width / 100
 
         # Update all elements
-        self.healthbar.on_change()
-        self.armorbar.on_change()
         self.minimap.on_change()
+        self.armorbar.on_change()
+        self.healthbar.on_change()
+
+    def on_player_update(self, armor, health):
+        self.armorbar.update_armorbar_info(armor)
+        self.healthbar.update_healthbar_info(health)
 
     def level_change(self, health, armor):
         # If level changes update hp and armor bar information only
