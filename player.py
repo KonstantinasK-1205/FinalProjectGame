@@ -154,7 +154,6 @@ class Player:
 
     # Calculate damage done to player armor and/or health
     def apply_damage(self, damage):
-        return
         # Calculate player health and armor applying damage
         if self.armor > 0 and self.armor >= damage:
             self.armor -= damage
