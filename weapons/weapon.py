@@ -70,8 +70,7 @@ class Weapon:
 
         self.animation.animate(self.game.dt)
 
-        self.current_state = self.animation.get_state()
-        self.sprite = self.animation.get_sprite()
+        self.sprite, self.current_state = self.animation.get_data()
 
         if self.mouse_down and not self.animation.is_playing():
             weapon = self.current_weapon()["Fire"]
@@ -160,7 +159,7 @@ class Weapon:
         self.change_weapon(weapon)
 
     def change_weapon(self, weapon):
-        if self.weapon_info[weapon]["Unlocked"]:
+        if self.weapon_info[weapon]["Unlocked"] and self.animation.completed:
             self.selected_weapon = weapon
             self.animation.load_sprite_animations(self.current_weapon())
             self.change_state("Idle")

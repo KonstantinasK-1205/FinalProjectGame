@@ -38,10 +38,6 @@ class BigTorch(Sprite):
 
     def update(self):
         self.animation.animate(self.game.dt)
-        if self.animation.completed:
-            self.animation.change_animation("Idle")
-
-        self.current_state = self.animation.get_state()
         self.sprite = self.animation.get_sprite()
 
     def draw(self):

@@ -14,8 +14,6 @@ class ZombieSpawn(Sprite):
         self.next_spawn = random.randrange(15000, 30000)
 
     def update(self):
-        super().update()
-
         current_time = pg.time.get_ticks()
         if current_time - self.last_spawned > self.next_spawn:
             self.game.object_handler.add_npc(Zombie(self.game, self.pos))

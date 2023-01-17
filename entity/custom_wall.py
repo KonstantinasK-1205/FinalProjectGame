@@ -20,18 +20,16 @@ class BreakableWall(Sprite):
         self.game.renderer.draw_sprite(self.pos, self.size, self.sprite, angle=self.angle)
 
     def update(self):
-        super().update()
-
-        # Breakable wall should be between 2 walls, try to find angle for it
+        # Breakable wall should be between 2 walls, try to find angle for it, condition runs only once
         if not self.angle_updated:
-            if self.game.map.is_wall(self.pos[0], self.pos[1] - 1) and self.game.map.is_wall(self.pos[0],
-                                                                                             self.pos[1] + 1):
+            if self.game.map.is_wall(self.pos[0], self.pos[1] - 1) and \
+                    self.game.map.is_wall(self.pos[0], self.pos[1] + 1):
                 self.pos[0] = self.pos[0]
-                self.pos[1] = self.pos[1] + 0.5
+                self.pos[1] += 0.5
                 self.angle = math.pi / 2
                 texture = str(self.game.map.get_wall(self.pos[0], self.pos[1] - 1))
             else:
-                self.pos[0] = self.pos[0] + 0.5
+                self.pos[0] += 0.5
                 self.pos[1] = self.pos[1]
                 self.angle = 0
                 texture = str(self.game.map.get_wall(self.pos[0] + 1, self.pos[1]))
@@ -47,7 +45,6 @@ class BreakableWall(Sprite):
             for n in range(25):
                 width = random.uniform(0.05, 0.3)
                 height = random.uniform(0.05, 0.3)
-                self.game.object_handler.add_sprite(Particle(self.game,
-                                                             self.pos,
-                                                             [width, height]))
+                self.game.object_handler.add_sprite(Particle(self.game, self.pos, [width, height]))
             self.delete = True
+            self.game.object_handler.update_interactive_sprite_list()

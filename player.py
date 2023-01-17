@@ -102,8 +102,7 @@ class Player:
         # Player radius prevents the camera from getting too close to a wall
         # Should not be greater than 0.5 (half wall size), as there is no
         # support for collisions with 3 walls at the same time
-        res = resolve_collision(self.pos, dx, dy, self.game.map, 0.2)
-        self.pos = res.pos[:3]
+        self.pos = resolve_collision(self.pos, dx, dy, self.game.map, 0.2)[0]
 
     # Remove Fog Of War based on player map movement
     def fill_map_visited(self):
@@ -197,9 +196,7 @@ class Player:
 
     # Calculate distance between player and passed object position
     def distance_from(self, other):
-        return math.hypot(self.pos[0] - other.pos[0],  # X Position
-                          self.pos[1] - other.pos[1],  # Y Position
-                          self.pos[2] - other.pos[2])  # Z Position
+        return math.dist(self.pos, other.pos)  # Z Position
 
     # Set spawning point of player
     def set_spawn(self, x, y, z=0):

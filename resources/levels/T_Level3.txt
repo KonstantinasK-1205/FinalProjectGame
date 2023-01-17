@@ -4,7 +4,7 @@ Next Level: T_Level2
 1	1				]	O					F	w	q	1	*	*	*	*	1	C	C	C	C	C	C	C	C	C	C	C	C	C	C	C	C	C	C	C	1	1	1	1	1
 1	1	1	1	1	1	S	D	F	@	1	F	w	q	1	*	*	*	*	*	C	C	C	C	C	C	C	C	C	C	C	C	C	C	C	C	C	C	C	1	1	1	1	1
 1	1	1	1	1	1	1	1	1	1	1	F	w	q	1	*	*	*	*	1	C	C	C	C	C	C	C	C	C	C	C	C	C	C	C	C	C	C	C	1	1	1	1	1
-1	1	#	#	#	S	S	S	D	D	D	F	w	q	1	*	*	*	*	1	C	C	C	C	C	C	C	C	C	C	C	C	C	C	C	C	C	C	C	1	1	1	1	1
+1	1	#	#	#	s	s	s	D	D	D	F	w	q	1	*	*	*	*	1	C	C	C	C	C	C	C	C	C	C	C	C	C	C	C	C	C	C	C	1	1	1	1	1
 1	1	#	#	#	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	[	1	1	1	[	1	!	!	1	1	1	1	1
 1	1	#	#	#												1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	[	1	1	S	F	1	!	!	1	1	1	1	1
 1	#	#	#	#	#	1	1	1	1	@	1	1	1	1		1	1	1	1	1	B	B	B	B	B	B	B	B	1	1	[	1	1	1	1	1	!	!	1	1	1	1	1

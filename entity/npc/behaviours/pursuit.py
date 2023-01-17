@@ -27,8 +27,7 @@ class Pursuit(Behaviour):
             self.enemy.dy = math.sin(self.enemy.angle) * self.enemy.speed * self.game.dt
 
             # Handle collision and move NPC
-            res = resolve_collision(self.enemy.pos, self.enemy.dx, self.enemy.dy, self.game.map, 0.15)
-            self.enemy.pos = res.pos[:3]
+            self.enemy.pos = resolve_collision(self.enemy.pos, self.enemy.dx, self.enemy.dy, self.game.map, 0.15)[0]
 
     def update(self):
         pass

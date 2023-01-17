@@ -19,20 +19,17 @@ class Particle(Sprite):
             self.sprite = "resources/textures/desert/wall_" + str(collided_tile) + ".jpg"
 
     def update(self):
-        super().update()
-
+        dt = self.game.dt
         # Keep collision radius same as bullet to avoid colliding at a position
         # where the bullet was not
-        res = resolve_collision(self.pos, self.dir_pos[0] * self.game.dt, self.dir_pos[1] * self.game.dt, self.game.map,
-                                0.01)
-        self.pos = res.pos
-        if res.collided:
+        self.pos, collided = resolve_collision(self.pos, self.dir_pos[0] * dt, self.dir_pos[1] * dt, self.game.map, 0.01)
+        if collided:
             self.dir_pos[0] = -self.dir_pos[0]
             self.dir_pos[1] = -self.dir_pos[1]
 
         # Gravity
-        self.dir_pos[2] -= 0.00001 * self.game.dt
-        self.pos[2] += self.dir_pos[2] * self.game.dt
+        self.dir_pos[2] -= 0.00001 * dt
+        self.pos[2] += self.dir_pos[2] * dt
 
         # If hit ground, apply friction and bounce up
         if self.pos[2] < 0:
@@ -43,7 +40,7 @@ class Particle(Sprite):
 
         # Lifetime counts seconds, dt is millisecond based, so divide by 1000
         # Only delete once reached -1 seconds to allow for a fade out
-        self.lifetime -= self.game.dt / 1000
+        self.lifetime -= dt / 1000
         if self.lifetime < -1:
             self.delete = True
 

@@ -46,13 +46,16 @@ class NPC(Sprite):
         else:
             sound = self.sfx_death
             self.alive = False
-        self.game.sound.play_sfx(sound, [self.exact_pos,
-                                         self.player.exact_pos])
+            self.game.object_handler.update_npc_list()
+        self.game.sound.play_sfx(sound, [self.exact_pos, self.player.exact_pos])
 
     # Using power of trigonometry check if NPC can see player
     def can_see_player(self, npc_pos, player_pos, angle):
         # Init variables
         step = 0.5
+
+        # Preload map object function
+        is_wall = self.game.map.is_wall
 
         # Calculate NPC sin and cos of angle once and reuse
         cos_angle = math.cos(angle)
@@ -63,23 +66,21 @@ class NPC(Sprite):
 
         # Check if NPC can walk straight line to player, if so NPC can see player
         for i in range(self.vision_range):
+            # Increase NPC position by step, stop increasing certain axis, if pos == player axis pos
             if not int(npc_pos[0]) == player_pos[0]:
                 npc_pos[0] += cos_angle * step
             if not int(npc_pos[1]) == player_pos[1]:
                 npc_pos[1] += sin_angle * step
-            if self.game.map.is_wall(int(npc_pos[0]), int(npc_pos[1])):
-                break
-            elif player_pos[0] == int(npc_pos[0]) and player_pos[1] == int(npc_pos[1]):
+
+            # Check if NPC pos == player, or if pos is in wall
+            if player_pos[0] == int(npc_pos[0]) and player_pos[1] == int(npc_pos[1]):
                 return True
+            elif is_wall(int(npc_pos[0]), int(npc_pos[1])):
+                break
         return False
 
     # Change NPC state and animation
     def change_state(self, state):
-        if not self.current_state == state:
+        if not self.current_state == state or state == "Pain":
             self.current_state = state
             self.animation.change_animation(state)
-
-    # Quick way to check if NPC is dead
-    @property
-    def dead(self):
-        return not self.alive

@@ -47,13 +47,6 @@ class HudRenderer:
 
             glLoadIdentity()
             glTranslatef(rect.x, rect.y, 0)
-            # No rotation is needed if the angle is not set, or is 0, so the
-            # following check is valid
-            if rect.angle:
-                # Offset to rotate around center
-                glTranslatef(rect.width / 2, rect.height / 2, 0)
-                glRotatef(math.degrees(rect.angle), 0, 0, 1)
-                glTranslatef(-rect.width / 2, -rect.height / 2, 0)
             glScalef(rect.width, rect.height, 1)
             glDrawArrays(GL_QUADS, 0, 4)
 

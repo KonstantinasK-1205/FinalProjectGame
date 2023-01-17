@@ -1,5 +1,6 @@
 from states.state import *
 
+
 class GameState(State):
     def __init__(self, game):
         super().__init__(game)
@@ -10,6 +11,9 @@ class GameState(State):
         self.hit_flash_ms = self.hit_flash_duration_ms
 
     def on_set(self):
+        # Reset amount of mouse movement, so being in menu doesn't impact player angle
+        pg.mouse.get_rel()
+
         pg.mouse.set_visible(False)
         pg.event.set_grab(True)
         pg.mixer.stop()
@@ -33,9 +37,7 @@ class GameState(State):
         if self.hit_flash_ms < self.hit_flash_duration_ms:
             self.hit_flash_ms += self.game.dt
 
-        # Uncomment when profiling, turns game only for 22sec.
-        # print(pg.time.get_ticks())
-        # if pg.time.get_ticks() > 22000:
+        # if pg.time.get_ticks() > 120000:
         #    self.game.running = False
 
     def draw(self):

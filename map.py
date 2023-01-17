@@ -6,13 +6,14 @@ from entity.npc.enemies.pinky import *
 from entity.npc.enemies.reaper import *
 from entity.npc.enemies.soldier import *
 
-from sprites.pickup_ammo import *
-from sprites.environment_assets import *
-from sprites.pickup_misc import *
-from sprites.pickup_armor import PickupArmor
-from sprites.pickup_health import PickupHealth
-from sprites.pickup_weapons import *
+from entity.pickup.ammo import *
+from entity.pickup.misc import *
+from entity.pickup.armor import *
+from entity.pickup.health import *
+from entity.pickup.weapon import *
+
 from sprites.enemies_spawns import *
+from sprites.environment_assets import *
 
 
 class Map:
@@ -165,27 +166,31 @@ class Map:
 
                 # Pickups stats
                 elif char == "q":
-                    handler.add_pickup(PickupHealth(self.game, pos))
+                    handler.add_pickup(Health(self.game, pos))
                 elif char == "w":
-                    handler.add_pickup(PickupArmor(self.game, pos))
+                    handler.add_pickup(Armor(self.game, pos))
 
                 # Pickups weapons
                 elif char == "a":
-                    handler.add_pickup(PitchforkPickup(self.game, pos))
+                    handler.add_pickup(Pitchfork(self.game, pos))
                 elif char == "s":
-                    handler.add_pickup(RevolverPickup(self.game, pos))
+                    handler.add_pickup(Pistol(self.game, pos))
                 elif char == "d":
-                    handler.add_pickup(DoubleShotgunPickup(self.game, pos))
+                    handler.add_pickup(DoubleShotgun(self.game, pos))
                 elif char == "f":
-                    handler.add_pickup(AutomaticRiflePickup(self.game, pos))
+                    handler.add_pickup(AutomaticRifle(self.game, pos))
 
                 # Pickups ammo
                 elif char == "S":
-                    handler.add_pickup(PistolAmmo(self.game, pos))
+                    handler.add_pickup(Revolver(self.game, pos))
                 elif char == "D":
-                    handler.add_pickup(ShotgunAmmo(self.game, pos))
+                    handler.add_pickup(Shotgun(self.game, pos))
                 elif char == "F":
-                    handler.add_pickup(RifleAmmo(self.game, pos))
+                    handler.add_pickup(Rifle(self.game, pos))
+                elif char == "-":
+                    handler.add_pickup(BonusLevel(self.game, pos))
+                elif char == "]":
+                    handler.add_pickup(LevelChange(self.game, pos))
 
                 # Sprites / Decoration
                 elif char == "!":
@@ -196,12 +201,8 @@ class Map:
                     handler.add_sprite(SmallTorch(self.game, pos))
                 elif char == "*":
                     handler.add_sprite(Corpse(self.game, pos))
-                elif char == "-":
-                    handler.add_sprite(BonusLevel(self.game, pos))
-                elif char == "]":
-                    handler.add_sprite(LevelChangeChunk(self.game, pos))
                 elif char == "[":
-                    handler.add_sprite(BreakableWall(self.game, [x, y, 0]))
+                    handler.add_interactive_sprite(BreakableWall(self.game, [x, y, 0]))
 
                 # Spawns
                 elif char == ",":
@@ -238,7 +239,7 @@ class Map:
     def is_visited(self, x, y):
         if x < 0 or x >= self.size[0] or y < 0 or y >= self.size[1]:
             return False
-        return self.visited[int(x) + int(y) * self.size[0]] == True
+        return self.visited[int(x) + int(y) * self.size[0]]
 
     def set_visited(self, x, y, value=True):
         if x < 0 or x >= self.size[0] or y < 0 or y >= self.size[1]:

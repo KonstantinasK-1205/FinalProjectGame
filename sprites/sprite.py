@@ -20,21 +20,11 @@ class Sprite:
         pass
 
     def draw(self):
-        self.game.renderer.draw_sprite(self.pos,
-                                       self.size,
-                                       self.sprite)
+        self.game.renderer.draw_sprite(self.pos, self.size, self.sprite)
 
     # Calculate distance between sprite and passed object position
     def distance_from(self, other):
-        return math.hypot(self.pos[0] - other.pos[0],  # X Position
-                          self.pos[1] - other.pos[1],  # Y Position
-                          self.pos[2] - other.pos[2])  # Z Position
-
-    # Positional getters
-    # Returns exact (float) position
-    @property
-    def exact_pos(self):
-        return self.pos
+        return math.dist(self.pos, other.pos)
 
     # Returns grid (int) position
     @property
@@ -42,6 +32,11 @@ class Sprite:
         return [int(self.pos[0]),  # X Position
                 int(self.pos[1]),  # Y Position
                 int(self.pos[2])]  # Z Position
+
+    # Returns exact (float) position
+    @property
+    def exact_pos(self):
+        return self.pos
 
     # Returns exact (float) position on X axis
     @property
@@ -58,7 +53,6 @@ class Sprite:
     def pos_z(self):
         return self.pos[2]
 
-    # Size getters
     # Returns sprite (image) width
     @property
     def width(self):

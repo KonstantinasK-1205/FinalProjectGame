@@ -49,10 +49,4 @@ def resolve_collision(pos, dx, dy, tilemap, radius):
             collided = tilemap.get_wall(new_pos[0] + radius, new_pos[1] + radius)
             new_pos[1] = math.floor(new_pos[1] + radius) - radius - margin
 
-    return CollisionResult(new_pos, collided)
-
-
-class CollisionResult:
-    def __init__(self, pos, collided):
-        self.pos = pos
-        self.collided = collided
+    return new_pos, collided

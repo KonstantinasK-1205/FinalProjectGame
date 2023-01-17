@@ -30,12 +30,10 @@ class Attack(Behaviour):
             if self.enemy.last_fire_time > self.enemy.fire_cooldown:
                 self.enemy.change_state("Attack")
 
-        if self.enemy.current_state == "Attack" and self.enemy.animation.completed:
+        if self.enemy.animation.completed and self.enemy.current_state == "Attack":
             if self.enemy.bullet_in_gun >= self.enemy.bullet_per_shot:
-                for i in range(self.enemy.bullet_per_shot):
-                    self.enemy.create_projectile()
-                    self.game.sound.play_sfx(self.enemy.sfx_attack, [self.enemy.exact_pos,
-                                                                     self.enemy.player.exact_pos])
+                self.enemy.create_projectile(self.enemy.bullet_per_shot)
+                self.game.sound.play_sfx(self.enemy.sfx_attack, [self.enemy.exact_pos, self.enemy.player.exact_pos])
                 if self.enemy.take_damage_on_attack:
                     self.enemy.apply_damage(self.enemy.damage_on_attack)
                 self.enemy.last_fire_time = 0

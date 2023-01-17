@@ -19,9 +19,9 @@ class Animation:
         self.state = state
         self.current_frame = 0
         self.elapsed_time = 0
-        self.frames = self.sprite_info[self.state]["Frames"]
+        self.frames = self.sprite_info[state]["Frames"]
         self.frames_len = len(self.frames) - 1
-        self.frame_duration = self.sprite_info[self.state]["Speed"]
+        self.frame_duration = self.sprite_info[state]["Speed"]
         self.completed = False
 
     def animate(self, dt):
@@ -30,12 +30,12 @@ class Animation:
 
         # If the elapsed time is greater than the frame duration, move to the next frame
         if self.elapsed_time > self.frame_duration:
-            self.current_frame = self.current_frame + 1
+            self.current_frame += 1
             self.elapsed_time = 0
 
         # If the current frame is the last frame, set the completed flag to True
         if self.current_frame > self.frames_len:
-            self.current_frame = self.current_frame - 1
+            self.current_frame -= 1
             self.completed = True
             return
 
@@ -55,6 +55,9 @@ class Animation:
 
     def get_sprite(self):
         return self.frames[self.current_frame]
+
+    def get_data(self):
+        return self.frames[self.current_frame], self.state
 
     def is_playing(self):
         return not self.completed

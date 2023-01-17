@@ -6,7 +6,7 @@ from entity.npc.behaviours.pursuit import Pursuit
 from entity.npc.behaviours.wandering import Wandering
 from entity.npc.behaviours.rush import Rush
 from projectile import Projectile
-from sprites.pickup_ammo import *
+from entity.pickup.ammo import *
 
 
 class Enemy(NPC):
@@ -40,7 +40,7 @@ class Enemy(NPC):
 
         self.seeing_player = False  # Sets boolean if enemy can see player
         self.seeing_player_time = 0  # Reset timer, when enemy saw player
-        self.seeing_player_cooldown = 30  # Cooldown before enemy can check for player again
+        self.seeing_player_cooldown = 90  # Cooldown before enemy can check for player again
 
         ####
         # Pursuit variables
@@ -78,24 +78,22 @@ class Enemy(NPC):
 
     def update(self):
         self.animation.animate(self.game.dt)
-
-        self.current_state = self.animation.get_state()
-        self.sprite = self.animation.get_sprite()
+        self.sprite, self.current_state = self.animation.get_data()
 
         # If enemy is dead, stop main logic
         if not self.alive:
-            if not self.ammo_dropped:
+            if self.can_drop_ammo_on_death and not self.ammo_dropped:
                 if self.droppable_ammo == "Shotgun":
-                    self.game.object_handler.add_pickup(ShotgunAmmo(self.game,
-                                                                    self.exact_pos,
-                                                                    self.bullet_in_total))
+                    self.game.object_handler.add_pickup(Shotgun(self.game,
+                                                                self.exact_pos,
+                                                                self.bullet_in_total))
                 self.ammo_dropped = True
             self.change_state("Death")
             return
 
         # If NPC hurt, he can't do anything else
         if self.pain:
-            if self.current_state == "Pain" and self.animation.completed:
+            if self.animation.completed and self.current_state == "Pain":
                 self.pain = False
             return
 
@@ -121,10 +119,7 @@ class Enemy(NPC):
         elif self.distance_from_player <= self.update_range:
             # If player inside update range, let it wander around
             # Although if enemy was in pursuit mode, let it move toward last known position
-            if not self.in_pursuit:
-                self.current_behaviour = "Wandering"
-            else:
-                self.current_behaviour = "Pursuit"
+            self.current_behaviour = "Pursuit" if self.in_pursuit else "Wandering"
 
             # Check if player in vision range
             if self.distance_from_player <= self.vision_range:
@@ -167,7 +162,7 @@ class Enemy(NPC):
         elif self.current_behaviour == "Attack":
             pass
 
-    def create_projectile(self):
+    def create_projectile(self, amount=1):
         # Calculate projectile spawn position
         position = [self.pos[0], self.pos[1], (self.size[1] / 2)]
 
@@ -188,8 +183,12 @@ class Enemy(NPC):
                        self.projectile_speed,
                        self.projectile_lifetime,
                        "Enemy",
-                       self.projectile_size[0],
-                       self.projectile_size[1]]
+                       self.projectile_size]
 
         # Spawn bullet
-        self.game.object_handler.add_bullet(Projectile(self.game, position, angle, bullet_data, self.projectile_sprite))
+        for i in range(amount):
+            self.game.object_handler.add_bullet(Projectile(self.game,
+                                                           position,
+                                                           angle,
+                                                           bullet_data,
+                                                           self.projectile_sprite))
