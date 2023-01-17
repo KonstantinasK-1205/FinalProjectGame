@@ -24,6 +24,7 @@ class Map:
 
         self.floors = []
         self.walls = []
+        self.entities = []
         self.visited = []
 
         self.enemy_amount = 0
@@ -36,6 +37,7 @@ class Map:
 
         self.floors = [0] * self.size[0] * self.size[1]
         self.walls = [0] * self.size[0] * self.size[1]
+        self.entities = [""] * self.size[0] * self.size[1]
         self.visited = [False] * self.size[0] * self.size[1]
 
         self.enemy_amount = 0
@@ -47,9 +49,10 @@ class Map:
 
     def resize(self, size):
         new_size = size
-        new_floors = [0] * self.size[0] * self.size[1]
-        new_walls = [0] * self.size[0] * self.size[1]
-        new_visited = [False] * self.size[0] * self.size[1]
+        new_floors = [0] * new_size[0] * new_size[1]
+        new_walls = [0] * new_size[0] * new_size[1]
+        new_entities = [""] * new_size[0] * new_size[1]
+        new_visited = [False] * new_size[0] * new_size[1]
 
         overlap_size = (
             min(self.size[0], new_size[0]),
@@ -59,11 +62,13 @@ class Map:
             for j in range(overlap_size[0]):
                 new_floors[j + i * new_size[0]] = self.floors[j + i * self.size[0]]
                 new_walls[j + i * new_size[0]] = self.walls[j + i * self.size[0]]
+                new_entities[j + i * new_size[0]] = self.entities[j + i * self.size[0]]
                 new_visited[j + i * new_size[0]] = self.visited[j + i * self.size[0]]
 
         self.size = new_size
         self.floors = new_floors
         self.walls = new_walls
+        self.entities = new_entities
         self.visited = new_visited
 
     def load(self, filename):
@@ -147,6 +152,7 @@ class Map:
                     self.walls[x + y * self.size[0]] = int(char)
                 else:
                     self.floors[x + y * self.size[0]] = 1
+                    self.entities[x + y * self.size[0]] = char
 
                 # Player and Enemies
                 if char == "O":
@@ -226,6 +232,11 @@ class Map:
             return 0
         return self.floors[int(x) + int(y) * self.size[0]]
 
+    def set_floor(self, x, y, floor):
+        if x < 0 or x >= self.size[0] or y < 0 or y >= self.size[1]:
+            return 0
+        self.floors[int(x) + int(y) * self.size[0]] = floor
+
     def is_wall(self, x, y):
         if x < 0 or x >= self.size[0] or y < 0 or y >= self.size[1]:
             return True
@@ -235,6 +246,21 @@ class Map:
         if x < 0 or x >= self.size[0] or y < 0 or y >= self.size[1]:
             return 0
         return self.walls[int(x) + int(y) * self.size[0]]
+
+    def set_wall(self, x, y, wall):
+        if x < 0 or x >= self.size[0] or y < 0 or y >= self.size[1]:
+            return 0
+        self.walls[int(x) + int(y) * self.size[0]] = wall
+
+    def get_entity(self, x, y):
+        if x < 0 or x >= self.size[0] or y < 0 or y >= self.size[1]:
+            return 0
+        return self.entities[int(x) + int(y) * self.size[0]]
+
+    def set_entity(self, x, y, entity):
+        if x < 0 or x >= self.size[0] or y < 0 or y >= self.size[1]:
+            return 0
+        self.entities[int(x) + int(y) * self.size[0]] = entity
 
     def is_visited(self, x, y):
         if x < 0 or x >= self.size[0] or y < 0 or y >= self.size[1]:

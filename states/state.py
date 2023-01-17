@@ -32,12 +32,12 @@ class State:
         self.text_height = 0
 
         if not self.title_text == "":
-            surface = self.game.font.render(self.title_text, True, (255, 255, 255))
+            surface = self.game.fonts[0].render(self.title_text, True, (255, 255, 255))
             self.text_surfaces.append((self.text_height, surface))
             self.text_height += surface.get_height()
 
         for text in self.text:
-            surface = self.game.font_small.render(text, True, (255, 255, 255))
+            surface = self.game.fonts[1].render(text, True, (255, 255, 255))
             self.text_surfaces.append((self.text_height, surface))
             self.text_height += surface.get_height()
 

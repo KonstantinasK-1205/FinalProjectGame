@@ -38,7 +38,7 @@ class Hud:
         self.minimap.on_change()
 
     def draw_fps_counter(self):
-        fps_counter = self.game.font_small.render("FPS: " + str(int(self.game.clock.get_fps())),
+        fps_counter = self.game.fonts[1].render("FPS: " + str(int(self.game.clock.get_fps())),
                                                   True,
                                                   (255, 255, 255))
         self.game.renderer.load_texture_from_surface("fps_counter", fps_counter)

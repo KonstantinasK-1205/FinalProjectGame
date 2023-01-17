@@ -89,10 +89,10 @@ class MenuState(State):
 
         for menu in self.menu_list:
             if "Final Project" in menu:
-                surface = self.game.font.render(menu, True, (255, 255, 255))
+                surface = self.game.fonts[0].render(menu, True, (255, 255, 255))
                 self.menu_list[menu]["Clickable"] = False
             else:
-                surface = self.game.font_small.render(menu, True, (255, 255, 255))
+                surface = self.game.fonts[1].render(menu, True, (255, 255, 255))
                 self.menu_list[menu]["Clickable"] = True
 
             self.menu_list[menu]["Original Title"] = menu
@@ -125,9 +125,9 @@ class MenuState(State):
             return
 
         if hover:
-            surface = self.game.font_small.render("< " + menu + " >", True, (255, 255, 255))
+            surface = self.game.fonts[1].render("< " + menu + " >", True, (255, 255, 255))
         else:
-            surface = self.game.font_small.render(menu_dict["Original Title"], True, (255, 255, 255))
+            surface = self.game.fonts[1].render(menu_dict["Original Title"], True, (255, 255, 255))
 
         self.menu_list[menu]["Surface"] = surface
         self.game.renderer.load_texture_from_surface("menu_text_" + str(menu), surface)
