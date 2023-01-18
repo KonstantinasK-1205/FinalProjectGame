@@ -26,6 +26,21 @@ class Map:
         self.walls = []
         self.entities = []
         self.visited = []
+        self.properties = []
+
+        self.enemy_amount = 0
+        self.next_level = None
+
+        self.created = False
+
+    def reset(self):
+        self.size = (0, 0)
+
+        self.floors = []
+        self.walls = []
+        self.entities = []
+        self.visited = []
+        self.properties = []
 
         self.enemy_amount = 0
         self.next_level = None
@@ -39,6 +54,7 @@ class Map:
         self.walls = [0] * self.size[0] * self.size[1]
         self.entities = [""] * self.size[0] * self.size[1]
         self.visited = [False] * self.size[0] * self.size[1]
+        self.properties = []
 
         self.enemy_amount = 0
         self.next_level = None
@@ -76,49 +92,37 @@ class Map:
         map_file = open(path, "r")
 
         # Find map size
-        width = 0
-        height = 0
+        line = map_file.readline()
+        if line.find("Map Width: ") != 0:
+            return
+        width = int(line.split(": ")[1])
 
-        y = 0
+        line = map_file.readline()
+        if line.find("Map Height: ") != 0:
+            return
+        height = int(line.split(": ")[1])
+
+        self.create([width, height])
+
+        # Read map properties
         while line := map_file.readline():
-            # Skip lines with map constants
-            if ": " in line:
-                continue
+            # Strip the line separator
+            line = line[:-1]
 
-            x = 0
-            skip = False
-            for char in line:
-                # Magic fix for tab separated files
-                if "\t" in line:
-                    if skip:
-                        skip = False
-                        continue
-                    elif not char == "\t":
-                        skip = True
-                x += 1
-                width = max(width, x)
-            y += 1
-        height = y
+            # Properties end on blank line
+            if line == "":
+                break
 
-        self.create((width, height))
+            # Add properties line to list (used by map editor)
+            self.properties.append(line)
 
-        # Read map data
-        handler = self.game.object_handler
-
-        map_file.seek(0)
-        y = 0
-        while line := map_file.readline():
-            x = 0
-            skip = False
-            if "Player HP:" in line:
-                self.game.player.health = int(line.split(': ')[1])
-                continue
-            if "Player Armor:" in line:
-                self.game.player.armor = int(line.split(': ')[1])
-                continue
-            if "Weapon" in line:
-                parameter = line.split(': ')[1].lstrip()
-                parameter = parameter.split(",")
+            # Parse properties
+            if line.find("Player HP: ") == 0:
+                self.game.player.health = int(line.split(": ")[1])
+            elif line.find("Player Armor: ") == 0:
+                self.game.player.armor = int(line.split(": ")[1])
+            elif line.find("Weapon: ") == 0:
+                parameter = line.split(": ")[1].split(",")
                 if parameter[0] in self.game.weapon.weapon_info:
                     weapon = self.game.weapon.weapon_info[parameter[0]]
                     if len(parameter) >= 2:
@@ -129,30 +133,34 @@ class Map:
                         weapon["Fire"]["Cartridge Contains"] = int(parameter[3])
                 else:
                     print("map.py: Error while loading - " + path + ", couldn't find weapon - " + parameter[0])
-                continue
-            if "Next Level" in line:
+            elif line.find("Next Level: ") == 0:
                 if "None" in line:
                     self.next_level = None
                 else:
-                    self.next_level = line.split(': ')[1].replace("\n", "")
-                continue
-            for char in line:
-                # Magic fix for tab separated files
-                if "\t" in line:
-                    if skip:
-                        skip = False
-                        continue
-                    elif not char == "\t":
-                        skip = True
+                    self.next_level = line.split(': ')[1]
 
-                # world_map should only contain ints which refer to wall texture
-                # index
-                pos = [x + 0.5, y + 0.5, 0]
+        # Read floor map
+        for y in range(height):
+            line = map_file.readline()[:-1].split(" ")
+            for x in range(width):
+                self.floors[x + y * width] = int(line[x])
+
+        # Read wall and entity map
+        for y in range(height):
+            line = map_file.readline()[:-1].split(" ")
+            for x in range(width):
+                char = line[x]
+
                 if char.isdigit():
-                    self.walls[x + y * self.size[0]] = int(char)
-                else:
-                    self.floors[x + y * self.size[0]] = 1
-                    self.entities[x + y * self.size[0]] = char
+                    self.walls[x + y * width] = int(char)
+                    continue
+
+                self.entities[x + y * width] = char
+
+                # Entities are added to tile centers
+                pos = [x + 0.5, y + 0.5, 0]
+
+                handler = self.game.object_handler
 
                 # Player and Enemies
                 if char == "O":
@@ -214,13 +222,41 @@ class Map:
                 elif char == ",":
                     handler.add_sprite(ZombieSpawn(self.game, pos))
 
-                # Floor 2 (testing)
-                elif char == "_":
-                    self.floors[x + y * self.size[0]] = 2
-                x += 1
-            y += 1
-
         self.game.renderer.update_map_vbos()
+
+    def save(self, filename):
+        path = "resources/levels/" + filename + ".txt"
+        map_file = open(path, "w")
+
+        # Write map size
+        map_file.write("Map Width: " + str(self.width) + "\n")
+        map_file.write("Map Height: " + str(self.height) + "\n")
+
+        # Write map properties
+        for p in self.properties:
+            map_file.write(p + "\n")
+
+        # End propreties with a blank line
+        map_file.write("\n")
+
+        # Write floors map
+        for y in range(self.height):
+            for x in range(self.width):
+                if x > 0:
+                    map_file.write(" ")
+                map_file.write(str(self.floors[x + y * self.width]))
+            map_file.write("\n")
+
+        # Write wall and entity map
+        for y in range(self.height):
+            for x in range(self.width):
+                if x > 0:
+                    map_file.write(" ")
+                if self.entities[x + y * self.width]:
+                    map_file.write(self.entities[x + y * self.width])
+                else:
+                    map_file.write(str(self.walls[x + y * self.width]))
+            map_file.write("\n")
 
     def is_floor(self, x, y):
         if x < 0 or x >= self.size[0] or y < 0 or y >= self.size[1]:
@@ -265,7 +301,7 @@ class Map:
     def is_visited(self, x, y):
         if x < 0 or x >= self.size[0] or y < 0 or y >= self.size[1]:
             return False
-        return self.visited[int(x) + int(y) * self.size[0]]
+        return self.visited[int(x) + int(y) * self.size[0]] == True
 
     def set_visited(self, x, y, value=True):
         if x < 0 or x >= self.size[0] or y < 0 or y >= self.size[1]:

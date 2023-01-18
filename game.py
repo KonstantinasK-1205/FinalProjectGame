@@ -15,6 +15,7 @@ from states.win import WinState
 from states.controls import ControlsState
 from states.video_options import VideoOptionsState
 from states.audio_options import AudioOptionsState
+from states.editor import EditorState
 from weapons.weapon import Weapon
 from settings_manager import *
 
@@ -76,7 +77,8 @@ class Game:
             "Lose": LoseState(self),
             "Controls": ControlsState(self),
             "VideoOptions": VideoOptionsState(self),
-            "AudioOptions": AudioOptionsState(self)
+            "AudioOptions": AudioOptionsState(self),
+            "Editor": EditorState(self)
         }
         self.current_state = "Menu"
         self.map_started_to_change = 0
