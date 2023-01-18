@@ -1,6 +1,7 @@
 import gui
 import copy
 
+
 class LeftPanel(gui.VBox):
     def __init__(self, game):
         super().__init__(game)

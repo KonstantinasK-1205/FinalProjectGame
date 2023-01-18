@@ -42,7 +42,7 @@ class InputField(Text):
                     self.string = self.string[:-1]
                 elif event.key == pg.K_RETURN:
                     self.pressed = False
-                else:
+                elif event.unicode.isprintable():
                     self.string += event.unicode
 
     def draw(self):
@@ -50,14 +50,38 @@ class InputField(Text):
             return
 
         if self.pressed:
-            self.game.renderer.draw_rect(self.position[0], self.position[1], self.size[0], self.size[1], color=self.pressed_color)
+            self.game.renderer.draw_rect(
+                self.position[0],
+                self.position[1],
+                self.size[0],
+                self.size[1],
+                color=self.pressed_color
+            )
         elif self.hovering:
-            self.game.renderer.draw_rect(self.position[0], self.position[1], self.size[0], self.size[1], color=self.hover_color)
+            self.game.renderer.draw_rect(
+                self.position[0],
+                self.position[1],
+                self.size[0],
+                self.size[1],
+                color=self.hover_color
+            )
         else:
-            self.game.renderer.draw_rect(self.position[0], self.position[1], self.size[0], self.size[1], color=self.background_color)
+            self.game.renderer.draw_rect(
+                self.position[0],
+                self.position[1],
+                self.size[0],
+                self.size[1],
+                color=self.background_color
+            )
 
         if not self.background_texture == None:
-            self.game.renderer.draw_rect(self.position[0], self.position[1], self.size[0], self.size[1], self.background_texture)
+            self.game.renderer.draw_rect(
+                self.position[0],
+                self.position[1],
+                self.size[0],
+                self.size[1],
+                self.background_texture
+            )
 
         if self.font == None:
             return
@@ -68,8 +92,10 @@ class InputField(Text):
             self.game.renderer.load_texture_from_surface(self.texture_name, surface)
             self.texture_out_of_date = False
 
-        position = (
+        self.game.renderer.draw_rect(
             self.position[0] + (self.size[0] - self.texture_size[0]) / 2,
-            self.position[1] + (self.size[1] - self.texture_size[1]) / 2
+            self.position[1] + (self.size[1] - self.texture_size[1]) / 2,
+            self.texture_size[0],
+            self.texture_size[1],
+            self.texture_name
         )
-        self.game.renderer.draw_rect(position[0], position[1], self.texture_size[0], self.texture_size[1], self.texture_name)

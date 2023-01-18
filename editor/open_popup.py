@@ -7,7 +7,7 @@ class OpenPopup(gui.VBox):
         super().__init__(game)
 
         self.flexible = (False, False)
-        self.size = (400, 200-80)
+        self.size = (400, 120)
         self.position = (
             (self.game.width - self.size[0]) / 2,
             (self.game.height - self.size[1]) / 2

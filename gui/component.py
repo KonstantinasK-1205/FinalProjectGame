@@ -66,9 +66,21 @@ class Component:
             return
 
         if self.background_texture:
-            self.game.renderer.draw_rect(self.position[0], self.position[1], self.size[0], self.size[1], self.background_texture)
+            self.game.renderer.draw_rect(
+                self.position[0],
+                self.position[1],
+                self.size[0],
+                self.size[1],
+                self.background_texture
+            )
         else:
-            self.game.renderer.draw_rect(self.position[0], self.position[1], self.size[0], self.size[1], color=self.background_color)
+            self.game.renderer.draw_rect(
+                self.position[0],
+                self.position[1],
+                self.size[0],
+                self.size[1],
+                color=self.background_color
+            )
 
         for c in self.children:
             if c.position[0] + c.size[0] - 1 < self.position[0] or \

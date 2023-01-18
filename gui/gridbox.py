@@ -1,5 +1,6 @@
 from gui.component import *
 
+
 class GridBox(Component):
     def __init__(self, game):
         super().__init__(game)

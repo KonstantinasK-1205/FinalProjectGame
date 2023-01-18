@@ -23,7 +23,7 @@ class Text(Component):
 
         if not self.visible or self.font == None:
             return
-        
+
         if self.texture_out_of_date:
             surface = self.font.render(self.string, True, self.color)
             self.texture_size = surface.get_size()
@@ -35,7 +35,13 @@ class Text(Component):
             max(self.size[1], self.texture_size[1])            
         )
 
-        self.game.renderer.draw_rect(self.position[0], self.position[1], rect_size[0], rect_size[1], color=self.background_color)
+        self.game.renderer.draw_rect(
+            self.position[0],
+            self.position[1],
+            rect_size[0],
+            rect_size[1],
+            color=self.background_color
+        )
 
         if self.centered[0]:
             position_x = self.position[0] + (self.size[0] - self.texture_size[0]) / 2
@@ -46,7 +52,13 @@ class Text(Component):
         else:
             position_y = self.position[1]
 
-        self.game.renderer.draw_rect(position_x, position_y, self.texture_size[0], self.texture_size[1], self.texture_name)
+        self.game.renderer.draw_rect(
+            position_x,
+            position_y,
+            self.texture_size[0],
+            self.texture_size[1],
+            self.texture_name
+        )
 
     @property
     def font(self):

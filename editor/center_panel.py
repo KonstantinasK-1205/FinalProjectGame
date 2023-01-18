@@ -49,7 +49,8 @@ class CenterPanel(gui.VBox):
                event.pos[1] >= self.position[1] and event.pos[1] < (self.position[1] + self.size[1]):
                 self.pressed_draw = True
         if event.type == pg.MOUSEBUTTONDOWN and event.button == 3:
-            if event.pos[0] > self.position[0] and event.pos[0] < self.position[0] + self.size[0] and event.pos[1] > self.position[1] and event.pos[1] < self.position[1] + self.size[1]:
+            if event.pos[0] > self.position[0] and event.pos[0] < self.position[0] + self.size[0] and \
+               event.pos[1] > self.position[1] and event.pos[1] < self.position[1] + self.size[1]:
                 if not self.pressed:
                     self.mouse_on_press = (event.pos[0], event.pos[1])
                     self.value_on_press = (self.hscrollbar.value, self.vscrollbar.value)
