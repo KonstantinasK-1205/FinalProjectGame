@@ -34,8 +34,8 @@ class CenterPanel(gui.VBox):
 
         self.layout()
 
-        self.pressed = False
-        self.pressed_draw = False
+        self.dragging = False
+        self.drawing = False
         self.mouse_on_press = (0, 0)
         self.value_on_press = (0, 0)
         self.mouse_cur = (0, 0)
@@ -44,24 +44,25 @@ class CenterPanel(gui.VBox):
     def handle_event(self, event):
         super().handle_event(event)
 
-        if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
-            if event.pos[0] >= self.position[0] and event.pos[0] < (self.position[0] + self.size[0]) and \
-               event.pos[1] >= self.position[1] and event.pos[1] < (self.position[1] + self.size[1]):
-                self.pressed_draw = True
-        if event.type == pg.MOUSEBUTTONDOWN and event.button == 3:
-            if event.pos[0] > self.position[0] and event.pos[0] < self.position[0] + self.size[0] and \
-               event.pos[1] > self.position[1] and event.pos[1] < self.position[1] + self.size[1]:
-                if not self.pressed:
+        if event.type == pg.MOUSEBUTTONDOWN:
+            # Check against the position of the gridbox to avoid enabling
+            # drawing or dragging if the user clicks on the scrollbars
+            if event.pos[0] >= self.gridbox.position[0] and event.pos[0] < (self.gridbox.position[0] + self.gridbox.size[0]) and \
+               event.pos[1] >= self.gridbox.position[1] and event.pos[1] < (self.gridbox.position[1] + self.gridbox.size[1]):
+                if event.button == 1:
+                    self.drawing = True
+                elif event.button == 3 and not self.dragging:
                     self.mouse_on_press = (event.pos[0], event.pos[1])
                     self.value_on_press = (self.hscrollbar.value, self.vscrollbar.value)
-                self.pressed = True
-        elif event.type == pg.MOUSEBUTTONUP and event.button == 1:
-            self.pressed_draw = False
-        elif event.type == pg.MOUSEBUTTONUP and event.button == 3:
-            self.pressed = False
+                    self.dragging = True
+        elif event.type == pg.MOUSEBUTTONUP:
+            if event.button == 1:
+                self.drawing = False
+            elif event.button == 3:
+                self.dragging = False
         elif event.type == pg.WINDOWFOCUSLOST:
-            self.pressed = False
-            self.pressed_draw = False
+            self.dragging = False
+            self.drawing = False
 
     def update(self):
         super().update()
@@ -72,7 +73,7 @@ class CenterPanel(gui.VBox):
             max(0, min(self.game.map.height, int(int(self.vscrollbar.value) + (self.mouse_cur[1] - self.position[1]) / self.gridbox.tile_size[1])))
         )
 
-        if self.pressed_draw:
+        if self.drawing:
             lp = self.game.current_state_obj.left_panel
             if lp.selected_tool == "paint" and ":" in lp.selected_brush:
                 brush = lp.selected_brush.split(":")
@@ -87,7 +88,7 @@ class CenterPanel(gui.VBox):
                         self.game.map.set_entity(self.cursor_pos[0], self.cursor_pos[1], brush[1])
                 self.update_gridbox()
 
-        if self.pressed:
+        if self.dragging:
             sensitivity = 0.1
             rel_x = (self.mouse_cur[0] - self.mouse_on_press[0]) * sensitivity
             rel_y = (self.mouse_cur[1] - self.mouse_on_press[1]) * sensitivity
