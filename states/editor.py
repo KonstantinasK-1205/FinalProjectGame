@@ -13,11 +13,12 @@ class EditorState(State):
 
         self.left_panel = editor.LeftPanel(self.game)
         self.center_panel = editor.CenterPanel(self.game)
+        self.right_panel = editor.RightPanel(self.game)
 
         main_panel = gui.HBox(self.game)
         main_panel.add(self.left_panel)
         main_panel.add(self.center_panel)
-        main_panel.add(editor.RightPanel(self.game))
+        main_panel.add(self.right_panel)
 
         self.gui = gui.VBox(self.game)
         self.gui.size = (self.game.width, self.game.height)

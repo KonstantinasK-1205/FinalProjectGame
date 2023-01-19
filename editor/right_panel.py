@@ -73,7 +73,7 @@ class RightPanel(gui.VBox):
         else:
             self.layer_entities_button.background_color = (0, 0, 0)
 
-        self.game.current_state_obj.center_panel.update_gridbox(self.layer_entities, self.layer_walls, self.layer_floors)
+        self.game.current_state_obj.center_panel.update_gridbox()
 
     def onclick_layer_walls(self, component):
         self.layer_walls = not self.layer_walls
@@ -82,7 +82,7 @@ class RightPanel(gui.VBox):
         else:
             self.layer_walls_button.background_color = (0, 0, 0)
 
-        self.game.current_state_obj.center_panel.update_gridbox(self.layer_entities, self.layer_walls, self.layer_floors)
+        self.game.current_state_obj.center_panel.update_gridbox()
 
     def onclick_layer_floors(self, component):
         self.layer_floors = not self.layer_floors
@@ -91,4 +91,4 @@ class RightPanel(gui.VBox):
         else:
             self.layer_floors_button.background_color = (0, 0, 0)
 
-        self.game.current_state_obj.center_panel.update_gridbox(self.layer_entities, self.layer_walls, self.layer_floors)
+        self.game.current_state_obj.center_panel.update_gridbox()

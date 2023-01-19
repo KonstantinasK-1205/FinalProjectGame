@@ -11,7 +11,6 @@ class CenterPanel(gui.VBox):
         self.gridbox = gui.GridBox(self.game)
         self.gridbox.background_color = (0, 0, 0)
         self.gridbox.rows = self.game.map.width
-        self.update_gridbox()
         self.hbox.add(self.gridbox)
 
         self.vscrollbar = gui.VScrollbar(self.game)
@@ -108,7 +107,7 @@ class CenterPanel(gui.VBox):
         self.gridbox.row_offset = self.vscrollbar.value
         self.gridbox.layout()
 
-    def update_gridbox(self, draw_entities = True, draw_walls = True, draw_floors = True):
+    def update_gridbox(self):
         self.gridbox.rows = self.game.map.width
         items = {
             "e": "resources/icons/editor/erase.png",
@@ -137,6 +136,11 @@ class CenterPanel(gui.VBox):
             "[": "resources/textures/crack.png",
             ",": "resources/sprites/pickups/ammo/pistol.png"
         }
+
+        rp = self.game.current_state_obj.right_panel
+        draw_entities = rp.layer_entities
+        draw_walls = rp.layer_walls
+        draw_floors = rp.layer_floors
 
         self.gridbox.children = []
         for i in range(self.game.map.width * self.game.map.height):
