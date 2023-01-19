@@ -188,7 +188,7 @@ class Map:
                 elif char == "a":
                     handler.add_pickup(Pitchfork(self.game, pos))
                 elif char == "s":
-                    handler.add_pickup(Pistol(self.game, pos))
+                    handler.add_pickup(Revolver(self.game, pos))
                 elif char == "d":
                     handler.add_pickup(DoubleShotgun(self.game, pos))
                 elif char == "f":
@@ -196,7 +196,7 @@ class Map:
 
                 # Pickups ammo
                 elif char == "S":
-                    handler.add_pickup(Revolver(self.game, pos))
+                    handler.add_pickup(Pistol(self.game, pos))
                 elif char == "D":
                     handler.add_pickup(Shotgun(self.game, pos))
                 elif char == "F":
