@@ -4,7 +4,7 @@ from sprites.sprite import Sprite
 
 
 class NPC(Sprite):
-    def __init__(self, game, pos, size):
+    def __init__(self, game, pos, size, alive=True):
         super().__init__(game, pos, size)
 
         # Create animation class for each NPC and set default state
@@ -18,9 +18,10 @@ class NPC(Sprite):
         self.update_range = 100  # Range on which enemy starts to receive update
 
         # Base Stats
-        self.alive = True
+        self.alive = alive
         self.pain = False
-        self.health = 100
+        self.max_health = 100  # Set max health, if npc could be revived or healed
+        self.health = self.max_health  # Set in-game health, which changes based on damaged received
         self.speed = 0.002
         self.angle = 0
         self.dx = 0

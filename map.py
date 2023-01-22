@@ -50,10 +50,11 @@ class Map:
     def create(self, size):
         self.size = size
 
-        self.floors = [0] * self.size[0] * self.size[1]
-        self.walls = [0] * self.size[0] * self.size[1]
-        self.entities = [""] * self.size[0] * self.size[1]
-        self.visited = [False] * self.size[0] * self.size[1]
+        map_size = self.size[0] * self.size[1]
+        self.floors = [0] * map_size
+        self.walls = [0] * map_size
+        self.entities = [""] * map_size
+        self.visited = [False] * map_size
         self.properties = []
 
         self.enemy_amount = 0
@@ -76,10 +77,13 @@ class Map:
         )
         for i in range(overlap_size[1]):
             for j in range(overlap_size[0]):
-                new_floors[j + i * new_size[0]] = self.floors[j + i * self.size[0]]
-                new_walls[j + i * new_size[0]] = self.walls[j + i * self.size[0]]
-                new_entities[j + i * new_size[0]] = self.entities[j + i * self.size[0]]
-                new_visited[j + i * new_size[0]] = self.visited[j + i * self.size[0]]
+                old_data = j + i * self.size[0]
+                new_data = j + i * new_size[0]
+
+                new_floors[new_data] = self.floors[old_data]
+                new_walls[new_data] = self.walls[old_data]
+                new_entities[new_data] = self.entities[old_data]
+                new_visited[new_data] = self.visited[old_data]
 
         self.size = new_size
         self.floors = new_floors
@@ -214,7 +218,7 @@ class Map:
                 elif char == "#":
                     handler.add_sprite(SmallTorch(self.game, pos))
                 elif char == "*":
-                    handler.add_sprite(Corpse(self.game, pos))
+                    Corpse(self.game, pos)
                 elif char == "[":
                     handler.add_interactive_sprite(BreakableWall(self.game, [x, y, 0]))
 

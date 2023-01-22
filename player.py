@@ -143,13 +143,13 @@ class Player:
     def add_health(self, health):
         health += self.health
         self.health = self.max_health if health > self.max_health else health
-        self.game.hud.healthbar.update_healthbar_info(health)
+        self.game.hud.healthbar.update_healthbar_info(self.health)
 
     # Increase player armor value without exceeding max value
     def add_armor(self, armor):
         armor += self.armor
         self.armor = self.max_armor if armor > self.max_armor else armor
-        self.game.hud.armorbar.update_armorbar_info(armor)
+        self.game.hud.armorbar.update_armorbar_info(self.armor)
 
     # Calculate damage done to player armor and/or health
     def apply_damage(self, damage):

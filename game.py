@@ -125,6 +125,7 @@ class Game:
 
         self.pathfinding = PathFinding(self)
         self.hud.level_change(self.player.health, self.player.armor)
+        self.object_handler.update_npc_list()
 
     def next_level(self, level_filename):
         self.map_started_to_change = pg.time.get_ticks()
@@ -137,6 +138,7 @@ class Game:
 
         self.pathfinding = PathFinding(self)
         self.hud.level_change(self.player.health, self.player.armor)
+        self.object_handler.update_npc_list()
 
         print("Map: " + str(self.current_map) + ", loaded in: " + str(
             pg.time.get_ticks() - self.map_started_to_change) + "ms.")
@@ -150,6 +152,7 @@ class Game:
 
         self.pathfinding = PathFinding(self)
         self.hud.level_change(self.player.health, self.player.armor)
+        self.object_handler.update_npc_list()
 
     def run(self):
         self.running = True

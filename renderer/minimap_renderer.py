@@ -112,7 +112,7 @@ class MinimapRenderer:
         glDrawArrays(GL_QUADS, 0, self.wall_vbo_size)
 
     def draw_unvisited(self):
-        glColor4f(0, 0, 0, 0.4)
+        glColor4f(0, 0, 0, 0.9)
 
         for c in self.unvisited_chunks:
             if c.is_valid():

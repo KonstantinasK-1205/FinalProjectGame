@@ -11,15 +11,6 @@ class Tree(Sprite):
         self.sprite = game.sprite_manager.get_sprite("Tree")
 
 
-class Corpse(Sprite):
-    def __init__(self, game, pos):
-        super().__init__(game, pos, [0.35, 0.25])
-        corpse_no = str(random.randint(0, 2))
-        corpse_path = "corpse" + corpse_no + ".png"
-        game.sprite_manager.load_single_image("Corpse" + corpse_no, "resources/sprites/environment/" + corpse_path)
-        self.sprite = game.sprite_manager.get_sprite("Corpse" + corpse_no)
-
-
 class BigTorch(Sprite):
     def __init__(self, game, pos):
         super().__init__(game, pos, [0.3, 0.8])

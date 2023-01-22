@@ -1,3 +1,6 @@
+from entity.npc.enemies.pinky import Pinky
+from entity.npc.enemies.reaper import Reaper
+from entity.npc.enemies.soldier import Soldier
 from entity.npc.enemies.zombie import *
 from sprites.sprite import Sprite
 import pygame as pg
@@ -19,3 +22,17 @@ class ZombieSpawn(Sprite):
             self.game.object_handler.add_npc(Zombie(self.game, self.pos))
             self.next_spawn = random.randrange(15000, 30000)
             self.last_spawned = pg.time.get_ticks()
+
+
+class Corpse:
+    def __init__(self, game, pos):
+        handler = game.object_handler
+        match random.randint(0, 3):
+            case 0:
+                handler.add_npc(Zombie(game, pos, False))
+            case 1:
+                handler.add_npc(Soldier(game, pos, False))
+            case 2:
+                handler.add_npc(Pinky(game, pos, False))
+            case 3:
+                handler.add_npc(Reaper(game, pos, False))

@@ -3,15 +3,16 @@ import random
 
 
 class Reaper(Enemy):
-    def __init__(self, game, pos):
-        super().__init__(game, pos, [0, 0, 0])
+    def __init__(self, game, pos, alive=True):
+        super().__init__(game, pos, [0, 0, 0], alive)
 
         # Position and scale
         self.pos[2] = random.uniform(0.3, 0.6)
         self.size = [0.6, 0.6]
 
         # Stats
-        self.health = 200
+        self.max_health = 200
+        self.health = self.max_health if alive else 0
         self.speed = 0.002
 
         # Attack stats
@@ -82,6 +83,21 @@ class Reaper(Enemy):
         self.last_teleportation_time = 0
         self.teleportation_cooldown = 2000
         self.last_attack = 0
+
+        # Test
+        self.revived_used = False
+
+    def update(self):
+        if self.alive and 50 < self.health < 180:
+            if not self.revived_used:
+                for enemy in self.game.object_handler.npc_list:
+                    if not enemy.alive:
+                        if self.distance_from(enemy) < 5:
+                            enemy.alive = True
+                            enemy.health = enemy.max_health
+                            enemy.change_state("Death")
+                self.revived_used = True
+                self.game.object_handler.update_npc_list()
 
 #    def movement(self):
 #        # If teleported or player is further than 3 blocks

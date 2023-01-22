@@ -19,6 +19,7 @@ class Pitchfork(Sprite):
             self.sprite = self.game.sprite_manager.get_sprite("corpse without pitchfork")
             self.weapon_picked = True
             self.game.weapon.unlock("Pitchfork")
+            self.game.object_handler.update_pickup_list()
 
 
 class Revolver(Sprite):

@@ -1,0 +1,20 @@
+Weapon: Automatic Rifle,Unlocked,360,30
+Weapon: Double Shotgun,Unlocked,60,2
+Weapon: Revolver,Unlocked,48,8
+Next Level: T_Level2
+1	1	1	1	1	1	1	1	1	1	1	1	1
+1					Z	Z	Z					1
+1					Z	B	Z					1
+1	Z	Z	z		Z	Z	Z		Z	Z	Z	1
+1	Z	Z	Z						Z	Z	Z	1
+1	Z	Z	Z						Z	Z	Z	1
+1												1
+1												1
+1												1
+1												1
+1	1	1	1	1	1		1	1	1	1	1	1
+1	F										q	1
+1	F			1	1	1	1	1			q	1
+1	F			@				@			w	1
+1	F					O					w	1
+1	1	1	1	1	1	1	1	1	1	1	1	1

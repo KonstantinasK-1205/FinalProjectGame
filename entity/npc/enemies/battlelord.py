@@ -2,20 +2,21 @@ from entity.npc.enemy_base import Enemy
 
 
 class Battlelord(Enemy):
-    def __init__(self, game, pos):
-        super().__init__(game, pos, [0, 0, 0])
+    def __init__(self, game, pos, alive=True):
+        super().__init__(game, pos, [0, 0, 0], alive)
 
         # Position and scale
         self.size = [0.8, 0.9]
 
         # Stats
-        self.health = 2200
+        self.max_health = 2200
+        self.health = self.max_health if alive else 0
         self.speed = 0.003
 
         # Attack stats
         self.damage = 10  # How much damage should enemy do to player
 
-        self.fire_cooldown = 0  # Cooldown before enemy can shoot again
+        self.fire_cooldown = 10  # Cooldown before enemy can shoot again
         self.last_fire_time = 0  # Reset timer, when enemy fired
 
         self.bullet_in_gun = 360  # How much enemy has bullet in gun at moment

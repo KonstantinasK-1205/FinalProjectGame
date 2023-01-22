@@ -10,7 +10,7 @@ class Armor(Sprite):
         self.type = "Player"
 
     def update(self):
-        if self.distance_from(self.player) < 0.5 and (self.player.armor + self.amount) <= self.player.max_armor:
+        if self.distance_from(self.player) < 0.5 and self.player.armor < 100:
             self.delete = True
             self.player.add_armor(self.amount)
             self.game.sound.play_sfx("Pickup armor")

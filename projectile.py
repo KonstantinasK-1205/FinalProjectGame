@@ -6,7 +6,6 @@ class Projectile:
     def __init__(self, game, pos, angle, data, projectile=None):
         # Init all object variables and functions, for faster access time in loops
         self.game = game
-        self.delta = game.dt
         self.map = game.map
 
         self.player = game.player
@@ -38,7 +37,7 @@ class Projectile:
         self.game.renderer.draw_sprite(self.pos, self.size, self.sprite)
 
     def update(self):
-        self.alive += self.delta
+        self.alive += self.game.dt
         if self.alive < self.lifetime:
             # If fired by player, check collision with npc
             if self.owner == 'Player':
@@ -63,11 +62,11 @@ class Projectile:
                     return
 
             # Calculate cosine of vertical angle once per frame, for reusing
-            angle = math.cos(self.angle[1]) * self.delta
+            angle = math.cos(self.angle[1]) * self.game.dt
             # Calculate relative velocity for next frame
             dx = self.speed * math.cos(self.angle[0]) * angle
             dy = self.speed * math.sin(self.angle[0]) * angle
-            dz = self.speed * math.sin(self.angle[1]) * self.delta
+            dz = self.speed * math.sin(self.angle[1]) * self.game.dt
 
             # Check for collision
             self.pos, collided = resolve_collision(self.pos, dx, dy, self.map, 0.01)

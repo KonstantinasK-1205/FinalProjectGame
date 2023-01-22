@@ -44,13 +44,15 @@ class ObjectHandler:
         [bullet.draw() for bullet in self.bullet_list]
         [pickup.draw() for pickup in self.pickup_list]
         [sprite.draw() for sprite in self.sprite_list]
+        [sprite.draw() for sprite in self.interactive_sprite_list]
 
     def add_bullet(self, bullet):
         self.bullet_list.append(bullet)
 
-    def add_npc(self, npc):
+    def add_npc(self, npc, alive=True):
         self.npc_list.append(npc)
-        self.alive_npc_list.append(npc)
+        if alive:
+            self.alive_npc_list.append(npc)
         self.game.map.enemy_amount += 1
 
     def add_pickup(self, pickup):

@@ -2,13 +2,14 @@ from entity.npc.enemy_base import Enemy
 
 
 class Zombie(Enemy):
-    def __init__(self, game, pos):
-        super().__init__(game, pos, [0, 0, 0])
+    def __init__(self, game, pos, alive=True):
+        super().__init__(game, pos, [0, 0, 0], alive)
 
         self.size = [0.6, 0.6]
 
         # Stats
-        self.health = 20
+        self.max_health = 20
+        self.health = self.max_health if alive else 0
         self.speed = 0.0006
 
         # Attack stats

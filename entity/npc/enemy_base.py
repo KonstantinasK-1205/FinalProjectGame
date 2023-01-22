@@ -10,8 +10,8 @@ from entity.pickup.ammo import *
 
 
 class Enemy(NPC):
-    def __init__(self, game, pos, size):
-        super().__init__(game, pos, size)
+    def __init__(self, game, pos, size, alive=True):
+        super().__init__(game, pos, size, alive)
         # Base Attack stats
         self.damage = 0  # How much damage should enemy do to player
 
