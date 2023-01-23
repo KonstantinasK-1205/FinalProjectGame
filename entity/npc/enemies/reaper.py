@@ -88,6 +88,7 @@ class Reaper(Enemy):
         self.revived_used = False
 
     def update(self):
+        super().update()
         if self.alive and 50 < self.health < 180:
             if not self.revived_used:
                 for enemy in self.game.object_handler.npc_list:

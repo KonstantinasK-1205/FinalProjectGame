@@ -190,21 +190,21 @@ class Map:
 
                 # Pickups weapons
                 elif char == "a":
-                    handler.add_pickup(Pitchfork(self.game, pos))
+                    handler.add_pickup(WeaponPickup(self.game, pos, "Pitchfork"))
                 elif char == "s":
-                    handler.add_pickup(Revolver(self.game, pos))
+                    handler.add_pickup(WeaponPickup(self.game, pos, "Revolver"))
                 elif char == "d":
-                    handler.add_pickup(DoubleShotgun(self.game, pos))
+                    handler.add_pickup(WeaponPickup(self.game, pos, "Double Shotgun"))
                 elif char == "f":
-                    handler.add_pickup(AutomaticRifle(self.game, pos))
+                    handler.add_pickup(WeaponPickup(self.game, pos, "Automatic Rifle"))
 
                 # Pickups ammo
                 elif char == "S":
-                    handler.add_pickup(Pistol(self.game, pos))
+                    handler.add_pickup(Ammo(self.game, pos, "Revolver", 24))
                 elif char == "D":
-                    handler.add_pickup(Shotgun(self.game, pos))
+                    handler.add_pickup(Ammo(self.game, pos, "Double Shotgun", 30))
                 elif char == "F":
-                    handler.add_pickup(Rifle(self.game, pos))
+                    handler.add_pickup(Ammo(self.game, pos, "Automatic Rifle", 60))
                 elif char == "-":
                     handler.add_pickup(BonusLevel(self.game, pos))
                 elif char == "]":
@@ -213,6 +213,10 @@ class Map:
                 # Sprites / Decoration
                 elif char == "!":
                     handler.add_sprite(Tree(self.game, pos))
+                elif char == "$":
+                    handler.add_sprite(Fence(self.game, pos))
+                elif char == "c":
+                    handler.add_sprite(Cross(self.game, pos))
                 elif char == "@":
                     handler.add_sprite(BigTorch(self.game, pos))
                 elif char == "#":

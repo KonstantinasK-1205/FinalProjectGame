@@ -84,9 +84,10 @@ class Enemy(NPC):
         if not self.alive:
             if self.can_drop_ammo_on_death and not self.ammo_dropped:
                 if self.droppable_ammo == "Shotgun":
-                    self.game.object_handler.add_pickup(Shotgun(self.game,
-                                                                self.exact_pos,
-                                                                self.bullet_in_total))
+                    self.game.object_handler.add_pickup(Ammo(self.game,
+                                                             self.exact_pos,
+                                                             "Double Shotgun",
+                                                             self.bullet_in_total))
                 self.ammo_dropped = True
             self.change_state("Death")
             return

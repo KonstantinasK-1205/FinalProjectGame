@@ -1,6 +1,7 @@
 from sprites.sprite import Sprite
 from sprites.animation_manager import *
 import random
+import math
 
 
 class Tree(Sprite):
@@ -10,6 +11,34 @@ class Tree(Sprite):
         game.sprite_manager.load_single_image("Tree", "resources/sprites/environment/tree0.png")
         self.sprite = game.sprite_manager.get_sprite("Tree")
 
+
+class Cross(Sprite):
+    def __init__(self, game, pos):
+        super().__init__(game, pos, [0.4, 0.6])
+        game.sprite_manager.load_single_image("Cross Front", "resources/sprites/environment/Cross/0.png")
+        game.sprite_manager.load_single_image("Cross Angle", "resources/sprites/environment/Cross/1.png")
+        game.sprite_manager.load_single_image("Cross Side", "resources/sprites/environment/Cross/2.png")
+        self.sprite = game.sprite_manager.get_sprite("Cross Front")
+        self.front = "Cross Front"
+        self.angle = "Cross Angle"
+        self.side = "Cross Side"
+
+    def draw(self):
+        # For future, make sprite show specific sprite
+        self.game.renderer.draw_sprite(self.pos, self.size, self.sprite, angle=0)
+
+
+class Fence(Cross):
+    def __init__(self, game, pos):
+        super().__init__(game, pos)
+        self.size = [1.1, 1]
+        game.sprite_manager.load_single_image("Fence Front", "resources/sprites/environment/Fence/0.png")
+        game.sprite_manager.load_single_image("Fence Angle", "resources/sprites/environment/Fence/1.png")
+        game.sprite_manager.load_single_image("Fence Side", "resources/sprites/environment/Fence/2.png")
+        self.sprite = game.sprite_manager.get_sprite("Fence Front")
+        self.front = "Fence Front"
+        self.angle = "Fence Angle"
+        self.side = "Fence Side"
 
 class BigTorch(Sprite):
     def __init__(self, game, pos):

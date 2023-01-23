@@ -63,8 +63,8 @@ class Game:
         self.map = Map(self)
         self.sound = Sound(self)
 
-        self.starting_map = "Level1"
-        self.current_map = "Level1"
+        self.starting_map = "T_Level3"
+        self.current_map = "T_Level3"
 
         self.init_fonts()
 
