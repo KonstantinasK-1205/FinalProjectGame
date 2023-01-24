@@ -85,6 +85,8 @@ class SpriteRenderer:
         last_color = (255, 255, 255)
         glColor3ub(last_color[0], last_color[1], last_color[2])
 
+        glDepthMask(GL_FALSE)
+
         for o in self.sprites_to_render:
             if not o.texture == last_texture:
                 last_texture = o.texture
@@ -125,6 +127,8 @@ class SpriteRenderer:
                 glDrawArrays(GL_QUADS, 0, 4)
 
             glPopMatrix()
+
+        glDepthMask(GL_TRUE)
 
         self.sprites_to_render = []
 

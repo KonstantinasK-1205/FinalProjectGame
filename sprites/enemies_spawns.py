@@ -27,12 +27,12 @@ class ZombieSpawn(Sprite):
 class Corpse:
     def __init__(self, game, pos):
         handler = game.object_handler
-        match random.randint(0, 3):
-            case 0:
-                handler.add_npc(Zombie(game, pos, False))
-            case 1:
-                handler.add_npc(Soldier(game, pos, False))
-            case 2:
-                handler.add_npc(Pinky(game, pos, False))
-            case 3:
-                handler.add_npc(Reaper(game, pos, False))
+        r = random.randint(0, 3)
+        if r == 0:
+            handler.add_npc(Zombie(game, pos, False))
+        elif r == 1:
+            handler.add_npc(Soldier(game, pos, False))
+        elif r == 2:
+            handler.add_npc(Pinky(game, pos, False))
+        elif r == 3:
+            handler.add_npc(Reaper(game, pos, False))
