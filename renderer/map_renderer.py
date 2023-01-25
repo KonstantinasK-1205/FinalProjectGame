@@ -1,4 +1,5 @@
 from renderer.opengl import *
+import os
 
 
 class MapRenderer:
@@ -6,31 +7,19 @@ class MapRenderer:
         self.game = game
         self.renderer = renderer
 
-        self.floor_layers = []
-        self.wall_layers = []
+        # Separate layers are used to draw surfaces with different textures
+        self.layers = {}
 
-        self.vbos_initialized = False
-
-        self.floor_textures = 3
-        self.wall_textures = 4
-        for i in range(1, self.floor_textures + 1):
-            renderer.load_texture_from_file("resources/textures/desert/floor_" + str(i) + ".jpg", True, True)
-        for i in range(1, self.wall_textures + 1):
-            renderer.load_texture_from_file("resources/textures/desert/wall_" + str(i) + ".jpg", True, True)
+        for folder, subdirs, files in os.walk("resources/textures"):
+            for filename in files:
+                if "floor_" in filename or "wall_" in filename:
+                    renderer.load_texture_from_file(folder + "/" + filename, True, True)
 
     def update_vbos(self):
-        # Separate layers are used to draw surfaces with different textures
-        # Create a layer for each floor and wall texture
-        self.floor_layers = []
-        self.wall_layers = []
-        floor_layer_data = []
-        wall_layer_data = []
-        for i in range(1, self.floor_textures + 1):
-            floor_layer_data.append([])
-            self.floor_layers.append(MapRenderer.Layer("resources/textures/desert/floor_" + str(i) + ".jpg", "map_floor_" + str(i), 0))
-        for i in range(1, self.wall_textures + 1):
-            wall_layer_data.append([])
-            self.wall_layers.append(MapRenderer.Layer("resources/textures/desert/wall_" + str(i) + ".jpg", "map_wall_" + str(i), 0))
+        self.layers = {}
+
+        # VBO data is accumulated here until it's stored in the VBO
+        layer_data = {}
 
         for i in range(self.game.map.height):
             for j in range(self.game.map.width):
@@ -40,82 +29,90 @@ class MapRenderer:
                     continue
 
                 # Add visible wall vertices
-                self.add_visible_wall(j - 1, i    , 0, wall_layer_data)
-                self.add_visible_wall(j + 1, i    , 1, wall_layer_data)
-                self.add_visible_wall(j    , i - 1, 2, wall_layer_data)
-                self.add_visible_wall(j    , i + 1, 3, wall_layer_data)
+                self.add_visible_wall(j - 1, i    , 0, layer_data)
+                self.add_visible_wall(j + 1, i    , 1, layer_data)
+                self.add_visible_wall(j    , i - 1, 2, layer_data)
+                self.add_visible_wall(j    , i + 1, 3, layer_data)
 
                 # Add floor vertices
                 floor = self.game.map.get_floor(j, i)
-                if floor > 0:
-                    layer = floor - 1
+                if floor:
+                    name = "desert/floor_" + str(floor) + ".jpg"
+                    if not name in layer_data:
+                        self.layers[name] = MapRenderer.Layer(
+                            "resources/textures/" + name,
+                            "map_layer_" + name,
+                            0
+                        )
+                        layer_data[name] = []
 
-                    floor_layer_data[layer].extend([
+                    layer_data[name].extend([
                         0, 0, j + 0, 0, i + 1,
                         1, 0, j + 1, 0, i + 1,
                         1, 1, j + 1, 0, i + 0,
                         0, 1, j + 0, 0, i + 0
                     ])
-                    self.floor_layers[layer].vbo_size += 4
+                    self.layers[name].vbo_size += 4
 
-        for i in range(self.floor_textures):
-            self.renderer.load_vbo(self.floor_layers[i].vbo, floor_layer_data[i])
-        for i in range(self.wall_textures):
-            self.renderer.load_vbo(self.wall_layers[i].vbo, wall_layer_data[i])
-
-        self.vbos_initialized = True
+        for k in self.layers:
+            self.renderer.load_vbo(self.layers[k].vbo, layer_data[k])
 
     def add_visible_wall(self, x, y, direction, layer_data):
-        WALL_HEIGHT = 1.5
+        wall_height = 1.5
 
-        layer = self.game.map.get_wall(x, y) - 1
-        if layer < 0:
+        wall = self.game.map.get_wall(x, y)
+        if not wall:
             return
 
+        name = "desert/wall_" + str(wall) + ".jpg"
+        if not name in layer_data:
+            self.layers[name] = MapRenderer.Layer(
+                "resources/textures/" + name,
+                "map_layer_" + name,
+                0
+            )
+            layer_data[name] = []
+
         if direction == 0:
-            layer_data[layer].extend([
+            layer_data[name].extend([
                 1, 0, x + 1, 0          , y + 0,
-                1, 1, x + 1, WALL_HEIGHT, y + 0,
-                0, 1, x + 1, WALL_HEIGHT, y + 1,
+                1, 1, x + 1, wall_height, y + 0,
+                0, 1, x + 1, wall_height, y + 1,
                 0, 0, x + 1, 0          , y + 1
             ])
         elif direction == 1:
-            layer_data[layer].extend([
+            layer_data[name].extend([
                 0, 0, x + 0, 0          , y + 0,
                 1, 0, x + 0, 0          , y + 1,
-                1, 1, x + 0, WALL_HEIGHT, y + 1,
-                0, 1, x + 0, WALL_HEIGHT, y + 0
+                1, 1, x + 0, wall_height, y + 1,
+                0, 1, x + 0, wall_height, y + 0
             ])
         elif direction == 2:
-            layer_data[layer].extend([
+            layer_data[name].extend([
                 0, 0, x + 0, 0          , y + 1,
                 1, 0, x + 1, 0          , y + 1,
-                1, 1, x + 1, WALL_HEIGHT, y + 1,
-                0, 1, x + 0, WALL_HEIGHT, y + 1
+                1, 1, x + 1, wall_height, y + 1,
+                0, 1, x + 0, wall_height, y + 1
             ])
         else:
-            layer_data[layer].extend([
+            layer_data[name].extend([
                 1, 0, x + 0, 0          , y + 0,
-                1, 1, x + 0, WALL_HEIGHT, y + 0,
-                0, 1, x + 1, WALL_HEIGHT, y + 0,
+                1, 1, x + 0, wall_height, y + 0,
+                0, 1, x + 1, wall_height, y + 0,
                 0, 0, x + 1, 0          , y + 0
             ])
-        self.wall_layers[layer].vbo_size += 4
+        self.layers[name].vbo_size += 4
 
     def draw(self):
-        for l in self.floor_layers:
-            glBindTexture(GL_TEXTURE_2D, self.renderer.texture_manager.textures[l.texture])
+        tm = self.renderer.texture_manager
+        vm = self.renderer.vbo_manager
 
-            glBindBuffer(GL_ARRAY_BUFFER, self.renderer.vbo_manager.vbos[l.vbo])
-            glTexCoordPointer(2, GL_FLOAT, 5 * 4, ctypes.c_void_p(0))
-            glVertexPointer(3, GL_FLOAT, 5 * 4, ctypes.c_void_p(2 * 4))
+        for k in self.layers:
+            l = self.layers[k]
 
-            glDrawArrays(GL_QUADS, 0, l.vbo_size)
+            glBindTexture(GL_TEXTURE_2D, tm.textures[l.texture])
 
-        for l in self.wall_layers:
-            glBindTexture(GL_TEXTURE_2D, self.renderer.texture_manager.textures[l.texture])
-
-            glBindBuffer(GL_ARRAY_BUFFER, self.renderer.vbo_manager.vbos[l.vbo])
+            glBindBuffer(GL_ARRAY_BUFFER, vm.vbos[l.vbo])
             glTexCoordPointer(2, GL_FLOAT, 5 * 4, ctypes.c_void_p(0))
             glVertexPointer(3, GL_FLOAT, 5 * 4, ctypes.c_void_p(2 * 4))
 
