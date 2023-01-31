@@ -1,7 +1,6 @@
 from object_handler import *
 from hud.hud_manager import *
 from map import *
-from pathfinding import *
 from player import *
 from renderer.renderer import *
 from sound import *
@@ -51,7 +50,6 @@ class Game:
 
         # Needs to be initialized, otherwise will crash on resize before new game
         self.player = None
-        self.pathfinding = None
         self.weapon = None
 
         self.clock = pg.time.Clock()
@@ -63,8 +61,8 @@ class Game:
         self.map = Map(self)
         self.sound = Sound(self)
 
-        self.starting_map = "T_Level3"
-        self.current_map = "T_Level3"
+        self.starting_map = "Level1"
+        self.current_map = "Level1"
 
         self.init_fonts()
 
@@ -123,7 +121,6 @@ class Game:
         self.player.on_level_change()
         self.weapon.save_weapon_info()
 
-        self.pathfinding = PathFinding(self)
         self.hud.level_change(self.player.health, self.player.armor)
         self.object_handler.update_npc_list()
 
@@ -136,7 +133,6 @@ class Game:
         self.player.on_level_change()
         self.weapon.save_weapon_info()
 
-        self.pathfinding = PathFinding(self)
         self.hud.level_change(self.player.health, self.player.armor)
         self.object_handler.update_npc_list()
 
@@ -150,7 +146,6 @@ class Game:
         self.player.load_player_stats()
         self.weapon.load_weapon_info()
 
-        self.pathfinding = PathFinding(self)
         self.hud.level_change(self.player.health, self.player.armor)
         self.object_handler.update_npc_list()
 

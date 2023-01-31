@@ -1,55 +1,45 @@
-from collections import deque
 
 
-class PathFinding:
-    def __init__(self, game):
-        self.game = game
-        self.ways = [-1, 0], [0, -1], [1, 0], [0, 1], [-1, -1], [1, -1], [1, 1], [-1, 1]
-        self.graph = {}
-        self.get_graph()
-        self.visited = None
+def find_path(start_pos, target_pos, level_map):
+    # Define all possible movement directions
+    # Diagonal movement is also possible, but may result in a path that goes
+    # through a wall, as walls are not checked separately on X and Y axes
+    directions = [
+        (-1,  0),
+        ( 0, -1),
+        ( 0,  1),
+        ( 1,  0)
+    ]
 
-    def get_path(self, start, goal):
-        start = tuple(start)
-        goal = tuple(goal)
-        # Fail if start or goal positions are in walls as this causes
-        # pathfinding to take a long time
-        if self.game.map.is_wall(int(start[0]), int(start[1])) or self.game.map.is_wall(int(goal[0]), int(goal[1])):
-            return start
+    # Pathfinding is performed on a grid, so truncate the decimal points
+    # Also, positions need to be stored as tuples, as lists do not work in sets
+    start_pos = (int(start_pos[0]), int(start_pos[1]))
+    target_pos = (int(target_pos[0]), int(target_pos[1]))
 
-        self.visited = self.bfs(start, goal, self.graph)
-        path = [goal]
-        step = self.visited.get(goal, start)
+    # Remember previously visited positions to avoid an infinite loop
+    visited = set()
 
-        while step and step != start:
-            path.append(step)
-            step = self.visited[step]
-        return path[-1]
+    queue = []
+    # Start pathfinding from the target position so that the next step from the
+    # starting position can be returned
+    queue.append(target_pos)
+    while len(queue) > 0:
+        pos = queue.pop()
 
-    def bfs(self, start, goal, graph):
-        queue = deque([start])
-        visited = {start: None}
+        visited.add(pos)
 
-        while queue:
-            cur_node = queue.popleft()
-            if cur_node == goal:
-                break
-            if cur_node in graph:
-                next_nodes = graph[cur_node]
-            else:
-                break
+        for d in directions:
+            next_pos = (pos[0] + d[0], pos[1] + d[1])
 
-            for next_node in next_nodes:
-                if next_node not in visited and next_node:
-                    queue.append(next_node)
-                    visited[next_node] = cur_node
-        return visited
+            # If the next position is the start, it means that the current
+            # position is the next position from the start, and should be
+            # returned
+            # Make sure to return the position as an array
+            if next_pos == start_pos:
+                return [pos[0], pos[1]]
 
-    def get_next_nodes(self, x, y):
-        return [(x + dx, y + dy) for dx, dy in self.ways if not self.game.map.is_wall(int(x + dx), int(y + dy))]
+            if next_pos not in visited and not level_map.is_wall(next_pos[0], next_pos[1]):
+                queue.append(next_pos)
 
-    def get_graph(self):
-        for i in range(self.game.map.height):
-            for j in range(self.game.map.width):
-                if not self.game.map.is_wall(j, i):
-                    self.graph[(j, i)] = self.graph.get((j, i), []) + self.get_next_nodes(j, i)
+    # No path was found
+    return start_pos
